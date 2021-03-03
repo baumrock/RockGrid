@@ -7,21 +7,21 @@
  * @link https://www.baumrock.com
  */
 require_once("Grid.php");
-class RockGrid extends WireData implements Module, ConfigurableModule {
+class RockGrid2 extends WireData implements Module, ConfigurableModule {
 
   public $assetsDir;
 
   public static function getModuleInfo() {
     return [
-      'title' => 'RockGrid',
+      'title' => 'RockGrid2',
       'version' => '0.0.1',
-      'summary' => 'RockGrid Main Module',
+      'summary' => 'RockGrid2 Main Module',
       'autoload' => "template=admin",
       'singular' => true,
       'icon' => 'table',
       'requires' => [],
       'installs' => [
-        'InputfieldRockGrid',
+        'InputfieldRockGrid2',
       ],
     ];
   }
@@ -70,7 +70,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule {
   public function loadGrid($data) {
     $file = $this->getFile($data);
     require_once($file->path);
-    $class = "\RockGrid\\".$file->name;
+    $class = "\RockGrid2\\".$file->name;
     return new $class();
   }
 

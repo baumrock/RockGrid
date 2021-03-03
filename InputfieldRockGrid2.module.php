@@ -1,6 +1,6 @@
 <?php namespace ProcessWire;
 
-use RockGrid\Grid;
+use RockGrid2\Grid;
 
 /**
  * RockGrid Inputfield using tabulator.info
@@ -9,15 +9,17 @@ use RockGrid\Grid;
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class InputfieldRockGrid extends InputfieldTextarea {
+class InputfieldRockGrid2 extends InputfieldTextarea {
 
   public static function getModuleInfo() {
     return [
-      'title' => 'RockGrid Inputfield',
+      'title' => 'RockGrid2 Inputfield',
       'version' => '0.0.1',
       'summary' => 'RockGrid Inputfield using tabulator.info',
       'icon' => 'table',
-      'requires' => [],
+      'requires' => [
+        'RockGrid2',
+      ],
       'installs' => [],
     ];
   }
@@ -27,7 +29,7 @@ class InputfieldRockGrid extends InputfieldTextarea {
    * @return RockGrid
    */
   public function main() {
-    return $this->wire->modules->get('RockGrid');
+    return $this->wire->modules->get('RockGrid2');
   }
 
   /**

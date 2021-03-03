@@ -1,4 +1,4 @@
-<?php namespace RockGrid;
+<?php namespace RockGrid2;
 
 use ProcessWire\Inputfield;
 use ProcessWire\Wire;
