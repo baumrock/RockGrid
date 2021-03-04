@@ -25,8 +25,19 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
   }
 
   /**
+   * Get file path for given grid
+   * @return string
+   */
+  public function getFile($ext = "php") {
+    $file = $this->grid;
+    if(!is_file($file)) $file = $this->main()->assetsDir.$file.".$ext";
+    if(!is_file($file)) return false;
+    return $file;
+  }
+
+  /**
    * Get main module instance
-   * @return RockGrid
+   * @return RockGrid2
    */
   public function main() {
     return $this->wire->modules->get('RockGrid2');
@@ -47,6 +58,10 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
   */
   public function ___render() {
     $grid = $this->main()->loadGrid($this);
+    if(!$grid) {
+      $file = $this->getFile();
+      return "File $file not found";
+    }
     return $grid->render();
   }
 }

@@ -11,6 +11,8 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
 
   public $assetsDir;
 
+  private $loadAssets = false;
+
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2',
@@ -41,37 +43,59 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   /**
-   * Find file from given data object
-   * @return WireData
-   */
-  public function getFile($data) {
-    $file = $this->assetsDir."ImportInvoices.php";
-    $data = $this->wire(new WireData()); /** @var WireData $data */
-    $data->path = $file;
-    $data->name = pathinfo($file, PATHINFO_FILENAME);
-    return $data;
-  }
-
-  /**
    * Load tabulator assets
    * This is hookable so that you can customize the loaded scripts/styles
    * if you need.
    * @return void
    */
   public function ___loadAssets() {
-    $this->wire->config->scripts->add(__DIR__."/tabulator/js/tabulator.min.js");
-    $this->wire->config->styles->add(__DIR__."/tabulator/css/tabulator.min.css");
+    $rg = $this;
+
+    // add the grid's js file on renderready
+    $this->addHookAfter("InputfieldRockGrid2::renderReadyHook", function(HookEvent $event) use($rg) {
+      // set flag to load assets for rockgrid
+      $rg->loadAssets = true;
+      $inputfield = $event->object;
+      $js = $this->url($inputfield->getFile('js'));
+      if($js) $this->wire->config->scripts->add($js);
+    });
+
+    // if any rockgrid field is present we add the necessary libraries
+    // this is done AFTER all field's scripts are loaded so that the first
+    // init() call of RockGrid2.js fires for all grids but all files are
+    // still only loaded once
+    $this->addHookBefore('AdminTheme::getExtraMarkup', function (HookEvent $event) use($rg) {
+      if(!$rg->loadAssets) return;
+      $config = $this->wire->config;
+      $url = $config->urls($rg);
+      $config->scripts->add($url."lib/moment.min.js");
+      $config->scripts->add($url."tabulator/js/tabulator.min.js");
+      $config->scripts->add($url."Grid.js");
+      $config->scripts->add($url."RockGrid2.js");
+      $config->styles->add($url."tabulator/css/tabulator.min.css");
+    });
   }
 
   /**
    * Load grid
    * @return Grid|false
    */
-  public function loadGrid($data) {
-    $file = $this->getFile($data);
-    require_once($file->path);
-    $class = "\RockGrid2\\".$file->name;
+  public function loadGrid($inputfield) {
+    $file = $inputfield->getFile();
+    if(!is_file($file)) return false;
+    require_once($file);
+    $name = pathinfo($file, PATHINFO_FILENAME);
+    $class = "\RockGrid2\\".$name;
     return new $class();
+  }
+
+  /**
+   * Return url of given file
+   * @return string
+   */
+  public function url($path) {
+    $config = $this->wire->config;
+    return str_replace($config->paths->root, $config->urls->root, $path);
   }
 
   /**
