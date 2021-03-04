@@ -18,7 +18,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       'title' => 'RockGrid2',
       'version' => '0.0.1',
       'summary' => 'RockGrid2 Main Module',
-      'autoload' => "template=admin",
+      'autoload' => true,
       'singular' => true,
       'icon' => 'table',
       'requires' => [],
@@ -31,6 +31,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public function init() {
     $this->loadAssets();
     $this->createAssetsFolder();
+    $this->handleAjax();
   }
 
   /**
@@ -40,6 +41,43 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public function createAssetsFolder() {
     $this->assetsDir = $this->wire->config->paths->assets.$this->className()."/";
     if(!is_dir($this->assetsDir)) $this->wire->files->mkdir($this->assetsDir);
+  }
+
+  /**
+   * Get file of grid
+   * @return string
+   */
+  public function getFile($file, $ext = 'php') {
+    if(!is_file($file)) $file = $this->assetsDir.$file.".$ext";
+    if(!is_file($file)) return false;
+    return $file;
+  }
+
+  /**
+   * Load grid instance
+   * @return Grid|false
+   */
+  public function getGrid($data) {
+    if($data instanceof InputfieldRockGrid2) $data = $data->grid;
+    $file = $this->getFile($data);
+    if(!is_file($file)) return false;
+    require_once($file);
+    $name = pathinfo($file, PATHINFO_FILENAME);
+    $class = "\RockGrid2\\".$name;
+    return new $class();
+  }
+
+  /**
+   * Add hook to handle AJAX requests of grids
+   * @return void
+   */
+  public function handleAjax() {
+    $this->addHookAfter('ProcessPageView::pageNotFound', function(HookEvent $event) {
+      $url = trim($event->arguments(1),"/");
+      if($url !== 'foo/bar') return;
+      $grid = $this->getGrid("ListInvoices");
+      $grid->sendJSON();
+    });
   }
 
   /**
@@ -74,19 +112,6 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       $config->scripts->add($url."RockGrid2.js");
       $config->styles->add($url."tabulator/css/tabulator.min.css");
     });
-  }
-
-  /**
-   * Load grid
-   * @return Grid|false
-   */
-  public function loadGrid($inputfield) {
-    $file = $inputfield->getFile();
-    if(!is_file($file)) return false;
-    require_once($file);
-    $name = pathinfo($file, PATHINFO_FILENAME);
-    $class = "\RockGrid2\\".$name;
-    return new $class();
   }
 
   /**

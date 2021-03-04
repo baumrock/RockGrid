@@ -86,3 +86,15 @@ $(document).on('RockGrid2', function() {
   RockGrid2.add('FooGrid', setup);
 });
 ```
+
+## Data
+
+Data of the grid is defined either via JavaScript or on the PHP side you define it via the `getData()` method of the grid object. The getData method can return different types of data like a plain PHP array or a RockFinder3. If using a RockFinder3 you get the benefit of quick and easy development or debugging because you can utilize RockFinder3's Tracy dumping feature:
+
+```php
+$rg = $modules->get('RockGrid2');
+$grid = $rg->getGrid('ListInvoices');
+$grid->dump();
+```
+
+![img](https://i.imgur.com/O9DFR7H.png)
