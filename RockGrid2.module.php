@@ -6,10 +6,10 @@
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-require_once("Grid.php");
 class RockGrid2 extends WireData implements Module, ConfigurableModule {
 
   public $assetsDir;
+  public $path; // path to module
 
   private $loadAssets = false;
 
@@ -29,9 +29,23 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   public function init() {
+    $this->path = $this->wire->config->paths($this);
+    $this->autoloader();
     $this->loadAssets();
     $this->createAssetsFolder();
     $this->handleAjax();
+  }
+
+  /**
+   * Register classes folder for autoloading
+   * @return void
+   */
+  public function autoloader() {
+    spl_autoload_register(function($class) {
+      if(strpos($class, "RockGrid2") !== 0) return;
+      $name = str_replace("RockGrid2\\", "", $class);
+      require_once(__DIR__."/classes/$name.php");
+    });
   }
 
   /**
@@ -111,6 +125,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       $config->scripts->add($url."Grid.js");
       $config->scripts->add($url."RockGrid2.js");
       $config->styles->add($url."tabulator/css/tabulator.min.css");
+      $config->styles->add($url."RockGrid2.css");
     });
   }
 

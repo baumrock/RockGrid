@@ -10,14 +10,17 @@ use ReflectionClass;
  */
 class Grid extends Wire {
 
+  public $admin; // url to admin
   public $file;
   public $id;
   public $name;
 
   public function __construct() {
     parent::__construct();
+    $this->admin = $this->wire->pages->get(2)->url;
     $this->name = $this->className(); // unique name of grid
     $this->id = "rg2-".$this->className(); // id of dom element
+    $this->rg2 = $this->wire->modules->get('RockGrid2');
     $this->setFile();
   }
 
@@ -30,6 +33,26 @@ class Grid extends Wire {
     $data = $this->getData();
     if(!$data instanceof RockFinder3) return "Can only dump RockFinder3 data!";
     $data->dump();
+  }
+
+  /**
+   * Get default buttons for this grid
+   * @return Buttons
+   */
+  public function getButtons() {
+    $buttons = $this->wire(new Buttons());
+    $buttons->add([
+      'name' => 'reload',
+      'icon' => 'refresh',
+      'tooltip' => 'Reload data',
+    ]);
+    $buttons->add([
+      'name' => 'add',
+      'icon' => 'plus',
+      'tooltip' => 'Add entry',
+      'href' => $this->admin."page/add/?parent_id=1032",
+    ])->addClass('rg-panel rg-panel-reload');
+    return $buttons;
   }
 
   /**
@@ -56,17 +79,15 @@ class Grid extends Wire {
    * @return string
    */
   public function ___render() {
-    return "<div class='RockGrid2' id='{$this->id}'>
-        <div class='rg-header'></div>
-        <div class='rg-grid'></div>
-        <div class='rg-footer'></div>
-      </div>
-      <script>RockGrid2.init('{$this->name}');</script>";
+    $file = $this->rg2->path."layouts/default.php";
+    return $this->wire->files->render($file, ['grid' => $this])
+      ."<script>RockGrid2.init('{$this->name}');</script>";
   }
 
   /**
    * Send JSON
-   * todo: add check for valid json https://stackoverflow.com/a/35391449/6370411
+   * // TODO: add check for valid json
+   * https://stackoverflow.com/a/35391449/6370411
    * @return void
    */
   public function sendJSON($gzip = true) {
