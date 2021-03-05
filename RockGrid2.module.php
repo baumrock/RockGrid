@@ -11,6 +11,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public $assetsDir;
   public $path; // path to module
 
+  private $grids = []; // grid cache
   private $loadAssets = false;
 
   public static function getModuleInfo() {
@@ -77,8 +78,18 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     if(!is_file($file)) return false;
     require_once($file);
     $name = pathinfo($file, PATHINFO_FILENAME);
+
+    // try to get grid from cache
+    if(array_key_exists($name, $this->grids)) return $this->grids[$name];
+
+    // grid is not in cache, so we create it and trigger the "load" event
+    // this is done only once for each grid!
     $class = "\RockGrid2\\".$name;
-    return new $class();
+    $grid = new $class();
+    $grid->load();
+
+    // save to cache and return grid
+    return $this->grids[$name] = $grid;
   }
 
   /**

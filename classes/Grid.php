@@ -25,6 +25,13 @@ class Grid extends Wire {
   }
 
   /**
+   * This method is called when a grid is loaded the very first time
+   * This is only called when a grid is loaded so it is not the right place
+   * for attaching hooks like you'd to in init()
+   */
+  public function load() {}
+
+  /**
    * Dump data of grid to tracy console
    * Useful for development
    * Usage: $modules->get('RockGrid2')->getGrid('FooGrid')->dump();
