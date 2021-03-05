@@ -46,12 +46,6 @@ class Grid extends Wire {
       'icon' => 'refresh',
       'tooltip' => 'Reload data',
     ]);
-    $buttons->add([
-      'name' => 'add',
-      'icon' => 'plus',
-      'tooltip' => 'Add entry',
-      'href' => $this->admin."page/add/?parent_id=1032",
-    ])->addClass('rg-panel rg-panel-reload');
     return $buttons;
   }
 
