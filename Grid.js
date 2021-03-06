@@ -43,7 +43,7 @@ RG2Grid.prototype.reload = function() {
   });
 
   // reset header filters
-  $(document).on('rg.table.dataFiltered', function(e, params) {
+  $(document).on('rg.dataFiltered', function(e, params) {
     // show or hide filter button
     let grid = params.grid;
     let $button = grid.button('nofilter');

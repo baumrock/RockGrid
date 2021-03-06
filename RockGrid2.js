@@ -7,15 +7,23 @@ function RockGrid2() {
   this.setups = {
     'default': {
       pagination: "local",
-      paginationSize: 25,
+      paginationSize: 5,
       layout:"fitColumns",
       autoColumns:true,
     },
   }
 }
 
-RockGrid2.prototype.add = function(name, data) {
-  this.grids[name] = new RG2Grid(name, data);
+RockGrid2.prototype.add = function(name, data, setup) {
+  setup = this.setups[setup || 'default'];
+
+  // create setup object
+  // first we take one of the predefined setups and merge user setup data
+  // then we overwrite all callbacks
+  setup = $.extend(setup, data, this.callbacks());
+
+  // now create the grid object
+  this.grids[name] = new RG2Grid(name, setup);
 }
 
 RockGrid2.prototype.buttonClick = function(button) {
@@ -24,6 +32,14 @@ RockGrid2.prototype.buttonClick = function(button) {
   // trigger event on grid root element, eg "button.reload"
   // see grid.js for sample button events
   grid.$el.trigger("rg.button."+$button.attr('name'), grid);
+}
+
+RockGrid2.prototype.callbacks = function() {
+  let rg = this;
+  return {
+    dataFiltering:function(...params) { rg.trigger(this, 'dataFiltering', params); },
+    dataFiltered:function(...params) { rg.trigger(this, 'dataFiltered', params); },
+  }
 }
 
 /**
@@ -64,7 +80,7 @@ RockGrid2.prototype.setColdef = function(column, def, data) {
 
 RockGrid2.prototype.trigger = function(table, event, params) {
   let grid = this.getGrid(table);
-  $(document).trigger('rg.table.'+event, {grid, params});
+  $(document).trigger('rg.'+event, {grid, params});
 }
 
 // init class and trigger initial event
