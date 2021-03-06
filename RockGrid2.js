@@ -7,7 +7,8 @@ function RockGrid2() {
   this.setups = {
     'default': {
       ajaxURL:true,
-      maxHeight:600,
+      pagination:'local',
+      paginationSize:20,
       layout:"fitColumns",
       autoColumns:true,
     },
