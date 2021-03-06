@@ -53,6 +53,12 @@ class Grid extends Wire {
       'icon' => 'refresh',
       'tooltip' => 'Reload data',
     ]);
+    $buttons->add([
+      'name' => 'nofilter',
+      'icon' => 'times',
+      'tooltip' => 'Reset all filters',
+      'hidden' => true,
+    ]);
     return $buttons;
   }
 
@@ -66,12 +72,22 @@ class Grid extends Wire {
   }
 
   /**
-   * Get data as JSON
+   * Get data as JSON ready to send to the user
+   * This is the place wher ACCESS CONTROL happens!
    * @return string
    */
   public function getJSON() {
     $data = $this->getData();
-    if($data instanceof RockFinder3) return $data->getJSON();
+    if($data instanceof RockFinder3) $data = $data->getJSON();
+
+    // ACCESS CONTROL
+    // TODO: let the grid define access
+    if(!$this->wire->user->isSuperuser()) {
+      $data = ['error' => 'no access'];
+    }
+
+    // return json
+    if(is_string($data)) return $data;
     return json_encode($data);
   }
 
@@ -94,9 +110,12 @@ class Grid extends Wire {
   public function sendJSON($gzip = true) {
     $json = $this->getJSON();
     http_response_code(200);
-    header('Content-Type: application/json');
-    if($gzip) ini_set("zlib.output_compression", 1);
-    die($json);
+    if($this->wire->config->ajax) {
+      header('Content-Type: application/json');
+      if($gzip) ini_set("zlib.output_compression", 1);
+      die($json);
+    }
+    return $json;
   }
 
   /**

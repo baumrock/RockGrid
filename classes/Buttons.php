@@ -14,7 +14,8 @@ class Buttons extends \ProcessWire\WireArray {
     foreach($data as $k=>$v) {
       if($k == 'tooltip') $button->attr('uk-tooltip', $v);
       if($k == 'href') $button->attr('href', $v); // href quickfix
-      else $button->set($k, $v);
+      if($k == 'hidden') $button->attr('style', 'display:none'); // initially hide button
+      $button->set($k, $v);
     }
     parent::add($button);
     return $button;
@@ -36,7 +37,7 @@ class Buttons extends \ProcessWire\WireArray {
   public function render() {
     $buttons = '';
     foreach($this as $button) $buttons .= $button->render();
-    return $buttons;
+    return "<div class='rg-buttons'>$buttons</div>";
   }
 
 }

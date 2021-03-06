@@ -1,16 +1,21 @@
 "use strict";
-function RG2Grid() {
-  this.el; // dom element
-  this.name; // grid name
-  this.setup; // setup data object
+function RG2Grid(name, setup) {
+  this.name = name; // grid name
+  this.setup = setup; // setup data object
   this.table; // table instance (when initialized)
+
+  // dom elements
+  this.el; // table
+  this.$el; // table
+  this.$root; // root container
 }
 
-/**
- * Get grid dom element
- */
-RG2Grid.prototype.grid = function() {
-  return $('#rg2-'+this.name+' .rg-grid')[0];
+RG2Grid.prototype.button = function(name) {
+  return this.$root.find('.rg-buttons button[name='+name+']');
+}
+
+RG2Grid.prototype.hasHeaderFilter = function() {
+  return !!this.table.getHeaderFilters().length;
 }
 
 /**
@@ -21,8 +26,9 @@ RG2Grid.prototype.reload = function() {
   var headerFilters = table.getHeaderFilters();
   table.setData().then(function() {
     $.each(headerFilters, function(i, filter) {
-      table.getColumn(filter.field).setHeaderFilterValue(filter.value);
+      table.setHeaderFilterValue(filter.field, filter.value);
     });
+    table.redraw();
   });
 }
 
@@ -32,6 +38,19 @@ RG2Grid.prototype.reload = function() {
  */
 
   // reload
-  $(document).on('button.reload', '.RockGrid2', function(e, grid) {
+  $(document).on('rg.button.reload', '.RockGrid2', function(e, grid) {
     grid.reload();
+  });
+
+  // reset header filters
+  $(document).on('rg.table.dataFiltered', function(e, params) {
+    // show or hide filter button
+    let grid = params.grid;
+    let $button = grid.button('nofilter');
+    if(grid.hasHeaderFilter()) $button.fadeIn();
+    else $button.fadeOut();
+  });
+  $(document).on('rg.button.nofilter', '.RockGrid2', function(e, grid) {
+    // handle button click
+    grid.table.clearHeaderFilter();
   });

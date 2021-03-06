@@ -15,10 +15,7 @@ function RockGrid2() {
 }
 
 RockGrid2.prototype.add = function(name, data) {
-  let grid = new RG2Grid();
-  grid.name = name;
-  grid.setup = data;
-  this.grids[name] = grid;
+  this.grids[name] = new RG2Grid(name, data);
 }
 
 RockGrid2.prototype.buttonClick = function(button) {
@@ -26,7 +23,7 @@ RockGrid2.prototype.buttonClick = function(button) {
   let grid = this.getGrid(button);
   // trigger event on grid root element, eg "button.reload"
   // see grid.js for sample button events
-  $(grid.grid()).trigger("button."+$button.attr('name'), grid);
+  grid.$el.trigger("rg.button."+$button.attr('name'), grid);
 }
 
 /**
@@ -34,7 +31,10 @@ RockGrid2.prototype.buttonClick = function(button) {
  */
 RockGrid2.prototype.getGrid = function(name) {
   if(typeof name == 'object') {
-    // grid was requested by dom element
+    // is it a tabulator object? then it has an "element" property
+    if(name.element) name = name.element;
+
+    // get grid by dom element
     // get name of grid from ID of root element
     let $el = $(name).closest('.RockGrid2');
     name = $el.attr('id').replace('rg2-', '');
@@ -50,13 +50,21 @@ RockGrid2.prototype.getSetup = function(name) {
 RockGrid2.prototype.init = function(name) {
   let grid = this.getGrid(name);
   if(!grid) return;
-  grid.table = new Tabulator(grid.grid(), grid.setup);
+  grid.$root = $('#rg2-'+grid.name);
+  grid.$el = grid.$root.find('.rg-grid');
+  grid.el = grid.$el[0];
+  grid.table = new Tabulator(grid.el, grid.setup);
 }
 
 RockGrid2.prototype.setColdef = function(column, def, data) {
   let coldef = this.coldefs[def];
   if(typeof coldef == 'function') return coldef(column, data);
   console.warn('coldef '+def+' not found');
+}
+
+RockGrid2.prototype.trigger = function(table, event, params) {
+  let grid = this.getGrid(table);
+  $(document).trigger('rg.table.'+event, {grid, params});
 }
 
 // init class and trigger initial event
