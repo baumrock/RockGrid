@@ -97,11 +97,10 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
    * @return void
    */
   public function handleAjax() {
-    $this->addHookAfter('ProcessPageView::pageNotFound', function(HookEvent $event) {
-      $url = trim($event->arguments(1),"/");
-      if(strpos($url, "rockgrid2/") !== 0) return;
-      $name = trim(str_replace("rockgrid2/", "", $url));
+    $this->addHook('/rockgrid2/(.*)', function($event) {
+      $name = trim($event->arguments(1),"/");
       $grid = $this->getGrid($name);
+      if(!$grid) throw new Wire404Exception("Grid not found");
 
       // non-ajax requests return the json
       // this makes it possible to access grid data directly in the browser
