@@ -14,18 +14,28 @@
 <body>
   <div id="table"></div>
   <script>
-  let table = new Tabulator('#table', {
-    height:'100%',
-    layout:"fitColumns",
-    data:<?= $data ?>,
-    autoColumns:true,
-    autoColumnsDefinitions:function(definitions) {
-      definitions.forEach((column) => {
-        column.headerFilter = true;
-      });
-      return definitions;
-    },
-  });
+  let data = <?= $data ?>;
+  if(typeof data === 'object' && data.error) {
+    alert(data.error);
+  }
+  else if(!Array.isArray(data)) {
+    alert('error, see console');
+    console.log(data);
+  }
+  else {
+    let table = new Tabulator('#table', {
+      height:'100%',
+      layout:"fitColumns",
+      data,
+      autoColumns:true,
+      autoColumnsDefinitions:function(definitions) {
+        definitions.forEach((column) => {
+          column.headerFilter = true;
+        });
+        return definitions;
+      },
+    });
+  }
   </script>
 </body>
 </html>
