@@ -101,16 +101,8 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       $name = trim($event->arguments(1),"/");
       $grid = $this->getGrid($name);
       if(!$grid) throw new Wire404Exception("Grid not found");
-
-      // ajax requests will die() here
-      $json = $grid->sendJSON();
-
-      // non-ajax requests will render the debug file showing
-      // a tabulator holding all raw data of the grid
-      $event->return = $this->wire->files->render(__DIR__."/debug.php", [
-        'rg' => $this,
-        'data' => $json,
-      ]);
+      if($this->wire->config->ajax) $grid->sendJSON();
+      else $event->return = $grid->debug();
     });
   }
 

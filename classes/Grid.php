@@ -32,6 +32,17 @@ class Grid extends Wire {
   public function load() {}
 
   /**
+   * Render debug tabulator
+   * @return string
+   */
+  public function debug() {
+    return $this->wire->files->render($this->rg2->path."debug.php", [
+      'rg' => $this->rg2,
+      'data' => $this->getJSON(),
+    ]);
+  }
+
+  /**
    * Dump data of grid to tracy console
    * Useful for development
    * Usage: $modules->get('RockGrid2')->getGrid('FooGrid')->dump();
