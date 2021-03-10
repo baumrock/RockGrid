@@ -6,11 +6,15 @@ function RockGrid2() {
   this.grids = {}
   this.setups = {
     'default': {
-      ajaxURL:true,
+      ajaxURL:true, // custom flag to use rockgrid endpoint
       pagination:'local',
       paginationSize:20,
       layout:"fitColumns",
       autoColumns:true,
+      autoColumnsDefinitions:function(definitions) {
+        definitions.forEach((col) => { col.headerFilter = true; });
+        return definitions;
+      },
     },
   }
 }

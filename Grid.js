@@ -15,6 +15,7 @@ RG2Grid.prototype.button = function(name) {
 }
 
 RG2Grid.prototype.hasHeaderFilter = function() {
+  if(!this.table) return false;
   return !!this.table.getHeaderFilters().length;
 }
 
