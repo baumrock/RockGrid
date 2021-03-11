@@ -4,6 +4,6 @@
     <div class='uk-text-center rg-center'></div>
     <div class='uk-text-right rg-right'><?= $grid->getButtons()->render() ?></div>
   </div>
-  <div class='rg-grid'></div>
+  <div class='rg-grid'>Setup your grid via JS</div>
   <div class='rg-footer'></div>
 </div>

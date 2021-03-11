@@ -57,6 +57,7 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
     $grid = $this->main()->getGrid($this);
     if(!$grid) {
       $file = $this->getFile();
+      if(!$file) return "No file for this grid";
       return "File $file not found";
     }
     return $grid->render();
