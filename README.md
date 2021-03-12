@@ -98,3 +98,22 @@ $grid->dump();
 ```
 
 ![img](https://i.imgur.com/O9DFR7H.png)
+
+## Loading additional libraries
+
+For some functionality you need additional libraries to load. Do this in your grid constructor:
+
+```php
+class YourGrid extends Grid {
+  public function __construct() {
+    parent::__construct();
+    $this->rg2->loadXLSX = true; // load excel downloader
+  }
+```
+
+By default all additional scripts are NOT loaded. If you need one of the scripts, just set the flag to TRUE. Never ever set the flag to FALSE because this might overwrite the setting for another grid needing this library! The reason is that external scripts are loaded only once for all grids and the setting is based on the flag on RockGrid2 master module.
+
+## Buttons
+
+### XLSX Download
+

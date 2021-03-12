@@ -131,14 +131,30 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     $this->addHookBefore('AdminTheme::getExtraMarkup', function (HookEvent $event) use($rg) {
       if(!$rg->loadAssets) return;
       $config = $this->wire->config;
-      $url = $config->urls($rg);
-      $config->scripts->add($url."lib/moment.min.js");
-      $config->scripts->add($url."tabulator/js/tabulator.min.js");
-      $config->scripts->add($url."Grid.js");
-      $config->scripts->add($url."RockGrid2.js");
-      $config->styles->add($url."tabulator/css/tabulator.min.css");
-      $config->styles->add($url."RockGrid2.css");
+      $config->scripts->add($rg->m("lib/moment.min.js"));
+      $config->scripts->add($rg->m("tabulator/js/tabulator.min.js"));
+      $config->scripts->add($rg->m("Grid.js"));
+      $config->scripts->add($rg->m("RockGrid2.js"));
+      $config->styles->add($rg->m("tabulator/css/tabulator.min.css"));
+      $config->styles->add($rg->m("RockGrid2.css"));
+
+      // load exceljs and filesaver.js
+      if($rg->loadXLS) {
+        $config->scripts->add($rg->m("lib/exceljs.min.js"));
+        $config->scripts->add($rg->m("lib/FileSaver.min.js"));
+      }
     });
+  }
+
+  /**
+   * Return url including timestamp (cache buster)
+   * @return string
+   */
+  public function m($file) {
+    $config = $this->wire->config;
+    if(!is_file($file)) $file = $config->paths($this).$file;
+    $m = "?m=".filemtime($file);
+    return str_replace($config->paths->root, $config->urls->root, $file).$m;
   }
 
   /**

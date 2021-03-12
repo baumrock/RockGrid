@@ -40,7 +40,7 @@ RockGrid2.prototype.buttonClick = function(button) {
   let grid = this.getGrid(button);
   // trigger event on grid root element, eg "button.reload"
   // see grid.js for sample button events
-  grid.$el.trigger("rg.button."+$button.attr('name'), grid);
+  grid.$el.trigger("rg.button."+$button.attr('name'), [grid, $button]);
 }
 
 RockGrid2.prototype.callbacks = function() {
