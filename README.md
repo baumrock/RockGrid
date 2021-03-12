@@ -117,3 +117,21 @@ By default all additional scripts are NOT loaded. If you need one of the scripts
 
 ### XLSX Download
 
+Example download button:
+
+```js
+// download button
+$(document).on('rg.button.download', '.RockGrid2', function(e, grid) {
+  grid.xls({
+    name: 'baumrock',
+    sheets: {
+      'Invoices': {
+        rowRange: 'active', // show only filtered rows in xls
+        rowAdded:function(row, index) {
+          if(index === 0) row.font = { name: 'Comic Sans MS', bold: true };
+        }
+      }
+    }
+  });
+});
+```

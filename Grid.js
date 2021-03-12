@@ -47,15 +47,32 @@ RG2Grid.prototype.xls = async function(opt) {
   let sheets = opt.sheets || {'Sheet1':{}}; // sheets
 
   const wb = new ExcelJS.Workbook()
-  for(var sheet in sheets) {
-    let ws = wb.addWorksheet(sheet);
-    let data = this.table.getData();
-    $.each(data, function(i, row) {
-      let arr = [];
-      for(var prop in row) {
-        arr.push(row[prop]);
+  for(var sheetName in sheets) {
+    let sheet = sheets[sheetName];
+    let ws = wb.addWorksheet(sheetName);
+
+    // get rows of table
+    // filter can be set via sheet.rowRange setting
+    // eg sheets: { 'FooSheet': { rowRange: 'visible' }}
+    // see http://tabulator.info/docs/4.9/components#row-lookup
+    let rows = this.table.getRows(sheet.rowRange);
+
+    // iterate rows
+    $.each(rows, function(index, row) {
+      // fire row callback if one is set
+      if(typeof sheet.getRow == 'function') {
+        row = sheet.getRow(row);
+        if(!row) return;
       }
-      row = ws.addRow(arr);
+
+      // get row values
+      let data = Object.values(row.getData());
+
+      // add data to sheet
+      row = ws.addRow(data);
+      if(typeof sheet.rowAdded == 'function') {
+        sheet.rowAdded(row, index);
+      }
     });
   }
 
