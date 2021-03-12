@@ -61,22 +61,19 @@ RG2Grid.prototype.xls = async function(opt) {
     // iterate rows
     $.each(rows, function(index, row) {
       // if a row mutator is set execute it now
-      if(typeof sheet.rowLoaded == 'function') {
-        row = sheet.rowLoaded(row);
-        if(!row) return;
-      }
+      if(typeof sheet.rowMutator == 'function') sheet.rowMutator(row);
 
       // get row values
       let data = Object.values(row.getData());
 
       // add data to sheet
       row = ws.addRow(data);
-      if(typeof sheet.rowAdded == 'function') sheet.rowAdded(row, index);
+      if(typeof sheet.rowFormatter == 'function') sheet.rowFormatter(row, index);
     });
   }
 
   const buf = await wb.xlsx.writeBuffer()
-  saveAs(new Blob([buf]), name+'.xlsx')
+  // saveAs(new Blob([buf]), name+'.xlsx')
 }
 
 /**
