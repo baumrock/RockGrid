@@ -56,12 +56,13 @@ RG2Grid.prototype.xls = async function(opt) {
     // eg sheets: { 'FooSheet': { rowRange: 'visible' }}
     // see http://tabulator.info/docs/4.9/components#row-lookup
     let rows = this.table.getRows(sheet.rowRange);
+    if(typeof sheet.rowsLoaded == 'function') rows = sheet.rowsLoaded(rows);
 
     // iterate rows
     $.each(rows, function(index, row) {
-      // fire row callback if one is set
-      if(typeof sheet.getRow == 'function') {
-        row = sheet.getRow(row);
+      // if a row mutator is set execute it now
+      if(typeof sheet.rowLoaded == 'function') {
+        row = sheet.rowLoaded(row);
         if(!row) return;
       }
 
@@ -70,9 +71,7 @@ RG2Grid.prototype.xls = async function(opt) {
 
       // add data to sheet
       row = ws.addRow(data);
-      if(typeof sheet.rowAdded == 'function') {
-        sheet.rowAdded(row, index);
-      }
+      if(typeof sheet.rowAdded == 'function') sheet.rowAdded(row, index);
     });
   }
 
