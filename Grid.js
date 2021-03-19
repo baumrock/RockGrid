@@ -42,14 +42,15 @@ RG2Grid.prototype.xls = async function(opt) {
     return;
   }
 
-  let row;
   let name = opt.name || "data"; // filename
   let sheets = opt.sheets || {'Sheet1':{}}; // sheets
 
   const wb = new ExcelJS.Workbook()
   for(var sheetName in sheets) {
     let sheet = sheets[sheetName];
+
     let ws = wb.addWorksheet(sheetName);
+    if(typeof sheet.sheetAdded == 'function') sheet.sheetAdded(ws);
 
     // get rows of table
     // filter can be set via sheet.rowRange setting
@@ -59,21 +60,22 @@ RG2Grid.prototype.xls = async function(opt) {
     if(typeof sheet.rowsLoaded == 'function') rows = sheet.rowsLoaded(rows);
 
     // iterate rows
-    $.each(rows, function(index, row) {
-      // if a row mutator is set execute it now
-      if(typeof sheet.rowMutator == 'function') sheet.rowMutator(row);
+    let columns = {};
+    $.each(rows, function(rowindex, row) {
+      let obj = row.getData();
+      row = ws.addRow(Object.values(obj));
 
-      // get row values
-      let data = Object.values(row.getData());
-
-      // add data to sheet
-      row = ws.addRow(data);
-      if(typeof sheet.rowFormatter == 'function') sheet.rowFormatter(row, index);
+      // row callback
+      // change cell values or add formatting, hyperlinks etc.
+      // see https://github.com/exceljs/exceljs#value-types
+      if(typeof sheet.rowCallback == 'function') {
+        sheet.rowCallback(row, rowindex);
+      }
     });
   }
 
   const buf = await wb.xlsx.writeBuffer()
-  // saveAs(new Blob([buf]), name+'.xlsx')
+  saveAs(new Blob([buf]), name+'.xlsx')
 }
 
 /**

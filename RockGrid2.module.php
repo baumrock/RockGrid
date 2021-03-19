@@ -131,11 +131,20 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     $this->addHookBefore('AdminTheme::getExtraMarkup', function (HookEvent $event) use($rg) {
       if(!$rg->loadAssets) return;
       $config = $this->wire->config;
+
+      // load moment
       $config->scripts->add($rg->m("lib/moment.min.js"));
+      if($rg->momentTZ) {
+        $config->scripts->add($rg->m("lib/moment-timezone-with-data.min.js"));
+      }
+
+      // tabulator
       $config->scripts->add($rg->m("tabulator/js/tabulator.min.js"));
+      $config->styles->add($rg->m("tabulator/css/tabulator.min.css"));
+
+      // rockgrid
       $config->scripts->add($rg->m("Grid.js"));
       $config->scripts->add($rg->m("RockGrid2.js"));
-      $config->styles->add($rg->m("tabulator/css/tabulator.min.css"));
       $config->styles->add($rg->m("RockGrid2.css"));
 
       // load exceljs and filesaver.js
