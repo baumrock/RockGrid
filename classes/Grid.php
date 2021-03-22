@@ -36,9 +36,12 @@ class Grid extends Wire {
    * @return string
    */
   public function debug() {
+    // prepare data
+    $data = $this->getData();
+    if($data instanceof RockFinder3) $data = $data->getRowArray();
     return $this->wire->files->render($this->rg2->path."debug.php", [
       'rg' => $this->rg2,
-      'data' => $this->getJSON(),
+      'data' => $this->getJSON($data),
     ]);
   }
 
@@ -96,10 +99,10 @@ class Grid extends Wire {
    * This is the place wher ACCESS CONTROL happens!
    * @return string
    */
-  public function getJSON() {
+  public function getJSON($data = null) {
     // get data of this grid
     // this can be a plain php array
-    $data = $this->getData();
+    if(!$data) $data = $this->getData();
 
     // if data is a RockFinder3 we get the JSON
     // holding additional info like relations and options
