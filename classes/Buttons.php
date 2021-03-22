@@ -34,10 +34,10 @@ class Buttons extends \ProcessWire\WireArray {
    * Render all buttons
    * @return string
    */
-  public function render() {
+  public function render($align = 'rg-buttons-right') {
     $buttons = '';
     foreach($this as $button) $buttons .= $button->render();
-    return "<div class='rg-buttons'>$buttons</div>";
+    return "<div class='rg-buttons $align'>$buttons</div>";
   }
 
 }

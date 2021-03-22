@@ -74,6 +74,15 @@ class Grid extends Wire {
   }
 
   /**
+   * Get default left buttons for this grid
+   * @return Buttons
+   */
+  public function getButtonsLeft() {
+    $buttons = $this->wire(new Buttons());
+    return $buttons;
+  }
+
+  /**
    * Get data of this grid
    * This method should be overridden by grids extending this class
    * @return array|RockFinder3
