@@ -120,8 +120,8 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       // set flag to load assets for rockgrid
       $rg->loadAssets = true;
       $inputfield = $event->object;
-      $js = $this->url($inputfield->getFile('js'));
-      if($js) $this->wire->config->scripts->add($js);
+      $js = $inputfield->getFile('js');
+      if($js) $this->wire->config->scripts->add($rg->m($js));
     });
 
     // if any rockgrid field is present we add the necessary libraries
