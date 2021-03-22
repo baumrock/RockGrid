@@ -97,8 +97,13 @@ class Grid extends Wire {
    * @return string
    */
   public function getJSON() {
+    // get data of this grid
+    // this can be a plain php array
     $data = $this->getData();
-    if($data instanceof RockFinder3) $data = $data->getJSON();
+
+    // if data is a RockFinder3 we get the JSON
+    // holding additional info like relations and options
+    if($data instanceof RockFinder3) $data = $data->getJSON(true);
 
     // ACCESS CONTROL
     // TODO: let the grid define access

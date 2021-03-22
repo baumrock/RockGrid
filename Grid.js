@@ -3,6 +3,7 @@ function RG2Grid(name, setup) {
   this.name = name; // grid name
   this.setup = setup; // setup data object
   this.table; // table instance (when initialized)
+  this.rf3; // stores rockfinder3 data after ajax call
 
   // dom elements
   this.el; // table

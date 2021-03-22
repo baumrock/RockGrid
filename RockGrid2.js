@@ -154,6 +154,12 @@ RockGrid2.prototype.callbacks = function() {
   return {
     dataFiltering:function(...params) { rg.trigger(this, 'dataFiltering', params); },
     dataFiltered:function(...params) { rg.trigger(this, 'dataFiltered', params); },
+    ajaxResponse:function(url, params, response) {
+      // if the ajax response returns RockFinder3 data we need to do some
+      // additional actions before returning table data (eg storing data
+      // of relations to the grid)
+      return rg.setAjaxData(this, response);
+    },
   }
 }
 
@@ -185,6 +191,21 @@ RockGrid2.prototype.init = function(name) {
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
   grid.table = new Tabulator(grid.el, grid.setup);
+}
+
+/**
+ * Set ajax data for this grid after an ajax response was received
+ * This is necessary to support RockFinder3 as data source of grids
+ */
+RockGrid2.prototype.setAjaxData = function(table, response) {
+  if(typeof response != 'object') return [];
+  if(response.type == 'RockFinder3') {
+    let grid = this.getGrid(table);
+    delete response.type;
+    grid.rf3 = response;
+    return response.rows;
+  }
+  return response;
 }
 
 RockGrid2.prototype.setColdef = function(column, def, data) {
