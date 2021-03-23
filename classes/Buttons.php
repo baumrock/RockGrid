@@ -5,7 +5,7 @@ class Buttons extends \ProcessWire\WireArray {
    * Add a button to this array
    * @return Button
    */
-  public function add($data) {
+  public function add($data, $prepend = false) {
     $button = $this->wire(new Button());
     $button->id = uniqid();
     $button->small = true;
@@ -17,7 +17,8 @@ class Buttons extends \ProcessWire\WireArray {
       if($k == 'hidden') $button->attr('style', 'display:none'); // initially hide button
       $button->set($k, $v);
     }
-    parent::add($button);
+    if($prepend) parent::prepend($button);
+    else parent::add($button);
     return $button;
   }
 
@@ -28,6 +29,14 @@ class Buttons extends \ProcessWire\WireArray {
    */
   public function makeBlankItem() {
     return $this->wire(new Button());
+  }
+
+  /**
+   * Prepend a new button
+   * @return Button
+   */
+  public function prepend($data) {
+    return $this->add($data, true);
   }
 
   /**
