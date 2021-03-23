@@ -63,15 +63,15 @@ class Grid extends Wire {
   public function getButtons() {
     $buttons = $this->wire(new Buttons());
     $buttons->add([
-      'name' => 'reload',
-      'icon' => 'refresh',
-      'tooltip' => 'Reload data',
-    ]);
-    $buttons->add([
       'name' => 'nofilter',
       'icon' => 'times',
       'tooltip' => 'Reset all filters',
       'hidden' => true,
+    ]);
+    $buttons->add([
+      'name' => 'reload',
+      'icon' => 'refresh',
+      'tooltip' => 'Reload data',
     ]);
     return $buttons;
   }
