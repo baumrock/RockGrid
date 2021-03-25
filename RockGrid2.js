@@ -130,6 +130,24 @@ RockGrid2.prototype.add = function(name, data, setup) {
 }
 
 /**
+ * Add column definition after other column
+ */
+RockGrid2.prototype.addDefAfter = function(col, coldef, definitions) {
+  let arr = definitions.map(x=>x.field);
+  let index = arr.indexOf(col);
+  definitions.splice(index+1, 0, coldef);
+}
+
+/**
+ * Add column definition before other column
+ */
+RockGrid2.prototype.addDefBefore = function(col, coldef, definitions) {
+  let fields = definitions.map(x=>x.field);
+  let index = fields.indexOf(col);
+  definitions.splice(index, 0, coldef);
+}
+
+/**
  * Return fill pattern to use for ExcelJS
  * @return object
  */
@@ -184,6 +202,13 @@ RockGrid2.prototype.getSetup = function(name) {
   return this.setups[name || 'default'];
 }
 
+/**
+ * Return icon markup
+ */
+RockGrid2.prototype.icon = function(name) {
+  return '<i class="fa fa-'+name+'"></i>';
+}
+
 RockGrid2.prototype.init = function(name) {
   let grid = this.getGrid(name);
   if(!grid) return;
@@ -191,6 +216,28 @@ RockGrid2.prototype.init = function(name) {
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
   grid.table = new Tabulator(grid.el, grid.setup);
+}
+
+/**
+ * Move one column of the definitions after another
+ */
+RockGrid2.prototype.moveColAfter = function(columnToMove, otherColumn, definitions) {
+  let fields = definitions.map(x=>x.field);
+  let oldIndex = fields.indexOf(columnToMove);
+  let col = definitions[oldIndex];
+  delete definitions[oldIndex];
+  this.addDefAfter(otherColumn, col, definitions);
+}
+
+/**
+ * Move one column of the definitions before another
+ */
+RockGrid2.prototype.moveColBefore = function(columnToMove, otherColumn, definitions) {
+  let fields = definitions.map(x=>x.field);
+  let oldIndex = fields.indexOf(columnToMove);
+  let col = definitions[oldIndex];
+  delete definitions[oldIndex];
+  this.addDefBefore(otherColumn, col, definitions);
 }
 
 /**
