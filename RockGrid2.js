@@ -205,8 +205,9 @@ RockGrid2.prototype.getSetup = function(name) {
 /**
  * Return icon markup
  */
-RockGrid2.prototype.icon = function(name) {
-  return '<i class="fa fa-'+name+'"></i>';
+RockGrid2.prototype.icon = function(name, tooltip) {
+  tooltip = tooltip ? ' title="'+tooltip+'" uk-tooltip' : '';
+  return '<i class="fa fa-'+name+'"'+tooltip+'></i>';
 }
 
 RockGrid2.prototype.init = function(name) {
