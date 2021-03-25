@@ -95,6 +95,14 @@ class Grid extends Wire {
   }
 
   /**
+   * Get filter elements for this grid
+   * @return string
+   */
+  public function getFilters() {
+    return '';
+  }
+
+  /**
    * Get data as JSON ready to send to the user
    * This is the place wher ACCESS CONTROL happens!
    * @return string
