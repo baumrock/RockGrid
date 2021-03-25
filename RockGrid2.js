@@ -256,10 +256,43 @@ RockGrid2.prototype.setAjaxData = function(table, response) {
   return response;
 }
 
-RockGrid2.prototype.setColdef = function(column, def, data) {
+RockGrid2.prototype.setColDef = function(column, def, data) {
   let coldef = this.coldefs[def];
   if(typeof coldef == 'function') return coldef(column, data);
   console.warn('coldef '+def+' not found');
+}
+
+/**
+ * Usage:
+ * Given a definitions array [def1, foo, def2, bar]
+ * RockGrid2.setColOrder([foo, bar], definitions);
+ * Result = [def1, foo, bar, def2]
+ *
+ * The first item is taken as reference where to add the other columns.
+ * Leading and trailing elements will stay untouched.
+ */
+RockGrid2.prototype.setColOrder = function(order, definitions) {
+  let defs = {};
+  definitions.forEach(def => defs[def.field] = def);
+
+  let newDefs = [];
+  let pointer = 0;
+  $.each(definitions, function(i, col) {
+    // if colum is part of order array remove it from original definitions
+    // it will be added later
+    if(order.indexOf(col.field) < 0) newDefs.push(col);
+    if(col.field == order[0]) pointer = i;
+  });
+
+  // now add the new orderd columns to the array
+  $.each(order, function(i, name) {
+    newDefs.splice(pointer++, 0, defs[name]);
+  });
+
+  // overwrite the array
+  $.each(newDefs, function(i, def) {
+    definitions[i] = newDefs[i];
+  });
 }
 
 RockGrid2.prototype.trigger = function(table, event, params) {
