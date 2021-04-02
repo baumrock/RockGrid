@@ -11,6 +11,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public $assetsDir;
   public $path; // path to module
 
+  private $dirs = []; // additional grid dirs to scan for files
   private $grids = []; // grid cache
   private $loadAssets = false;
 
@@ -38,6 +39,16 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   /**
+   * Add dir to array of scanned directories
+   * Usage: $modules->get('RockGrid2')->addDir(/my/module/grids);
+   * @return void
+   */
+  public function addDir($dir) {
+    $dir = Paths::normalizeSeparators(rtrim($dir,"/")."/");
+    $this->dirs[] = $dir;
+  }
+
+  /**
    * Register classes folder for autoloading
    * @return void
    */
@@ -59,13 +70,25 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   /**
-   * Get file of grid
+   * Return path of file that sets up this grid
    * @return string
    */
   public function getFile($file, $ext = 'php') {
-    if(!is_file($file)) $file = $this->assetsDir.$file.".$ext";
-    if(!is_file($file)) return false;
-    return $file;
+    // is it already a file? then return it!
+    if(is_file($file)) return $file;
+
+    // it is no file, try the assets folder
+    $f = $this->assetsDir.$file.".$ext";
+    if(is_file($f)) return $f;
+
+    // still not found, try custom grid directories that were
+    // added via $rg->addDir(...);
+    foreach($this->dirs as $dir) {
+      $f = $dir.$file.".$ext";
+      if(is_file($f)) return $f;
+    }
+
+    return false;
   }
 
   /**
