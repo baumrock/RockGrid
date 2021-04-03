@@ -117,7 +117,6 @@ class Grid extends Wire {
     if($data instanceof RockFinder3) $data = $data->getJSON(true);
 
     // ACCESS CONTROL
-    // TODO: let the grid define access
     $su = $this->wire->user->isSuperuser();
     if(!$su AND !$this->isViewable()) {
       $data = ['error' => "<strong>Error</strong><br>"
