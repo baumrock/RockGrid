@@ -10,6 +10,7 @@ function RockGrid2() {
       placeholder:"No data",
       pagination:'local',
       paginationSize:20,
+      paginationSizeSelector:true,
       layout:"fitColumns",
       autoColumns:true,
       autoColumnsDefinitions:function(definitions) {
@@ -119,7 +120,7 @@ function RockGrid2() {
  * If no base setup is defined the grid will use the default one
  */
 RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
-  setup = this.setups[baseSetup || 'default'];
+  let setup = this.setups[baseSetup || 'default'];
 
   // by default we set the ajax url to the current grid
   // if you dont want an ajax grid set ajaxURL = false in your setup

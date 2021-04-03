@@ -49,6 +49,22 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   /**
+   * Add stylesheet to assets
+   */
+  public function addStylesheet() {
+    $config = $this->wire->config;
+    // If debug is true and RockLESS is installed this will auto-generate
+    // the css stylesheet that will be used on production.
+    $less = $this->wire->modules->isInstalled("RockLESS");
+    if($config->debug AND $less AND $this->wire->user->isSuperuser()) {
+      /** @var RockLESS $less */
+      $less = $this->wire('modules')->get('RockLESS');
+      $less->saveCSS(__DIR__."/RockGrid2.css", __DIR__."/RockGrid2.less");
+    }
+    $config->styles->add($this->m("RockGrid2.css"));
+  }
+
+  /**
    * Register classes folder for autoloading
    * @return void
    */
@@ -185,7 +201,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       // rockgrid
       $config->scripts->add($rg->m("Grid.js"));
       $config->scripts->add($rg->m("RockGrid2.js"));
-      $config->styles->add($rg->m("RockGrid2.css"));
+      $rg->addStylesheet();
 
       // load exceljs and filesaver.js
       if($rg->loadXLS) {
