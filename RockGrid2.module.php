@@ -59,7 +59,9 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     if($config->debug AND $less AND $this->wire->user->isSuperuser()) {
       /** @var RockLESS $less */
       $less = $this->wire('modules')->get('RockLESS');
-      $less->saveCSS(__DIR__."/RockGrid2.css", __DIR__."/RockGrid2.less");
+      $less->saveCSS(__DIR__."/RockGrid2.css", __DIR__."/RockGrid2.less", [
+        'parserOptions' => ['compress'=>true],
+      ]);
     }
     $config->styles->add($this->m("RockGrid2.css"));
   }
