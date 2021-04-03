@@ -114,20 +114,25 @@ function RockGrid2() {
   }
 }
 
-RockGrid2.prototype.add = function(name, data, setup) {
-  setup = this.setups[setup || 'default'];
+/**
+ * Add a grid to the main object using custom setup base on a base setup
+ * If no base setup is defined the grid will use the default one
+ */
+RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
+  setup = this.setups[baseSetup || 'default'];
 
   // by default we set the ajax url to the current grid
   // if you dont want an ajax grid set ajaxURL = false in your setup
-  if(setup.ajaxURL === true) setup.ajaxURL = "/rockgrid2/"+name;
+  if(setup.ajaxURL === true) setup.ajaxURL = "/rockgrid2/"+gridName;
 
   // create setup object
   // first we take one of the predefined setups and merge user setup data
-  // then we set all callbacks to rockgrid-callbacks (see https://github.com/olifolkerd/tabulator/issues/3230)
-  setup = $.extend(setup, data, this.callbacks());
+  // then we set all callbacks to rockgrid-callbacks
+  // (see https://github.com/olifolkerd/tabulator/issues/3230)
+  setup = $.extend(setup, customSetup, this.callbacks());
 
   // now create the grid object
-  this.grids[name] = new RG2Grid(name, setup);
+  this.grids[gridName] = new RG2Grid(gridName, setup);
 }
 
 /**
