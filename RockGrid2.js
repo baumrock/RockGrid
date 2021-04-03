@@ -2,6 +2,7 @@
 
 // setup class
 function RockGrid2() {
+  this.urls = ProcessWire.config.urls;
   this.coldefs = {};
   this.grids = {}
   this.setups = {
@@ -189,6 +190,13 @@ RockGrid2.prototype.callbacks = function() {
 }
 
 /**
+ * Return url to edit a page in the PW backend
+ */
+RockGrid2.prototype.editUrl = function(id) {
+  return this.urls.admin+"page/edit/?id="+id;
+}
+
+/**
  * Get grid by name or dom element
  */
 RockGrid2.prototype.getGrid = function(name) {
@@ -224,6 +232,27 @@ RockGrid2.prototype.init = function(name) {
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
   grid.table = new Tabulator(grid.el, grid.setup);
+}
+
+/**
+ * Return link markup
+ * Usage:
+ * RockGrid2.link({
+ *   icon: 'edit',
+ *   tooltip: 'Edit this page',
+ *   href: RockGrid2.editUrl(id),
+ *   class: 'my-class',
+ *   panel: true,
+ * });
+ */
+RockGrid2.prototype.link = function(data) {
+  data = data || {}
+  let href = data.href || '#';
+  let panel = data.panel ? ' rg-panel' : '';
+  let cls = " class='"+data.class+panel+"' ";
+  let icon = this.icon(data.icon, data.tooltip);
+  let label = icon+(data.label||'');
+  return "<a href='"+href+"' "+cls+">"+label+"</a>";
 }
 
 /**
