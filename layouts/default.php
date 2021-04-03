@@ -5,6 +5,6 @@
     <div class='uk-text-center rg-center uk-width-expand@m'></div>
     <div class='uk-text-right rg-right'><?= $grid->getButtons()->render() ?></div>
   </div>
-  <div class='rg-grid'>Setup your grid via JS</div>
+  <div class='rg-grid'>JS error</div>
   <div class='rg-footer'></div>
 </div>

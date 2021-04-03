@@ -177,11 +177,7 @@ RockGrid2.prototype.callbacks = function() {
       // if the ajax response returns RockFinder3 data we need to do some
       // additional actions before returning table data (eg storing data
       // of relations to the grid)
-      if(typeof response == 'object' && response.error) {
-        UIkit.modal.alert(response.error);
-        return [];
-      }
-      else return rg.setAjaxData(this, response);
+      return rg.setAjaxData(this, response);
     },
   }
 }
@@ -251,7 +247,14 @@ RockGrid2.prototype.moveColBefore = function(columnToMove, otherColumn, definiti
  * This is necessary to support RockFinder3 as data source of grids
  */
 RockGrid2.prototype.setAjaxData = function(table, response) {
-  if(typeof response != 'object') return [];
+  if(!response || typeof response != 'object') {
+    UIkit.modal.alert("Invalid data received");
+    return [];
+  }
+  if(response.error) {
+    UIkit.modal.alert(response.error);
+    return [];
+  }
   if(response.type == 'RockFinder3') {
     let grid = this.getGrid(table);
     delete response.type;

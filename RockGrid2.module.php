@@ -70,6 +70,22 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   /**
+   * Create JS file for this grid if it does not exist
+   * This helps on setting up new grids :)
+   * @return void
+   */
+  public function createJS($inputfield) {
+    $file = $inputfield->getFile();
+    $grid = $this->getGrid($inputfield);
+    $js = substr($file, 0, -4).".js";
+    if(is_file($js)) return;
+    $stub = $this->wire->files->fileGetContents(__DIR__."/stubs/grid.js");
+    $content = str_replace("{grid}", $grid->name, $stub);
+    $this->wire->files->filePutContents($js, $content);
+    return $js;
+  }
+
+  /**
    * Return path of file that sets up this grid
    * @return string
    */
@@ -144,7 +160,8 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       $rg->loadAssets = true;
       $inputfield = $event->object;
       $js = $inputfield->getFile('js');
-      if($js) $this->wire->config->scripts->add($rg->m($js));
+      if(!$js) $js = $this->createJS($inputfield);
+      $this->wire->config->scripts->add($rg->m($js));
     });
 
     // if any rockgrid field is present we add the necessary libraries
