@@ -118,13 +118,24 @@ class Grid extends Wire {
 
     // ACCESS CONTROL
     // TODO: let the grid define access
-    if(!$this->wire->user->isSuperuser()) {
-      $data = ['error' => 'no access'];
+    $su = $this->wire->user->isSuperuser();
+    if(!$su AND !$this->isViewable()) {
+      $data = ['error' => "<strong>Error</strong><br>"
+        ."You don't have access to view data of grid '$this'"];
     }
 
     // return json
     if(is_string($data)) return $data;
     return json_encode($data);
+  }
+
+  /**
+   * Define access level of this grid
+   * By default this returns false so only superusers have access
+   * @return bool
+   */
+  public function isViewable() {
+    return false;
   }
 
   /**

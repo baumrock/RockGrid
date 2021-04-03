@@ -7,6 +7,7 @@ function RockGrid2() {
   this.setups = {
     'default': {
       ajaxURL:true, // custom flag to use rockgrid endpoint
+      placeholder:"No data",
       pagination:'local',
       paginationSize:20,
       layout:"fitColumns",
@@ -176,7 +177,11 @@ RockGrid2.prototype.callbacks = function() {
       // if the ajax response returns RockFinder3 data we need to do some
       // additional actions before returning table data (eg storing data
       // of relations to the grid)
-      return rg.setAjaxData(this, response);
+      if(typeof response == 'object' && response.error) {
+        UIkit.modal.alert(response.error);
+        return [];
+      }
+      else return rg.setAjaxData(this, response);
     },
   }
 }
