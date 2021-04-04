@@ -95,7 +95,9 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public function createJS($inputfield) {
     $file = $inputfield->getFile();
     $grid = $this->getGrid($inputfield);
-    $js = substr($file, 0, -4).".js";
+    $base = substr($file, 0, -4);
+    if(!$base) return;
+    $js = "$base.js";
     if(is_file($js)) return;
     $stub = $this->wire->files->fileGetContents(__DIR__."/stubs/grid.js");
     $content = str_replace("{grid}", $grid->name, $stub);
@@ -111,14 +113,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     // is it already a file? then return it!
     if(is_file($file)) return $file;
 
-    // it is no file, try the assets folder
-    $f = $this->assetsDir.$file.".$ext";
-    if(is_file($f)) return $f;
-
-    // still not found, try custom grid directories that were
-    // added via $rg->addDir(...);
-    foreach($this->dirs as $dir) {
-      $f = $dir.$file.".$ext";
+    foreach($this->getPossibleFilenames($file, $ext) as $f) {
       if(is_file($f)) return $f;
     }
 
@@ -147,6 +142,21 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
 
     // save to cache and return grid
     return $this->grids[$name] = $grid;
+  }
+
+  /**
+   * Return all possible filenames for this grid
+   * @return array
+   */
+  public function getPossibleFilenames($file, $ext = 'php') {
+    $arr = [];
+
+    // first, try the assets folder
+    // then add all dirs that where added via $rg->addDir(...);
+    $arr[] = $this->assetsDir.$file.".$ext";
+    foreach($this->dirs as $dir) $arr[] = $dir.$file.".$ext";
+
+    return $arr;
   }
 
   /**
