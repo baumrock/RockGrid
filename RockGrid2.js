@@ -353,6 +353,10 @@ RockGrid2.prototype.setColOrder = function(order, definitions) {
   });
 }
 
+RockGrid2.prototype.tooltip = function(label, tooltip) {
+  return "<span title='"+tooltip+"' uk-tooltip>"+label+"</span>";
+}
+
 RockGrid2.prototype.trigger = function(table, event, params) {
   let grid = this.getGrid(table);
   $(document).trigger('rg.'+event, {grid, params});
