@@ -148,6 +148,7 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
 
 /**
  * Add column definition after other column
+ * RockGrid2.addDefAfter('id', {...}, definitions);
  */
 RockGrid2.prototype.addDefAfter = function(col, coldef, definitions) {
   let arr = definitions.map(x=>x.field);
