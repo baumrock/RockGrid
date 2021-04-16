@@ -69,6 +69,39 @@ By default all additional scripts are NOT loaded. If you need one of the scripts
 
 ## Buttons
 
+Buttons can be added in the grid's php file:
+
+```php
+<?php namespace RockGrid2;
+class Demo extends Grid {
+  /**
+   * Get left buttons for this grid
+   * @return Buttons
+   */
+  public function getButtonsLeft() {
+    $buttons = parent::getButtonsLeft();
+    $buttons->add([
+      'name' => 'add',
+      'icon' => 'plus',
+      'value' => 'Demo button',
+      'href' => "/demo/page/add/?parent_id=123",
+      'secondary' => false,
+    ])->addClass('rg-panel rg-panel-reload');
+  }
+
+  [...]
+
+}
+```
+
+You can modify button behaviour on the frontend via JavaScript:
+
+```js
+$(document).on('rg.button.add', '.RockGrid2', function(e, grid) {
+  ...
+});
+```
+
 ### XLSX Download
 
 Example download button:
