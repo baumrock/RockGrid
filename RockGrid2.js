@@ -12,6 +12,7 @@ function RockGrid2() {
       pagination:'local',
       paginationSize:20,
       paginationSizeSelector:true,
+      resizableColumns:'header',
       footerElement: "<span class='uk-float-left rg-footer-left'></span>"
         +"<span class='rg-footer-right'></span>",
       layout:"fitColumns",
