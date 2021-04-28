@@ -124,7 +124,9 @@ function RockGrid2() {
  * If no base setup is defined the grid will use the default one
  */
 RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
-  let setup = this.setups[baseSetup || 'default'];
+  // create an immutable copy of the setup to prevent modifying the original
+  // setup and using the same setup for several grids
+  let setup = $.extend({}, this.setups[baseSetup || 'default']);
 
   // by default we set the ajax url to the current grid
   // if you dont want an ajax grid set ajaxURL = false in your setup
@@ -249,6 +251,7 @@ RockGrid2.prototype.init = function(name) {
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
   grid.table = new Tabulator(grid.el, grid.setup);
+  console.log(grid);
 }
 
 /**
