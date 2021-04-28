@@ -239,6 +239,7 @@ RockGrid2.prototype.init = function(name) {
  * Usage:
  * RockGrid2.link({
  *   icon: 'edit',
+ *   label: 'foo bar',
  *   tooltip: 'Edit this page',
  *   href: RockGrid2.editUrl(id),
  *   class: 'my-class',
