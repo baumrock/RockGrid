@@ -145,7 +145,7 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
 /**
  * Add column definition to definitions array
  */
- RockGrid2.prototype.addDef = function(coldef, definitions) {
+RockGrid2.prototype.addDef = function(coldef, definitions) {
   definitions.push(coldef);
 }
 
