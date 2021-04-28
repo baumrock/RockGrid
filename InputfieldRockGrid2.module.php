@@ -54,11 +54,13 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
   * @return string
   */
   public function ___render() {
+    // output must be wrapped in a div to make ajax inputfields work!
+    $out = "<div>";
     $grid = $this->main()->getGrid($this);
     if(!$grid) {
       $file = $this->getFile();
       if(!$file) {
-        $out = "<strong>No file for this grid found!</strong> Tried these...";
+        $out .= "<strong>No file for this grid found!</strong> Tried these...";
         foreach($this->main()->getPossibleFilenames($this->grid) as $f) {
           $out .= "<div>$f</div>";
         }
@@ -66,6 +68,11 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
       }
       return "File $file not found";
     }
+    $out .= "</div>";
     return $grid->render();
+  }
+  
+  public function ___renderValue() {
+    return $this->___render();
   }
 }

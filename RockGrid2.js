@@ -251,7 +251,6 @@ RockGrid2.prototype.init = function(name) {
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
   grid.table = new Tabulator(grid.el, grid.setup);
-  console.log(grid);
 }
 
 /**
