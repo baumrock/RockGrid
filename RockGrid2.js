@@ -12,6 +12,9 @@ function RockGrid2() {
       pagination:'local',
       paginationSize:20,
       paginationSizeSelector:true,
+      resizableColumns:'header',
+      footerElement: "<span class='uk-float-left rg-footer-left'></span>"
+        +"<span class='rg-footer-right'></span>",
       layout:"fitColumns",
       autoColumns:true,
       autoColumnsDefinitions:function(definitions) {
@@ -138,7 +141,15 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
 }
 
 /**
+ * Add column definition to definitions array
+ */
+ RockGrid2.prototype.addDef = function(coldef, definitions) {
+  definitions.push(coldef);
+}
+
+/**
  * Add column definition after other column
+ * RockGrid2.addDefAfter('id', {...}, definitions);
  */
 RockGrid2.prototype.addDefAfter = function(col, coldef, definitions) {
   let arr = definitions.map(x=>x.field);
@@ -175,6 +186,9 @@ RockGrid2.prototype.buttonClick = function(button) {
   grid.$el.trigger("rg.button."+$button.attr('name'), [grid, $button]);
 }
 
+/**
+ * Add callbacks to the grid
+ */
 RockGrid2.prototype.callbacks = function() {
   let rg = this;
   return {
@@ -221,7 +235,10 @@ RockGrid2.prototype.getSetup = function(name) {
  * Return icon markup
  */
 RockGrid2.prototype.icon = function(name, tooltip) {
-  tooltip = tooltip ? ' title="'+tooltip+'" uk-tooltip' : '';
+  if(tooltip) {
+    tooltip = tooltip.replace(/(<([^>]+)>)/gi, "").replace(/["|']/gi,'');
+    tooltip = ' title="'+tooltip+'" uk-tooltip';
+  }
   return '<i class="fa fa-'+name+'"'+tooltip+'></i>';
 }
 
@@ -243,14 +260,16 @@ RockGrid2.prototype.init = function(name) {
  *   tooltip: 'Edit this page',
  *   href: RockGrid2.editUrl(id),
  *   class: 'my-class',
- *   panel: true,
+ *   panel: true, // default
+ *   reload: true,
  * });
  */
 RockGrid2.prototype.link = function(data) {
   data = data || {}
   let href = data.href || '#';
-  let panel = data.panel ? ' rg-panel' : '';
-  let cls = " class='"+data.class+panel+"' ";
+  let panel = data.panel !== false ? ' rg-panel' : '';
+  let reload = data.reload ? ' rg-panel-reload' : '';
+  let cls = " class='"+data.class+panel+reload+"' ";
   let icon = this.icon(data.icon, data.tooltip);
   let label = icon+(data.label||'');
   return "<a href='"+href+"' "+cls+">"+label+"</a>";
@@ -337,6 +356,10 @@ RockGrid2.prototype.setColOrder = function(order, definitions) {
   $.each(newDefs, function(i, def) {
     definitions[i] = newDefs[i];
   });
+}
+
+RockGrid2.prototype.tooltip = function(label, tooltip) {
+  return "<span title='"+tooltip+"' uk-tooltip>"+label+"</span>";
 }
 
 RockGrid2.prototype.trigger = function(table, event, params) {
