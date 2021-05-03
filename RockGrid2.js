@@ -18,7 +18,10 @@ function RockGrid2() {
       layout:"fitColumns",
       autoColumns:true,
       autoColumnsDefinitions:function(definitions) {
-        definitions.forEach((col) => { col.headerFilter = true; });
+        definitions.forEach((col) => {
+          col.headerFilter = true;
+          col.headerFilterFunc = "rg2.smart";
+        });
         return definitions;
       },
     },
@@ -393,6 +396,28 @@ $(document).trigger('RockGrid2');
       thousand:".",
     };
   }
+
+/**
+ * Filters
+ */
+
+  Tabulator.prototype.extendModule("filter", "filters", {
+    // smart filter
+    "rg2.smart": function(headerValue, rowValue, rowData, filterParams){
+      let filters = this;
+      let search = headerValue;
+      let val = rowValue;
+
+      // searching . returns all non-empty cells
+      if(search === '.') return val!==null;
+
+      // searching ! returns all empty cells
+      else if(search === '!') return val===null;
+
+      // otherwise we use the regular like filter
+      return filters['like'](search, val, rowData, filterParams);
+    }
+  });
 
 /**
  * Event listeners
