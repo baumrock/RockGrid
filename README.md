@@ -39,11 +39,36 @@ class FooGrid extends Grid {
 }
 ```
 
+If you want/need to place your grids in a dedicated folder somewhere else you can add that folder to RockGrid on init()
+
+```php
+/** @var RockGrid2 $rg */
+$rg = $this->wire()->modules->get('RockGrid2');
+$rg->addDir(__DIR__."/grids");
+```
+
 Once you load your field the JS file that defines all visual and frontend logic parts will be created automatically making it really easy to setup.
 
 ## Data
 
-Data of the grid is defined either via JavaScript or on the PHP side you define it via the `getData()` method of the grid object. The getData method can return different types of data like a plain PHP array or a RockFinder3. If using a RockFinder3 you get the benefit of quick and easy development or debugging because you can utilize RockFinder3's Tracy dumping feature:
+Data of the grid is defined either via JavaScript or on the PHP side you define it via the `getData()` method of the grid object.
+
+```php
+  /**
+   * Get data for this grid
+   */
+  public function getData() {
+    /** @var RockFinder3Master $finder */
+    $finder = $this->wire->rockfinder;
+    $data = $finder->find([
+        'template' => 'foo',
+        'sort' => '-id',
+      ])->addColumnsFromTemplate('foo');
+    return $data;
+  }
+```
+
+The getData method can return different types of data like a plain PHP array or a RockFinder3. If using a RockFinder3 you get the benefit of quick and easy development or debugging because you can utilize RockFinder3's Tracy dumping feature:
 
 ```php
 $rg = $modules->get('RockGrid2');

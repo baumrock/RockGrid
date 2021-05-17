@@ -7,7 +7,14 @@ function RockGrid2() {
   this.grids = {}
   this.setups = {
     'default': {
-      ajaxURL:true, // custom flag to use rockgrid endpoint
+      ajaxURL:true, // custom flag to use rockgrid ajax endpoint
+      ajaxConfig: {
+        method:"POST",
+        headers: {
+          "X-Requested-With": 'XMLHttpRequest',
+          "Content-type": 'application/json; charset=utf-8',
+        },
+      },
       placeholder:"No data",
       pagination:'local',
       paginationSize:20,
