@@ -384,9 +384,41 @@ var RockGrid2 = new RockGrid2();
 $(document).trigger('RockGrid2');
 
 /**
+ * Custom Tabulator Formatters
+ * Usage: see checkbox coldef
+ */
+Tabulator.prototype.extendModule("format", "formatters", {
+
+  // format the value of a checkbox
+  "rg2.checkbox": function(cell, formatterParams) {
+    let value = cell.getValue();
+    let $el = $(cell.getElement());
+    if(value === 'yes') {
+      $el.css('background', RockGrid2.colors['green-100']);
+      return RockGrid2.icon('check', value);
+    }
+    else {
+      $el.css('background', RockGrid2.colors['red-100']);
+      return RockGrid2.icon('times', value);
+    }
+  },
+
+});
+
+/**
  * Add coldefs that change many column properties at once
  * You can add custom coldefs easily on the RockGrid2 event
+ *
+ * Usage: RockGrid2.setColDef(col, 'checkbox');
  */
+
+  // checkbox
+  RockGrid2.coldefs['checkbox'] = function(col) {
+    col.mutator = function(value) { return value ? 'yes' : 'no'; };
+    col.formatter = 'rg2.checkbox';
+    col.hozAlign = 'center';
+    col.width = 60;
+  }
 
   // money coldef
   RockGrid2.coldefs['money'] = function(column) {
@@ -406,8 +438,8 @@ $(document).trigger('RockGrid2');
 
 /**
  * Filters
+ * Usage: col.headerFilterFunc = "rg2.smart";
  */
-
   Tabulator.prototype.extendModule("filter", "filters", {
     // smart filter
     "rg2.smart": function(headerValue, rowValue, rowData, filterParams){
