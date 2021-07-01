@@ -390,9 +390,11 @@ $(document).trigger('RockGrid2');
 Tabulator.prototype.extendModule("format", "formatters", {
 
   // format the value of a checkbox
+  // you can provide a NULL value to the cell to prevent rendering of YES/NO
   "rg2.checkbox": function(cell, formatterParams) {
     let value = cell.getValue();
     let $el = $(cell.getElement());
+    if(!value) return;
     if(value === 'yes') {
       $el.css('background', RockGrid2.colors['green-100']);
       return RockGrid2.icon('check', value);
