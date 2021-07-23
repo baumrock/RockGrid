@@ -15,6 +15,9 @@ class Grid extends Wire {
   public $id;
   public $name;
 
+  // url segment string, eg /foo/bar in /rockgrid2/MyGrid/foo/bar
+  public $urlSegmentStr;
+
   public function __construct() {
     parent::__construct();
     $this->admin = $this->wire->pages->get(2)->url;
@@ -141,10 +144,10 @@ class Grid extends Wire {
    * Render this grid
    * @return string
    */
-  public function ___render() {
+  public function ___render($urlSegmentStr = '') {
     $file = $this->rg2->path."layouts/default.php";
     return $this->wire->files->render($file, ['grid' => $this])
-      ."<script>RockGrid2.init('{$this->name}');</script>";
+      ."<script>RockGrid2.init('{$this->name}', '$urlSegmentStr');</script>";
   }
 
   /**

@@ -53,6 +53,30 @@ $grid->dump();
 
 ![img](https://i.imgur.com/O9DFR7H.png)
 
+### Dynamic Data
+
+If you need to adjust grid data to the currently edited page, you can add an urlsegmentstring to the ajax request url:
+
+```php
+$form->add([
+  'type' => 'RockGrid2',
+  'label' => 'Dynamic Grid',
+  'grid' => 'DynamicGridDemo',
+  'urlSegmentStr' => "/$page",
+]);
+```
+
+You can then access and parse this urlsegmentstring in the getData() method of your grid:
+
+```php
+// get group from urlsegmentstr
+$groupid = trim($grid->urlSegmentStr, "/");
+$group = $mailer->getGroup($groupid);
+if(!$group->id) throw new WireException("Group not found");
+if(!$group->editable()) throw new WireException("No access");
+$finder = ...
+```
+
 ## Loading additional libraries
 
 For some functionality you need additional libraries to load. Do this in your grid constructor:
