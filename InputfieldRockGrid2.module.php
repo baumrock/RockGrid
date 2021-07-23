@@ -11,6 +11,11 @@ use RockGrid2\Grid;
  */
 class InputfieldRockGrid2 extends InputfieldTextarea {
 
+  // url segment string used for the ajax request
+  // can be set as inputfield property
+  // eg $f->urlSegmentStr = '/foo/bar';
+  public $urlSegmentStr;
+
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2 Inputfield',
@@ -45,7 +50,6 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
   * @return $this
   */
   public function ___processInput($input) {
-    $this->message('process input!');
     return false;
   }
 
@@ -55,23 +59,28 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
   */
   public function ___render() {
     // output must be wrapped in a div to make ajax inputfields work!
-    $out = "<div>";
-    $grid = $this->main()->getGrid($this);
-    if(!$grid) {
-      $file = $this->getFile();
-      if(!$file) {
-        $out .= "<strong>No file for this grid found!</strong> Tried these...";
-        foreach($this->main()->getPossibleFilenames($this->grid) as $f) {
-          $out .= "<div>$f</div>";
+    try {
+      $out = "<div>";
+      $grid = $this->main()->getGrid($this);
+      if(!$grid) {
+        $file = $this->getFile();
+        if(!$file) {
+          $out .= "<strong>No file for this grid found!</strong> Tried these...";
+          foreach($this->main()->getPossibleFilenames($this->grid) as $f) {
+            $out .= "<div>$f</div>";
+          }
+          return $out;
         }
-        return $out;
+        return "File $file not found";
       }
-      return "File $file not found";
+      $out .= "</div>";
+      return $grid->render($this->urlSegmentStr);
+    } catch (\Throwable $th) {
+      if($this->wire->user->isSuperuser()) return $th->getMessage();
+      else return "Error rendering grid";
     }
-    $out .= "</div>";
-    return $grid->render();
   }
-  
+
   public function ___renderValue() {
     return $this->___render();
   }

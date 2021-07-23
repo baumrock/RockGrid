@@ -164,10 +164,15 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
    * @return void
    */
   public function handleAjax() {
-    $this->addHook('/rockgrid2/(.*)', function($event) {
-      $name = trim($event->arguments(1),"/");
-      $grid = $this->getGrid($name);
+    $this->addHook('/rockgrid2/{grid}(/.*)', function($event) {
+      $grid = $this->getGrid($event->grid);
       if(!$grid) throw new Wire404Exception("Grid not found");
+
+      // set urlsegmentstr to make dynamic grids possible
+      // eg /rockgrid2/MyGrid/foo/bar
+      // $grid->urlSegmentStr can then be accessed in getData() of the grid
+      $grid->urlSegmentStr = $event->arguments(2);
+
       if($this->wire->config->ajax) $grid->sendJSON();
       else $event->return = $grid->debug();
     });

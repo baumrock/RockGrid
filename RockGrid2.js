@@ -254,12 +254,19 @@ RockGrid2.prototype.icon = function(name, tooltip) {
   return '<i class="fa fa-'+name+'"'+tooltip+'></i>';
 }
 
-RockGrid2.prototype.init = function(name) {
+RockGrid2.prototype.init = function(name, urlSegmentStr) {
   let grid = this.getGrid(name);
   if(!grid) return;
+
+  // the url segment string is used for the ajax request
+  // this makes it possible to create dynamic grids
+  urlSegmentStr = urlSegmentStr || '';
+  grid.setup.ajaxURL = grid.setup.ajaxURL+urlSegmentStr;
+
   grid.$root = $('#rg2-'+grid.name);
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
+
   grid.table = new Tabulator(grid.el, grid.setup);
 }
 
