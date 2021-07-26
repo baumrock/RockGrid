@@ -338,6 +338,12 @@ RockGrid2.prototype.setAjaxData = function(table, response) {
   return response;
 }
 
+/**
+ * Set coldef
+ * Usage:
+ * rg2.setColDef(col, 'link', 'id');
+ * rg2.setColDef(col, 'foobar', {foo:'foo',bar:'bar'});
+ */
 RockGrid2.prototype.setColDef = function(column, def, data) {
   let coldef = this.coldefs[def];
   if(typeof coldef == 'function') return coldef(column, data);
@@ -442,6 +448,20 @@ Tabulator.prototype.extendModule("format", "formatters", {
         tooltip: 'Edit this page',
         panel: true,
       });
+    }
+  }
+
+  // link to page edit screen
+  // Usage: rg2.setColdef(col, 'link', 'mycolumn');
+  RockGrid2.coldefs['link'] = function(col, prop) {
+    prop = prop || 'id';
+    col.formatter = function(cell) {
+      let value = cell.getValue();
+      if(!value) return;
+      // by default we take the ID row property
+      let id = cell.getRow().getData()[prop];
+      let url = RockGrid2.editUrl(id);
+      return "<a href='"+url+"'>"+value+"</a>";
     }
   }
 
