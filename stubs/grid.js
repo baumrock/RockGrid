@@ -10,17 +10,7 @@ $(document).on('RockGrid2', function() {
         let name = col.field;
 
         if(name == 'id') {
-          col.width = 50;
-          col.hozAlign = 'center';
-          col.formatter = function(cell) {
-            let id = cell.getValue();
-            return rg2.link({
-              icon: 'edit',
-              href: rg2.editUrl(id),
-              tooltip: 'Edit this page',
-              panel: true,
-            });
-          }
+          rg2.setColDef(col, 'edit');
         }
 
         col.headerFilter = true;

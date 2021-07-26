@@ -429,6 +429,22 @@ Tabulator.prototype.extendModule("format", "formatters", {
     col.width = 60;
   }
 
+  // edit
+  RockGrid2.coldefs['edit'] = function(col) {
+    col.title = '';
+    col.width = 50;
+    col.hozAlign = 'center';
+    col.formatter = function(cell) {
+      let id = cell.getValue();
+      return RockGrid2.link({
+        icon: 'edit',
+        href: RockGrid2.editUrl(id),
+        tooltip: 'Edit this page',
+        panel: true,
+      });
+    }
+  }
+
   // money coldef
   RockGrid2.coldefs['money'] = function(column) {
     column.formatter = 'money';
