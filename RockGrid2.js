@@ -296,6 +296,9 @@ RockGrid2.prototype.link = function(data) {
 
 /**
  * Move one column of the definitions after another
+ * Usage:
+ * RockGrid2.moveColAfter('title', 'beforetitle', definitions);
+ * See also setColOrder(...);
  */
 RockGrid2.prototype.moveColAfter = function(columnToMove, otherColumn, definitions) {
   let fields = definitions.map(x=>x.field);
