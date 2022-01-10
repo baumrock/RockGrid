@@ -1,9 +1,15 @@
 <div class='RockGrid2' id='<?= $grid->id ?>'>
   <div class='rg-filter'><?= $grid->getFilters() ?></div>
   <div class='rg-header uk-child-width-1-1 uk-child-width-auto@m' uk-grid>
-    <div class='uk-text-left rg-left'><?= $grid->getButtonsLeft()->render('rg-buttons-left') ?></div>
-    <div class='uk-text-center rg-center uk-width-expand@m'></div>
-    <div class='uk-text-right rg-right'><?= $grid->getButtons()->render() ?></div>
+    <div class='uk-text-left rg-left'>
+      <?= $grid->getButtonsLeft()->render('rg-buttons-left') ?>
+    </div>
+    <div class='uk-text-center rg-center uk-width-expand@m'>
+      <?= $grid->getButtonsCenter()->render() ?>
+    </div>
+    <div class='uk-text-right rg-right'>
+      <?= $grid->getButtons()->render() ?>
+    </div>
   </div>
   <div class='rg-grid'>JS error</div>
   <div class='rg-footer'></div>

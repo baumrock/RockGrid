@@ -31,6 +31,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   public function init() {
+    $this->wire('rockgrid2', $this);
     $this->path = $this->wire->config->paths($this);
     $this->autoloader();
     $this->loadAssets();
@@ -164,17 +165,42 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
    * @return void
    */
   public function handleAjax() {
-    $this->addHook('/rockgrid2/{grid}(/.*)', function($event) {
+    // hook for grid data
+    $this->addHook('/rockgrid2/{grid}', function($event) {
       $grid = $this->getGrid($event->grid);
       if(!$grid) throw new Wire404Exception("Grid not found");
 
-      // set urlsegmentstr to make dynamic grids possible
-      // eg /rockgrid2/MyGrid/foo/bar
-      // $grid->urlSegmentStr can then be accessed in getData() of the grid
-      $grid->urlSegmentStr = $event->arguments(2);
+      // ACCESS CONTROL
+      if(!$grid->isViewable()) {
+        return json_encode(['error' => "<strong>Error</strong><br>"
+          ."You don't have access to view data of grid '$this'"]);
+      }
 
       if($this->wire->config->ajax) $grid->sendJSON();
       else $event->return = $grid->debug();
+    });
+    $this->addHook('/rockgrid2/{grid}/cc/{callback}', function($event) {
+      $grid = $this->getGrid($event->grid);
+      if(!$grid) throw new Wire404Exception("Grid not found");
+
+      // ACCESS CONTROL
+      if(!$grid->isViewable()) {
+        return json_encode(['error' => "<strong>Error</strong><br>"
+          ."You don't have access to view data of grid '$this'"]);
+      }
+
+      $callback = $grid->getCallbacks($event->callback);
+      if(!$callback) throw new WireException("Callback not found");
+      if(!$this->wire->config->ajax) throw new WireException("Not allowed");
+
+      // execute callback
+      $data = file_get_contents('php://input');
+      $data = json_decode($data, TRUE);
+      $input = $this->wire(new WireData()); /** @var WireData $input */
+      $input->setArray($data);
+      $result = $callback->__invoke($input, $grid);
+
+      return json_encode($result);
     });
   }
 

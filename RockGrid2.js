@@ -149,7 +149,15 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
   setup = $.extend(setup, customSetup, this.callbacks());
 
   // now create the grid object
-  this.grids[gridName] = new RG2Grid(gridName, setup);
+  let grid = new RG2Grid(gridName, setup);
+  this.grids[gridName] = grid;
+
+  // add callbacks
+  grid.addCallback("trashSelected", function(grid, $button, modal) {
+    let rows = grid.table.getSelectedRows();
+    let ids = rows.map(row => row.getData().id);
+    grid.ajax("trashSelected", {ids: ids}, $button, modal);
+  });
 }
 
 /**
@@ -206,6 +214,7 @@ RockGrid2.prototype.callbacks = function() {
   return {
     dataFiltering:function(...params) { rg.trigger(this, 'dataFiltering', params); },
     dataFiltered:function(...params) { rg.trigger(this, 'dataFiltered', params); },
+    rowSelectionChanged:function(...params) { rg.trigger(this, 'rowSelectionChanged', params); },
     ajaxResponse:function(url, params, response) {
       // if the ajax response returns RockFinder3 data we need to do some
       // additional actions before returning table data (eg storing data
@@ -254,19 +263,12 @@ RockGrid2.prototype.icon = function(name, tooltip) {
   return '<i class="fa fa-'+name+'"'+tooltip+'></i>';
 }
 
-RockGrid2.prototype.init = function(name, urlSegmentStr) {
+RockGrid2.prototype.init = function(name) {
   let grid = this.getGrid(name);
   if(!grid) return;
-
-  // the url segment string is used for the ajax request
-  // this makes it possible to create dynamic grids
-  urlSegmentStr = urlSegmentStr || '';
-  grid.setup.ajaxURL = grid.setup.ajaxURL+urlSegmentStr;
-
   grid.$root = $('#rg2-'+grid.name);
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
-
   grid.table = new Tabulator(grid.el, grid.setup);
 }
 
@@ -296,9 +298,6 @@ RockGrid2.prototype.link = function(data) {
 
 /**
  * Move one column of the definitions after another
- * Usage:
- * RockGrid2.moveColAfter('title', 'beforetitle', definitions);
- * See also setColOrder(...);
  */
 RockGrid2.prototype.moveColAfter = function(columnToMove, otherColumn, definitions) {
   let fields = definitions.map(x=>x.field);
@@ -341,12 +340,6 @@ RockGrid2.prototype.setAjaxData = function(table, response) {
   return response;
 }
 
-/**
- * Set coldef
- * Usage:
- * rg2.setColDef(col, 'link', 'id');
- * rg2.setColDef(col, 'foobar', {foo:'foo',bar:'bar'});
- */
 RockGrid2.prototype.setColDef = function(column, def, data) {
   let coldef = this.coldefs[def];
   if(typeof coldef == 'function') return coldef(column, data);
@@ -395,6 +388,10 @@ RockGrid2.prototype.trigger = function(table, event, params) {
   $(document).trigger('rg.'+event, {grid, params});
 }
 
+RockGrid2.prototype.util = function() {
+  return UIkit.util;
+}
+
 // init class and trigger initial event
 var RockGrid2 = new RockGrid2();
 $(document).trigger('RockGrid2');
@@ -436,36 +433,6 @@ Tabulator.prototype.extendModule("format", "formatters", {
     col.formatter = 'rg2.checkbox';
     col.hozAlign = 'center';
     col.width = 60;
-  }
-
-  // edit
-  RockGrid2.coldefs['edit'] = function(col) {
-    col.title = '';
-    col.width = 50;
-    col.hozAlign = 'center';
-    col.formatter = function(cell) {
-      let id = cell.getValue();
-      return RockGrid2.link({
-        icon: 'edit',
-        href: RockGrid2.editUrl(id),
-        tooltip: 'Edit this page',
-        panel: true,
-      });
-    }
-  }
-
-  // link to page edit screen
-  // Usage: rg2.setColdef(col, 'link', 'mycolumn');
-  RockGrid2.coldefs['link'] = function(col, prop) {
-    prop = prop || 'id';
-    col.formatter = function(cell) {
-      let value = cell.getValue();
-      if(!value) return;
-      // by default we take the ID row property
-      let id = cell.getRow().getData()[prop];
-      let url = RockGrid2.editUrl(id);
-      return "<a href='"+url+"'>"+value+"</a>";
-    }
   }
 
   // money coldef

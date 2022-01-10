@@ -3,6 +3,7 @@
 use ProcessWire\Paths;
 use ProcessWire\RockFinder3;
 use ProcessWire\Wire;
+use ProcessWire\WireData;
 use ReflectionClass;
 
 /**
@@ -14,9 +15,6 @@ class Grid extends Wire {
   public $file;
   public $id;
   public $name;
-
-  // url segment string, eg /foo/bar in /rockgrid2/MyGrid/foo/bar
-  public $urlSegmentStr;
 
   public function __construct() {
     parent::__construct();
@@ -40,6 +38,7 @@ class Grid extends Wire {
    */
   public function debug() {
     // prepare data
+    if(!$this->wire->user->isSuperuser()) return;
     $data = $this->getData();
     if($data instanceof RockFinder3) $data = $data->getRowArray();
     return $this->wire->files->render($this->rg2->path."debug.php", [
@@ -60,11 +59,32 @@ class Grid extends Wire {
   }
 
   /**
+   * @return WireArray
+   */
+  public function getAllButtons() {
+    return $this->getButtonsLeft()
+      ->addButtons($this->getButtonsCenter())
+      ->addButtons($this->getButtons());
+  }
+
+  /**
    * Get default buttons for this grid
    * @return Buttons
    */
   public function getButtons() {
     $buttons = $this->wire(new Buttons());
+    $buttons->add([
+      'name' => 'clearSelection',
+      'tooltip' => 'Clear selection',
+      'html' => '<i class="fa fa-check"></i><i class="fa fa-times"></i>',
+      'hidden' => '!selected',
+    ]);
+    $buttons->add([
+      'name' => 'selectAllFiltered',
+      'tooltip' => 'Select all filtered rows',
+      'icon' => 'check',
+      'hidden' => true,
+    ]);
     $buttons->add([
       'name' => 'nofilter',
       'icon' => 'times',
@@ -80,12 +100,58 @@ class Grid extends Wire {
   }
 
   /**
-   * Get default left buttons for this grid
+   * Center Buttons
+   * @return Buttons
+   */
+  public function getButtonsCenter() {
+    $buttons = $this->wire(new Buttons());
+    $buttons->add([
+      'name' => 'trashSelected',
+      'icon' => 'trash',
+      'tooltip' => 'Trash selected rows',
+      'hidden' => '!selected',
+      'callback' => [
+        'confirm' => 'Do you really want to trash the selected rows?',
+        'reload' => true,
+        'execute' => function($input) {
+          // bd($input);
+          $ids = $this->wire->sanitizer->intArray($input->ids);
+          foreach($this->wire->pages->findMany(["id" => $ids]) as $p) {
+            $p->trash();
+          }
+          return [
+            'success' => true,
+            // 'message' => 'das ist ein test',
+          ];
+        },
+      ],
+    ]);
+    return $buttons;
+  }
+
+  /**
+   * Get default left buttons for this gridg
    * @return Buttons
    */
   public function getButtonsLeft() {
     $buttons = $this->wire(new Buttons());
     return $buttons;
+  }
+
+  /**
+   * Get callbacks of ajax buttons
+   * @return WireData
+   */
+  public function getCallbacks($name = null) {
+    $callbacks = $this->wire(new WireData()); /** @var WireData $callbacks */
+    foreach($this->getAllButtons() as $button) {
+      if(!$button->callback) continue;
+      $data = $this->wire(new WireData()); /** @var WireData $data */
+      $data->setArray($button->callback);
+      $callbacks->{$button->name} = $data->execute;
+    }
+    if($name) return $callbacks->$name;
+    return $callbacks;
   }
 
   /**
@@ -119,13 +185,6 @@ class Grid extends Wire {
     // holding additional info like relations and options
     if($data instanceof RockFinder3) $data = $data->getJSON(true);
 
-    // ACCESS CONTROL
-    $su = $this->wire->user->isSuperuser();
-    if(!$su AND !$this->isViewable()) {
-      $data = ['error' => "<strong>Error</strong><br>"
-        ."You don't have access to view data of grid '$this'"];
-    }
-
     // return json
     if(is_string($data)) return $data;
     return json_encode($data);
@@ -144,10 +203,10 @@ class Grid extends Wire {
    * Render this grid
    * @return string
    */
-  public function ___render($urlSegmentStr = '') {
+  public function ___render() {
     $file = $this->rg2->path."layouts/default.php";
     return $this->wire->files->render($file, ['grid' => $this])
-      ."<script>RockGrid2.init('{$this->name}', '$urlSegmentStr');</script>";
+      ."<script>RockGrid2.init('{$this->name}');</script>";
   }
 
   /**

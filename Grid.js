@@ -5,14 +5,51 @@ function RG2Grid(name, setup) {
   this.table; // table instance (when initialized)
   this.rf3; // stores rockfinder3 data after ajax call
 
+  this.callbacks = {};
+
   // dom elements
   this.el; // table
   this.$el; // table
   this.$root; // root container
 }
 
+RG2Grid.prototype.addCallback = function(name, callback) {
+  this.callbacks[name] = callback;
+}
+
+RG2Grid.prototype.ajax = function(callback, data, $button, modal) {
+  let url = "/rockgrid2/" + this.name + "/cc/" + callback;
+  if(modal) {
+    $(modal.$el).find('.rg-callback-confirm').fadeOut();
+    let $body = $(modal.$el).find('.uk-modal-body');
+    let loading = $button.data('loading');
+    if(loading) $body.html('<i class="fa fa-spin fa-spinner"></i> '+loading);
+  }
+  $.ajax({
+    url,
+    type: 'post',
+    data: JSON.stringify(data),
+    dataType: 'json',
+    headers: {"X-Requested-With": 'XMLHttpRequest'}
+  }).done(function(data) {
+    if(data.success) {
+      if(modal) modal.hide();
+      if($button.data('reload')) RockGrid2.getGrid($button).reload();
+    }
+    else {
+      UIkit.modal.alert(data.message || 'Error');
+    }
+  }).fail(function(data) {
+    UIkit.modal.alert(data.message || 'Error');
+  });
+}
+
 RG2Grid.prototype.button = function(name) {
   return this.$root.find('.rg-buttons button[name='+name+']');
+}
+
+RG2Grid.prototype.getCallback = function(name) {
+  return this.callbacks[name];
 }
 
 RG2Grid.prototype.hasHeaderFilter = function() {
@@ -32,6 +69,10 @@ RG2Grid.prototype.reload = function() {
     });
     table.redraw();
   });
+}
+
+RG2Grid.prototype.util = function() {
+  return UIkit.util;
 }
 
 /**
@@ -80,8 +121,64 @@ RG2Grid.prototype.xls = async function(opt) {
 }
 
 /**
- * Button events
+ * Callbacks
  */
+  // $(document).on('click', '.rg-callback-confirm', function(e) {
+  //   e.preventDefault();
+
+  //   // new html
+  //   let $ok = $(e.target);
+  //   $ok.fadeOut();
+  //   let $form = $ok.closest('form');
+  //   let $body = $form.find('.uk-modal-body');
+  //   $body.html('<i class="fa fa-spin fa-spinner"></i> '+$form.data('loading'));
+
+  //   // fire callback
+  //   let grid = RockGrid2.getGrid(e.target);
+  //   let callback = grid.getCallback($form.data('callback'));
+  //   callback(grid, $button);
+  // });
+  $(document).on('click', '.rg-buttons button[data-callback]', function(e) {
+    let grid = RockGrid2.getGrid(e.target);
+    let $button = $(e.target).closest('button');
+    let confirm = $button.data('confirm');
+    let callback = grid.getCallback($button.data('callback'));
+    if(!callback) return;
+
+    // if a confirm message is set we ask for confirmation
+    // you can prevent the confirmation question by shift+click
+    if(confirm && !e.shiftKey) {
+      let modal = UIkit.modal.dialog('<form>'
+        +'<div class="uk-modal-body">'+confirm+'</div>'
+        +'<div class="uk-modal-footer uk-text-right">'
+          +'<button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>'
+          +'<button class="uk-button uk-button-primary rg-callback-confirm" onClick="return false" autofocus>Ok</button>'
+        +'</div></form>');
+
+      $(modal.$el).find('.rg-callback-confirm').on('click', function() {
+        callback(grid, $button, modal);
+      });
+
+
+    }
+    else {
+      // no confirm message, so we call the callback directly
+      callback(grid, $button);
+    }
+  });
+
+/**
+ * Buttons
+ */
+
+  // hidden attribute
+  $(document).on('rg.rowSelectionChanged', function(e, params) {
+    let grid = params.grid;
+    let $buttons = grid.$root.find('.rg-buttons button[data-hidden="!selected"]');
+    let rows = params.params[1];
+    if(rows.length) $buttons.fadeIn();
+    else $buttons.fadeOut();
+  });
 
   // reload
   $(document).on('rg.button.reload', '.RockGrid2', function(e, grid) {
@@ -97,6 +194,22 @@ RG2Grid.prototype.xls = async function(opt) {
     else $button.fadeOut();
   });
   $(document).on('rg.button.nofilter', '.RockGrid2', function(e, grid) {
-    // handle button click
     grid.table.clearHeaderFilter();
+  });
+
+  // clear selection button
+  $(document).on('rg.button.clearSelection', '.RockGrid2', function(e, grid) {
+    grid.table.deselectRow();
+  });
+
+  // select all filtered rows
+  $(document).on('rg.rowSelectionChanged', function(e, params) {
+    // show button only if the grid has selection enabled
+    let grid = params.grid;
+    if(!grid.setup.selectable) return;
+    grid.button('selectAllFiltered').fadeIn();
+  });
+  $(document).on('rg.button.selectAllFiltered', '.RockGrid2', function(e, grid) {
+    // select all filtered rows on click
+    grid.table.selectRow(grid.table.getRows(true));
   });
