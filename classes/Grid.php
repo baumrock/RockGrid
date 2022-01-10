@@ -112,6 +112,7 @@ class Grid extends Wire {
       'hidden' => '!selected',
       'callback' => [
         'confirm' => 'Do you really want to trash the selected rows?',
+        'loading' => 'Trashing items...',
         'reload' => true,
         'execute' => function($input) {
           // bd($input);
