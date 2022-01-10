@@ -151,8 +151,8 @@ RG2Grid.prototype.xls = async function(opt) {
       let modal = UIkit.modal.dialog('<form>'
         +'<div class="uk-modal-body">'+confirm+'</div>'
         +'<div class="uk-modal-footer uk-text-right">'
-          +'<button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>'
-          +'<button class="uk-button uk-button-primary rg-callback-confirm" onClick="return false" autofocus>Ok</button>'
+          +'<button class="uk-button uk-button-default uk-modal-close" type="button" autofocus>Cancel</button>'
+          +'<button class="uk-button uk-button-primary rg-callback-confirm" onClick="return false">Ok</button>'
         +'</div></form>');
 
       $(modal.$el).find('.rg-callback-confirm').on('click', function() {
