@@ -157,9 +157,12 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
     let rows = grid.table.getSelectedRows();
     let ids = rows.map(row => row.getData().id);
     let data = {ids: ids}
-    $(modal.$el).find('input').each(function(i, el) {
-      data[$(el).attr('name')] = $(el).val();
-    });
+    // we have no modal on shift-click
+    if(modal) {
+      $(modal.$el).find('input').each(function(i, el) {
+        data[$(el).attr('name')] = $(el).val();
+      });
+    }
     // console.log(data);
     grid.ajax($button.attr('name'), data, $button, modal);
   });
