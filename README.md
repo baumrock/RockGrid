@@ -151,6 +151,70 @@ $(document).on('rg.button.add', '.RockGrid2', function(e, grid) {
 });
 ```
 
+### Button callbacks
+
+You can define callbacks for your buttons that will be fired via ajax request.
+
+PHP
+
+```php
+public function getButtonsCenter() {
+  $buttons = parent::getButtonsCenter();
+  $buttons->add([
+    'name' => 'markClaimed',
+    'icon' => 'check',
+    'tooltip' => 'Mark selected items as claimed',
+    'hidden' => '!selected',
+    'appendMarkup' => '<div id=markClaimedConfirm hidden>
+        <p class=uk-text-bold>Do you really want to mark selected items as claimed?</p>
+        <p>'.Effort::label_claimedwith.'<br>
+          <input type=text name=note class=uk-input>
+        </p>
+      </div>',
+    'callback' => [
+      'name' => 'sendIDs',
+      'confirmmarkup' => '#markClaimedConfirm',
+      'loading' => 'Saving items...',
+      'reload' => true,
+      'execute' => function($input) {
+        $ids = $this->wire->sanitizer->intArray($input->ids);
+        foreach($this->wire->pages->findMany(["id" => $ids]) as $p) {
+          $p->setAndSave(Effort::field_claimed, 1);
+          $p->setAndSave(Effort::field_claimedwith, $input->note);
+        }
+        return [
+          'success' => true,
+          // 'message' => 'das ist ein test',
+        ];
+      },
+    ],
+  ]);
+  return $buttons;
+}
+```
+
+JS
+
+```js
+grid.addCallback("sendIDs", function(grid, $button, modal) {
+  let rows = grid.table.getSelectedRows();
+  let ids = rows.map(row => row.getData().id);
+  let data = {ids: ids}
+  $(modal.$el).find('input').each(function(i, el) {
+    data[$(el).attr('name')] = $(el).val();
+  });
+  // console.log(data);
+  grid.ajax($button.attr('name'), data, $button, modal);
+});
+```
+
+`$button['callback']['name']` defines which callback to fire on the JS side. The `sendIDs` callback can be used by many buttons as it sends all ids of selected rows together with data that might be provided via `input` fields.
+
+You can either set a confirm message via the `confirm` property (single string) or you can provide a css selector to fetch the html from (useful for adding inputfields to your confirm message):
+
+![img](https://i.imgur.com/qrprt0w.png)
+
+
 ### XLSX Download
 
 Example download button:

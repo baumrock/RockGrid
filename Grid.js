@@ -141,9 +141,15 @@ RG2Grid.prototype.xls = async function(opt) {
   $(document).on('click', '.rg-buttons button[data-callback]', function(e) {
     let grid = RockGrid2.getGrid(e.target);
     let $button = $(e.target).closest('button');
-    let confirm = $button.data('confirm');
     let callback = grid.getCallback($button.data('callback'));
     if(!callback) return;
+
+    // get confirm message or markup
+    // confirmmarkup is a css selector to grab html from
+    // eg 'confirmmarkup' => '#myhiddenelement'
+    let confirm = $button.data('confirm');
+    let confirmmarkup = $button.data('confirmmarkup');
+    if(confirmmarkup) confirm = $(confirmmarkup).html();
 
     // if a confirm message is set we ask for confirmation
     // you can prevent the confirmation question by shift+click

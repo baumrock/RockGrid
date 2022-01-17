@@ -33,13 +33,15 @@ class Buttons extends \ProcessWire\WireArray {
 
       // ajax buttons with callback
       elseif($k == 'callback') {
-        if(!array_key_exists("name", $data)) {
-          throw new WireException("you must specify a button name to use callbacks");
-        }
+        // get callback name (used to access callback)
+        $callbackname = @$data['callback']['name'] ?: @$data['name'];
+        if(!$callbackname) throw new WireException("No callback name found");
+
         $cb = $this->wire(new WireData()); /** @var WireData $cb */
         $cb->setArray($v);
-        $button->attr('data-callback', $data['name']);
+        $button->attr('data-callback', $callbackname);
         $button->attr('data-confirm', $cb->confirm);
+        $button->attr('data-confirmmarkup', $cb->confirmmarkup);
         $button->attr('data-loading', $cb->loading ?: 'loading...');
         $button->attr('data-reload', $cb->reload ? 1 : 0);
       }

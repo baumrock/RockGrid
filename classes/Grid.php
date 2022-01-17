@@ -111,6 +111,7 @@ class Grid extends Wire {
       'tooltip' => 'Trash selected rows',
       'hidden' => '!selected',
       'callback' => [
+        'name' => 'sendIDs',
         'confirm' => 'Do you really want to trash the selected rows?',
         'loading' => 'Trashing items...',
         'reload' => true,
@@ -149,7 +150,8 @@ class Grid extends Wire {
       if(!$button->callback) continue;
       $data = $this->wire(new WireData()); /** @var WireData $data */
       $data->setArray($button->callback);
-      $callbacks->{$button->name} = $data->execute;
+      $callbackname = $button->get('endpoint|name');
+      $callbacks->set($callbackname, $data->execute);
     }
     if($name) return $callbacks->$name;
     return $callbacks;

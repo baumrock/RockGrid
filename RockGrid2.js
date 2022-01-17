@@ -153,10 +153,15 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
   this.grids[gridName] = grid;
 
   // add callbacks
-  grid.addCallback("trashSelected", function(grid, $button, modal) {
+  grid.addCallback("sendIDs", function(grid, $button, modal) {
     let rows = grid.table.getSelectedRows();
     let ids = rows.map(row => row.getData().id);
-    grid.ajax("trashSelected", {ids: ids}, $button, modal);
+    let data = {ids: ids}
+    $(modal.$el).find('input').each(function(i, el) {
+      data[$(el).attr('name')] = $(el).val();
+    });
+    // console.log(data);
+    grid.ajax($button.attr('name'), data, $button, modal);
   });
 }
 
