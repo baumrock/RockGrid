@@ -18,6 +18,74 @@ RG2Grid.prototype.addCallback = function(name, callback) {
 }
 
 RG2Grid.prototype.ajax = function(callback, data, $button, modal) {
+  let url = "/rockgrid2/" + this.name + "/ajax/" + callback;
+  if(modal) {
+    $(modal.$el).find('.rg-callback-confirm').fadeOut();
+    let $body = $(modal.$el).find('.uk-modal-body');
+    let loading = $button.data('loading');
+    if(loading) $body.html('<i class="fa fa-spin fa-spinner"></i> '+loading);
+  }
+  $.ajax({
+    url,
+    type: 'post',
+    data: JSON.stringify(data),
+    dataType: 'json',
+    headers: {"X-Requested-With": 'XMLHttpRequest'}
+  }).done(function(data) {
+    if(data.success) {
+      if(modal) modal.hide();
+      if($button.data('reload')) RockGrid2.getGrid($button).reload();
+    }
+    else {
+      UIkit.modal.alert(data.message || 'Error');
+    }
+  }).fail(function(data) {
+    UIkit.modal.alert(data.message || 'Error');
+  });
+}
+
+RG2Grid.prototype.sse = function(callback, data, $button, modal) {
+  let url = "/rockgrid2/" + this.name + "/sse/" + callback;
+
+  if(modal) {
+    $(modal.$el).find('.rg-callback-confirm').fadeOut();
+    let $body = $(modal.$el).find('.uk-modal-body');
+    let loading = $button.data('loading');
+    if(loading) {
+      $body.html('<i class="fa fa-spin fa-spinner"></i> '+loading+
+        '<div id="sse-progress" style="display:none"></div>');
+    }
+  }
+
+  // first send an ajax request to store ids in the session
+  $.ajax({
+    url,
+    type: 'post',
+    data: JSON.stringify(data),
+    dataType: 'json',
+    headers: {"X-Requested-With": 'XMLHttpRequest'}
+  }).done(function(data) {
+    let $progress = $('#sse-progress');
+    const evtSource = new EventSource(url, { withCredentials: true } );
+    evtSource.onmessage = function(event) {
+      console.log(event);
+      if(event.data==='DONE') {
+        evtSource.close();
+        if(modal) modal.hide();
+        if($button.data('reload')) RockGrid2.getGrid($button).reload();
+      }
+      else if($progress) {
+        $progress.fadeIn();
+        $progress.html(event.data);
+      }
+    }
+  }).fail(function(data) {
+    UIkit.modal.alert(data.message || 'Error');
+  });
+
+}
+
+RG2Grid.prototype.ajax = function(callback, data, $button, modal) {
   let url = "/rockgrid2/" + this.name + "/cc/" + callback;
   if(modal) {
     $(modal.$el).find('.rg-callback-confirm').fadeOut();

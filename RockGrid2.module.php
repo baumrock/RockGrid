@@ -179,7 +179,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       if($this->wire->config->ajax) $grid->sendJSON();
       else $event->return = $grid->debug();
     });
-    $this->addHook('/rockgrid2/{grid}/cc/{callback}', function($event) {
+    $this->addHook('/rockgrid2/{grid}/ajax/{callback}', function($event) {
       $grid = $this->getGrid($event->grid);
       if(!$grid) throw new Wire404Exception("Grid not found");
 
@@ -201,6 +201,41 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       $result = $callback->__invoke($input, $grid);
 
       return json_encode($result);
+    });
+    $this->addHook('/rockgrid2/{grid}/sse/{callback}', function($event) {
+      $grid = $this->getGrid($event->grid);
+      if(!$grid) throw new Wire404Exception("Grid not found");
+
+      // ACCESS CONTROL
+      if(!$grid->isViewable()) {
+        return json_encode(['error' => "<strong>Error</strong><br>"
+          ."You don't have access to view data of grid '$this'"]);
+      }
+
+      // payload key
+      $sessionkey = "sse-{$event->grid}-{$event->callback}";
+
+      if($this->wire->config->ajax) {
+        // ajax request with payload
+        $data = file_get_contents('php://input');
+        $this->wire->session->set($sessionkey, $data);
+        return json_encode([
+          'succes' => true,
+        ]);
+      }
+
+      // send response
+      header("Cache-Control: no-cache");
+      header("Content-Type: text/event-stream");
+
+      $callback = $grid->getCallbacks($event->callback);
+      if(!$callback) throw new WireException("Callback not found");
+
+      // execute callback
+      $input = json_decode($this->wire->session->get($sessionkey));
+      $callback->__invoke($input, $grid);
+      if(connection_aborted()) return 'aborted';
+      return 'success';
     });
   }
 

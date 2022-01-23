@@ -115,16 +115,14 @@ class Grid extends Wire {
         'confirm' => 'Do you really want to trash the selected rows?',
         'loading' => 'Trashing items...',
         'reload' => true,
-        'execute' => function($input) {
-          // bd($input);
+        'execute' => function($input, self $grid) {
           $ids = $this->wire->sanitizer->intArray($input->ids);
           foreach($this->wire->pages->findMany(["id" => $ids]) as $p) {
+            $grid->sse("Trashing page $p");
             $p->trash();
           }
-          return [
-            'success' => true,
-            // 'message' => 'das ist ein test',
-          ];
+          $grid->sse("DONE");
+          return ['success' => true];
         },
       ],
     ]);
@@ -236,6 +234,20 @@ class Grid extends Wire {
   public function setFile() {
     $class = new ReflectionClass($this);
     $this->file = Paths::normalizeSeparators($class->getFilename());
+  }
+
+  /**
+   * Send SSE message to client
+   * @return void
+   */
+  public function sse($msg) {
+    echo "data: $msg\n\n";
+    echo str_pad('',8186)."\n";
+    flush();
+  }
+
+  public function sseDone() {
+    $this->sse("DONE");
   }
 
   public function __debugInfo() {

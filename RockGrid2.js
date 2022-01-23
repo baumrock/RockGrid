@@ -164,7 +164,8 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
       });
     }
     // console.log(data);
-    grid.ajax($button.attr('name'), data, $button, modal);
+    // grid.ajax($button.attr('name'), data, $button, modal);
+    grid.sse($button.attr('name'), data, $button, modal);
   });
 }
 
