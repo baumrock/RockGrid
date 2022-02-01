@@ -59,6 +59,24 @@ class Grid extends Wire {
   }
 
   /**
+   * Get data array from findRaw
+   *
+   * This converts a regular $pages->findRaw() result into a format
+   * that RockGrid can handle.
+   *
+   * @return array
+   */
+  public function findRaw(...$args) {
+    $raw = $this->wire->pages->findRaw(...$args);
+    // create array of objects
+    $array = array_map(function($item) {
+      return (object)$item;
+    }, $raw);
+    // return only array values
+    return array_values($array);
+  }
+
+  /**
    * @return WireArray
    */
   public function getAllButtons() {
