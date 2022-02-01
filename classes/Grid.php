@@ -64,16 +64,25 @@ class Grid extends Wire {
    * This converts a regular $pages->findRaw() result into a format
    * that RockGrid can handle.
    *
+   * Note that the second parameter must be an array. This makes sure that
+   * the result has all specified columns in the results array.
+   *
    * @return array
    */
-  public function findRaw(...$args) {
-    $raw = $this->wire->pages->findRaw(...$args);
+  public function findRaw($selector, array $fields) {
+    $raw = $this->wire->pages->findRaw($selector, $fields);
+
+    // prepare keys that we need in the results
+    $keys = [];
+    foreach($fields as $k=>$v) $keys[$v] = '';
+    // db($keys, 'keys');
+
     // create array of objects
-    $array = array_map(function($item) {
-      return (object)$item;
-    }, $raw);
-    // return only array values
-    return array_values($array);
+    $array = array_values(array_map(function($item) use($keys) {
+      return (object)array_merge($keys, $item);
+    }, $raw));
+
+    return $array;
   }
 
   /**
