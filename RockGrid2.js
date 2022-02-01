@@ -302,7 +302,8 @@ RockGrid2.prototype.link = function(data) {
   let cls = " class='"+data.class+panel+reload+"' ";
   let icon = this.icon(data.icon, data.tooltip);
   let label = icon+(data.label||'');
-  return "<a href='"+href+"' "+cls+">"+label+"</a>";
+  let tooltip = data.tooltip ? " title='"+data.tooltip+"' uk-tooltip" : '';
+  return "<a href='"+href+"' "+cls+tooltip+">"+label+"</a>";
 }
 
 /**
