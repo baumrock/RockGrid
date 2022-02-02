@@ -398,6 +398,13 @@ RockGrid2.prototype.trigger = function(table, event, params) {
   $(document).trigger('rg.'+event, {grid, params});
 }
 
+/**
+ * Return jump-url of page with given id
+ */
+ RockGrid2.prototype.url = function(id) {
+  return "/rockgrid2/jump/"+id;
+}
+
 RockGrid2.prototype.util = function() {
   return UIkit.util;
 }

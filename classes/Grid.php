@@ -2,6 +2,7 @@
 
 use ProcessWire\Paths;
 use ProcessWire\RockFinder3;
+use ProcessWire\RockGrid2;
 use ProcessWire\Wire;
 use ProcessWire\WireData;
 use ReflectionClass;
@@ -61,28 +62,16 @@ class Grid extends Wire {
   /**
    * Get data array from findRaw
    *
-   * This converts a regular $pages->findRaw() result into a format
-   * that RockGrid can handle.
-   *
-   * Note that the second parameter must be an array. This makes sure that
-   * the result has all specified columns in the results array.
+   * This is only a convenient method that proxies the call to the module.
+   * The method itself is defined in the module so that it can easily be
+   * called and used for frontend tables as well.
    *
    * @return array
    */
   public function findRaw($selector, array $fields) {
-    $raw = $this->wire->pages->findRaw($selector, $fields);
-
-    // prepare keys that we need in the results
-    $keys = [];
-    foreach($fields as $k=>$v) $keys[$v] = '';
-    // db($keys, 'keys');
-
-    // create array of objects
-    $array = array_values(array_map(function($item) use($keys) {
-      return (object)array_merge($keys, $item);
-    }, $raw));
-
-    return $array;
+    /** @var RockGrid2 $rg */
+    $rg = $this->wire->modules->get('RockGrid2');
+    return $rg->findRaw($selector, $fields);
   }
 
   /**

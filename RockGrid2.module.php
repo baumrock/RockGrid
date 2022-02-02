@@ -18,7 +18,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2',
-      'version' => '0.0.4',
+      'version' => '0.0.5',
       'summary' => 'RockGrid2 Main Module',
       'autoload' => true,
       'singular' => true,
@@ -37,6 +37,9 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     $this->loadAssets();
     $this->createAssetsFolder();
     $this->handleAjax();
+
+    // attach hooks
+    $this->addHookAfter("/rockgrid2/jump/{pageID}", $this, "jumpToPage");
   }
 
   /**
@@ -104,6 +107,34 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     $content = str_replace("{grid}", $grid->name, $stub);
     $this->wire->files->filePutContents($js, $content);
     return $js;
+  }
+
+  /**
+   * Get data array from findRaw
+   *
+   * This converts a regular $pages->findRaw() result into a format
+   * that RockGrid can handle.
+   *
+   * Note that the second parameter must be an array. This makes sure that
+   * the result has all specified columns in the results array.
+   *
+   * @return array
+   */
+  public function findRaw($selector, array $fields) {
+    $raw = $this->wire->pages->findRaw($selector, $fields);
+    // bdb($raw, "raw");
+
+    // prepare keys that we need in the results
+    $keys = [];
+    foreach($fields as $k=>$v) $keys[$v] = '';
+    // db($keys, 'keys');
+
+    // create array of objects
+    $array = array_values(array_map(function($item) use($keys) {
+      return (object)array_merge($keys, $item);
+    }, $raw));
+
+    return $array;
   }
 
   /**
@@ -237,6 +268,18 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       if(connection_aborted()) return 'aborted';
       return 'success';
     });
+  }
+
+  /**
+   * Jump to page via id
+   * @return void
+   */
+  public function jumpToPage(HookEvent $event) {
+    if(!$this->wire->user->isLoggedin()) return;
+    if(!$id = (int)$event->pageID) return;
+    if(!$page = $this->wire->pages->get($id) OR !$page->id) return;
+    if(!$page->viewable()) return;
+    $this->wire->session->redirect($page->url);
   }
 
   /**
