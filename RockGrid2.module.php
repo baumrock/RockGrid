@@ -18,7 +18,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2',
-      'version' => '0.0.6',
+      'version' => '0.0.7',
       'summary' => 'RockGrid2 Main Module',
       'autoload' => true,
       'singular' => true,

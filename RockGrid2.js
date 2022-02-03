@@ -265,6 +265,7 @@ RockGrid2.prototype.getSetup = function(name) {
  * Return icon markup
  */
 RockGrid2.prototype.icon = function(name, tooltip) {
+  if(!name) return '';
   if(tooltip) {
     tooltip = tooltip.replace(/(<([^>]+)>)/gi, "").replace(/["|']/gi,'');
     tooltip = ' title="'+tooltip+'" uk-tooltip';
