@@ -301,7 +301,8 @@ RockGrid2.prototype.link = function(data) {
   let reload = data.reload ? ' rg-panel-reload' : '';
   let cls = " class='"+data.class+panel+reload+"' ";
   let icon = this.icon(data.icon, data.tooltip);
-  let label = icon+(data.label||'');
+  let label = data.label||'';
+  label = icon + (label?' '+label:'');
   let tooltip = data.tooltip ? " title='"+data.tooltip+"' uk-tooltip" : '';
   return "<a href='"+href+"' "+cls+tooltip+">"+label+"</a>";
 }
@@ -415,7 +416,7 @@ $(document).trigger('RockGrid2');
 
 /**
  * Custom Tabulator Formatters
- * Usage: see checkbox coldef
+ * Usage: col.formatter = 'rg2.checkbox'
  */
 Tabulator.prototype.extendModule("format", "formatters", {
 
@@ -433,6 +434,20 @@ Tabulator.prototype.extendModule("format", "formatters", {
       $el.css('background', RockGrid2.colors['red-100']);
       return RockGrid2.icon('times', value);
     }
+  },
+
+  "rg2.editlink": function(cell) {
+    let val = cell.getValue();
+    let id = cell.getRow().getData()['id'];
+    if(!id) return val;
+    return "<a href='"+RockGrid2.editUrl(id)+"'>"+val+"</a>";
+  },
+
+  "rg2.link": function(cell) {
+    let val = cell.getValue();
+    let id = cell.getRow().getData()['id'];
+    if(!id) return val;
+    return "<a href='"+RockGrid2.url(id)+"'>"+val+"</a>";
   },
 
 });
