@@ -267,3 +267,5 @@ else if(field == prefix+"end") {
   }
 }
 ```
+
+As you can see there are several helpers available via `RockGrid2` - in the example above we use RockGrid2.icon() to display an icon with a tooltip as column header.
