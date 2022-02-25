@@ -195,7 +195,12 @@ public function getButtonsCenter() {
 }
 ```
 
+You can either set a confirm message via the `confirm` property (single string) or you can provide a css selector in the `confirmmarkup` property to fetch the html from (useful for adding inputfields to your confirm message).
+
+
 JS
+
+Note that if you only refer to selected IDs you need to add this JS to your project as it is already in place and you can simply use it by referencing it from within your button setup! Nonetheless it is easy to add custom callbacks if you need. For reference the implementation of `sendIDs` is shown here:
 
 ```js
 grid.addCallback("sendIDs", function(grid, $button, modal) {
@@ -209,10 +214,6 @@ grid.addCallback("sendIDs", function(grid, $button, modal) {
   grid.ajax($button.attr('name'), data, $button, modal);
 });
 ```
-
-`$button['callback']['name']` defines which callback to fire on the JS side. The `sendIDs` callback can be used by many buttons as it sends all ids of selected rows together with data that might be provided via `input` fields.
-
-You can either set a confirm message via the `confirm` property (single string) or you can provide a css selector to fetch the html from (useful for adding inputfields to your confirm message):
 
 ![img](https://i.imgur.com/qrprt0w.png)
 
