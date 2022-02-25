@@ -44,14 +44,14 @@ If you want/need to place your grids in a dedicated folder somewhere else you ca
 ```php
 /** @var RockGrid2 $rg */
 $rg = $this->wire()->modules->get('RockGrid2');
-$rg->addDir(__DIR__."/grids");
+$rg->addDir("/path/to/your/rock/grids");
 ```
 
 Once you load your field the JS file that defines all visual and frontend logic parts will be created automatically making it really easy to setup.
 
 ## Data
 
-Data of the grid is defined either via JavaScript or on the PHP side you define it via the `getData()` method of the grid object.
+Most likely you'll want the grid to display a set of ProcessWire pages. Simply add a `getData()` method to your PHP file that defines the grid:
 
 ```php
   /**
@@ -80,7 +80,7 @@ $grid->dump();
 
 ### Dynamic Data
 
-If you need to adjust grid data to the currently edited page, you can add an urlsegmentstring to the ajax request url:
+Sometimes you want to use one grid to show different chunks of the same data on different pages. You can do so by providing an url segment string:
 
 ```php
 $form->add([
@@ -109,8 +109,8 @@ For some functionality you need additional libraries to load. Do this in your gr
 ```php
 class YourGrid extends Grid {
   public function __construct() {
-    parent::__construct();
-    $this->rg2->loadXLSX = true; // load excel downloader
+    parent::__construct(); // dont forget to call the parent constructor!
+    $this->rg2->loadXLSX = true; // load excel library to enable XLSX download
   }
 ```
 
