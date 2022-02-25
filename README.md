@@ -102,6 +102,37 @@ if(!$group->editable()) throw new WireException("No access");
 $finder = ...
 ```
 
+## Frontend styling
+
+RockGrid will automatically add a JS file for your grid that helps you setting up the grid on the frontend. You can then alter any of your columns in the `autoColumnsDefinitions` section of that file. The most important parts are `cell formatters` (see http://tabulator.info/docs/5.0/format#format) and `cell mutators` (see http://tabulator.info/docs/5.0/mutators). Here is an example:
+
+```js
+else if(field == "starthour") {
+  col.title = RockGrid2.icon('flag-o', "Beginn");
+  col.width = 50;
+  col.hozAlign = 'center';
+  col.mutator = function(value, data) {
+    let start = data[prefix+"start"];
+    if(start) return moment(start).format('HH:mm');
+  }
+}
+else if(field == prefix+"end") {
+  col.title = RockGrid2.icon('flag-checkered', "Ende");
+  col.width = 50;
+  col.hozAlign = 'center';
+  col.formatter = function(cell) {
+    let end = cell.getValue();
+    if(end) return moment(end).format('HH:mm');
+  }
+  col.headerFilterFunc = function(search, cell) {
+    cell = moment(cell).format("HH:mm");
+    return cell.indexOf(search) > -1;
+  }
+}
+```
+
+As you can see there are several helpers available via `RockGrid2` - in the example above we use RockGrid2.icon() to display an icon with a tooltip as column header.
+
 ## Loading additional libraries
 
 For some functionality you need additional libraries to load. Do this in your grid constructor:
@@ -238,34 +269,3 @@ $(document).on('rg.button.download', '.RockGrid2', function(e, grid) {
   });
 });
 ```
-
-## Frontend styling
-
-RockGrid will automatically add a JS file for your grid that helps you setting up the grid on the frontend. You can then alter any of your columns in the `autoColumnsDefinitions` section of that file. The most important parts are `cell formatters` (see http://tabulator.info/docs/5.0/format#format) and `cell mutators` (see http://tabulator.info/docs/5.0/mutators). Here is an example:
-
-```js
-else if(field == "starthour") {
-  col.title = RockGrid2.icon('flag-o', "Beginn");
-  col.width = 50;
-  col.hozAlign = 'center';
-  col.mutator = function(value, data) {
-    let start = data[prefix+"start"];
-    if(start) return moment(start).format('HH:mm');
-  }
-}
-else if(field == prefix+"end") {
-  col.title = RockGrid2.icon('flag-checkered', "Ende");
-  col.width = 50;
-  col.hozAlign = 'center';
-  col.formatter = function(cell) {
-    let end = cell.getValue();
-    if(end) return moment(end).format('HH:mm');
-  }
-  col.headerFilterFunc = function(search, cell) {
-    cell = moment(cell).format("HH:mm");
-    return cell.indexOf(search) > -1;
-  }
-}
-```
-
-As you can see there are several helpers available via `RockGrid2` - in the example above we use RockGrid2.icon() to display an icon with a tooltip as column header.
