@@ -155,6 +155,8 @@ $(document).on('rg.button.add', '.RockGrid2', function(e, grid) {
 
 You can define callbacks for your buttons that will be fired via ajax request.
 
+![img](https://i.imgur.com/EODtQXT.gif)
+
 PHP
 
 ```php
