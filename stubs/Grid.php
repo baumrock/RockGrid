@@ -17,7 +17,7 @@ class {name} extends Grid {
   }
 
   public function getData() {
-    $data = $this->findRaw("id>0, limit=5", [
+    $data = $this->findRaw("id>0, limit=50, sort=-id", [
       'id',
       'title',
     ]);
