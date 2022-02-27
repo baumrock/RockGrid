@@ -16,7 +16,13 @@ class {name} extends Grid {
     return parent::getButtonsLeft();
   }
 
-  public function getData() {}
+  public function getData() {
+    $data = $this->findRaw("id>0, limit=5", [
+      'id',
+      'title',
+    ]);
+    return $data;
+  }
 
   public function isViewable() {
     return false;

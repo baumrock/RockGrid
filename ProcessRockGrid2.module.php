@@ -43,10 +43,19 @@ class ProcessRockGrid2 extends Process {
     /** @var InputfieldForm $form */
     $form = $this->modules->get('InputfieldForm');
 
+    $notes = '';
+    if($this->wire->user->isSuperuser()) {
+      $url = "/rockgrid2/".$grid->name;
+      $notes = "[$url]($url)";
+      if(!$this->wire->modules->isInstalled("TracyDebugger")) {
+        $notes .= "\nMake sure to install TracyDebugger to make your life easier!";
+      }
+    }
     $form->add([
       'type' => 'RockGrid2',
       'label' => $info->title,
       'grid' => $info->name,
+      'notes' => "Superuser note: Debug grid via $notes",
     ]);
 
     return $form->render();
@@ -55,6 +64,8 @@ class ProcessRockGrid2 extends Process {
   public function executeNew() {
     $this->headline('Grids');
     $this->browserTitle('Grids');
+
+    if(!$this->wire->user->isSuperuser()) throw new Wire404Exception("No access");
 
     /** @var InputfieldForm $form */
     $form = $this->modules->get('InputfieldForm');
@@ -81,7 +92,7 @@ class ProcessRockGrid2 extends Process {
     $form->add([
       'type' => 'text',
       'name' => 'grid',
-      'label' => 'Enter name of new Grid',
+      'label' => 'Enter name of new grid',
       'value' => $name,
     ]);
     $f = $form->children()->last();
