@@ -16,11 +16,6 @@ $(document).on('RockGrid2', function() {
       definitions.push({
         field: 'money',
         title: 'Dynamic Money Column',
-        formatter: function(cell) {
-          // demo of a cell formatter
-          // responsible for the visual representation of the cell
-          return cell.getValue() + " (Euro)";
-        },
         mutator: function() {
           // demo of a cell mutator
           // responsible for the cell value (used for filtering)
@@ -61,13 +56,25 @@ $(document).on('RockGrid2', function() {
           rg2.setColDef(col, 'edit');
         }
 
-        // use the page id and format it as if it was a money column
-        // this is to show how you can easily format number values to money format
-        // it also adds a sum row at the bottom of the table that shows
-        // instant sum of all filtered rows
-        // See RockGrid2.js to see how the money coldef was implemented
         if(name == 'money') {
+          // set the money coldef (sets formatter and params)
+          // see RockGrid2.js for details what is happening
           rg2.setColDef(col, 'money');
+
+          // here we overwrite the default money formatter so that we can
+          // show how to colorize cells based on their value while still using
+          // a tabulator formatter to format the cells value
+          // see https://bit.ly/3vo1ZEw
+          col.formatter = function(cell, params, callback) {
+            let moneyFormatter = cell.getTable().modules.format.getFormatter("money");
+            let formatted = moneyFormatter(cell, params, callback);
+            let $el = $(cell.getElement());
+
+            if(cell.getValue()<50) $el.css('background', rg2.colors['red-100']);
+            else $el.css('background', rg2.colors['green-100']);
+
+            return formatted;
+          };
         }
 
       });
