@@ -4,10 +4,13 @@
 function RockGrid2() {
   this.urls = ProcessWire.config.urls;
   this.coldefs = {};
-  this.grids = {}
+  this.grids = {};
+  this.markup = {}; // markup helper functions
   this.setups = {
     'default': {
-      ajaxURL:true, // custom flag to use rockgrid ajax endpoint
+      // TRUE is a custom flag that tells rockgrid to use the default
+      // rockgrid ajax endpoint
+      ajaxURL:true,
       ajaxConfig: {
         method:"POST",
         headers: {
@@ -15,22 +18,29 @@ function RockGrid2() {
           "Content-type": 'application/json; charset=utf-8',
         },
       },
+
       placeholder:"No data",
-      pagination:'local',
-      paginationSize:20,
-      paginationSizeSelector:true,
-      resizableColumns:'header',
-      footerElement: "<span class='uk-float-left rg-footer-left'></span>"
-        +"<span class='rg-footer-right'></span>",
+
+      // column setup
       layout:"fitColumns",
       autoColumns:true,
-      autoColumnsDefinitions:function(definitions) {
-        definitions.forEach((col) => {
-          col.headerFilter = true;
-          col.headerFilterFunc = "rg2.smart";
-        });
-        return definitions;
+      columnDefaults: {
+        headerFilter: true,
+        headerFilterFunc: 'rg2.smart',
       },
+      // footerElement:
+      //   "<span class='uk-float-left rg-footer-left'>left</span>"
+      //   +"<span class='rg-footer-right'>right</span>",
+
+      // http://tabulator.info/docs/5.1/select
+      selectable:true,
+      selectableRangeMode:"click",
+
+      // http://tabulator.info/docs/5.1/page#local
+      pagination:true,
+      paginationSize:10,
+      paginationSizeSelector:true,
+      paginationCounter:"rows",
     },
   }
 
@@ -221,9 +231,6 @@ RockGrid2.prototype.buttonClick = function(button) {
 RockGrid2.prototype.callbacks = function() {
   let rg = this;
   return {
-    dataFiltering:function(...params) { rg.trigger(this, 'dataFiltering', params); },
-    dataFiltered:function(...params) { rg.trigger(this, 'dataFiltered', params); },
-    rowSelectionChanged:function(...params) { rg.trigger(this, 'rowSelectionChanged', params); },
     ajaxResponse:function(url, params, response) {
       // if the ajax response returns RockFinder3 data we need to do some
       // additional actions before returning table data (eg storing data
@@ -280,6 +287,7 @@ RockGrid2.prototype.init = function(name) {
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
   grid.table = new Tabulator(grid.el, grid.setup);
+  grid.addListeners();
 }
 
 /**
@@ -411,15 +419,11 @@ RockGrid2.prototype.util = function() {
   return UIkit.util;
 }
 
-// init class and trigger initial event
-var RockGrid2 = new RockGrid2();
-$(document).trigger('RockGrid2');
-
 /**
  * Custom Tabulator Formatters
  * Usage: col.formatter = 'rg2.checkbox'
  */
-Tabulator.prototype.extendModule("format", "formatters", {
+Tabulator.extendModule("format", "formatters", {
 
   // format the value of a checkbox
   // you can provide a NULL value to the cell to prevent rendering of YES/NO
@@ -437,6 +441,7 @@ Tabulator.prototype.extendModule("format", "formatters", {
     }
   },
 
+  // link to edit item in pw page editor
   "rg2.editlink": function(cell) {
     let val = cell.getValue();
     let id = cell.getRow().getData()['id'];
@@ -444,6 +449,8 @@ Tabulator.prototype.extendModule("format", "formatters", {
     return "<a href='"+RockGrid2.editUrl(id)+"'>"+val+"</a>";
   },
 
+  // link to page id jumplink
+  // makes it possible to link to a page by id rather than by page url
   "rg2.link": function(cell) {
     let val = cell.getValue();
     let id = cell.getRow().getData()['id'];
@@ -454,57 +461,67 @@ Tabulator.prototype.extendModule("format", "formatters", {
 });
 
 /**
+ * Filters
+ * Usage: col.headerFilterFunc = "rg2.smart";
+ */
+Tabulator.extendModule("filter", "filters", {
+  // smart filter
+  "rg2.smart": function(headerValue, rowValue, rowData, filterParams){
+    let filters = this;
+    let search = headerValue;
+    let val = rowValue;
+
+    // searching . returns all non-empty cells
+    if(search === '.') return val!==null;
+
+    // searching ! returns all empty cells
+    else if(search === '!') return val===null;
+
+    else if(search.indexOf("<=")===0) return val<=search.substring(2);
+    else if(search.indexOf(">=")===0) return val>=search.substring(2);
+    else if(search.indexOf("<")===0) return val<search.substring(1);
+    else if(search.indexOf(">")===0) return val>search.substring(1);
+
+    // otherwise we use the regular like filter
+    return filters['like'](search, val, rowData, filterParams);
+  }
+});
+
+// init class and trigger initial event
+var RockGrid2 = new RockGrid2();
+$(document).trigger('RockGrid2');
+
+/**
  * Add coldefs that change many column properties at once
  * You can add custom coldefs easily on the RockGrid2 event
  *
  * Usage: RockGrid2.setColDef(col, 'checkbox');
  */
-
-  // checkbox
-  RockGrid2.coldefs['checkbox'] = function(col) {
+RockGrid2.coldefs = {
+  checkbox: function(col) {
     col.mutator = function(value) { return value ? 'yes' : 'no'; };
     col.formatter = 'rg2.checkbox';
     col.hozAlign = 'center';
     col.width = 60;
-  }
-
-  // money coldef
-  RockGrid2.coldefs['money'] = function(column) {
-    column.formatter = 'money';
-    column.formatterParams = {
+  },
+  edit: function(col) {
+    col.formatter = 'rg2.editlink';
+  },
+  money: function(col) {
+    col.formatter = 'money';
+    col.formatterParams = {
       decimal:",",
       thousand:".",
     };
-    column.hozAlign = 'right';
-    column.bottomCalc = 'sum';
-    column.bottomCalcFormatter = 'money';
-    column.bottomCalcFormatterParams = {
+    col.hozAlign = 'right';
+    col.bottomCalc = 'sum';
+    col.bottomCalcFormatter = 'money';
+    col.bottomCalcFormatterParams = {
       decimal:",",
       thousand:".",
     };
-  }
-
-/**
- * Filters
- * Usage: col.headerFilterFunc = "rg2.smart";
- */
-  Tabulator.prototype.extendModule("filter", "filters", {
-    // smart filter
-    "rg2.smart": function(headerValue, rowValue, rowData, filterParams){
-      let filters = this;
-      let search = headerValue;
-      let val = rowValue;
-
-      // searching . returns all non-empty cells
-      if(search === '.') return val!==null;
-
-      // searching ! returns all empty cells
-      else if(search === '!') return val===null;
-
-      // otherwise we use the regular like filter
-      return filters['like'](search, val, rowData, filterParams);
-    }
-  });
+  },
+};
 
 /**
  * Event listeners

@@ -17,6 +17,42 @@ RG2Grid.prototype.addCallback = function(name, callback) {
   this.callbacks[name] = callback;
 }
 
+/**
+ * Listen to events
+ */
+RG2Grid.prototype.addListeners = function() {
+  let grid = this;
+
+  // hide/unhide buttions with the data-hidden property when selection changes
+  this.table.on('rowSelectionChanged', function(data, rows) {
+    let $buttons = grid.$root.find('.rg-buttons button[data-hidden="!selected"]');
+    if(rows.length) $buttons.fadeIn();
+    else $buttons.fadeOut();
+  });
+  $(document).on('rg.button.clearSelection', grid.$root, function(e, grid) {
+    grid.table.deselectRow();
+  });
+
+  // add button to reset header filter
+  this.table.on('dataFiltered', function(filters, rows) {
+    let $button = grid.button('nofilter');
+    if(grid.hasHeaderFilter()) $button.fadeIn();
+    else $button.fadeOut();
+  });
+  $(document).on('rg.button.nofilter', grid.$root, function(e, grid) {
+    grid.table.clearHeaderFilter();
+  });
+
+  // select all filtered rows
+  this.table.on('rowSelectionChanged', function(data, rows) {
+    if(!grid.setup.selectable) return;
+    grid.button('selectAllFiltered').fadeIn();
+  });
+  $(document).on('rg.button.selectAllFiltered', grid.$root, function(e, grid) {
+    grid.table.selectRow(grid.table.getRows(true));
+  });
+}
+
 RG2Grid.prototype.ajax = function(callback, data, $button, modal) {
   let url = "/rockgrid2/" + this.name + "/ajax/" + callback;
   if(modal) {
@@ -245,45 +281,8 @@ RG2Grid.prototype.xls = async function(opt) {
  * Buttons
  */
 
-  // hidden attribute
-  $(document).on('rg.rowSelectionChanged', function(e, params) {
-    let grid = params.grid;
-    let $buttons = grid.$root.find('.rg-buttons button[data-hidden="!selected"]');
-    let rows = params.params[1];
-    if(rows.length) $buttons.fadeIn();
-    else $buttons.fadeOut();
-  });
-
   // reload
   $(document).on('rg.button.reload', '.RockGrid2', function(e, grid) {
     grid.reload();
   });
 
-  // reset header filters
-  $(document).on('rg.dataFiltered', function(e, params) {
-    // show or hide filter button
-    let grid = params.grid;
-    let $button = grid.button('nofilter');
-    if(grid.hasHeaderFilter()) $button.fadeIn();
-    else $button.fadeOut();
-  });
-  $(document).on('rg.button.nofilter', '.RockGrid2', function(e, grid) {
-    grid.table.clearHeaderFilter();
-  });
-
-  // clear selection button
-  $(document).on('rg.button.clearSelection', '.RockGrid2', function(e, grid) {
-    grid.table.deselectRow();
-  });
-
-  // select all filtered rows
-  $(document).on('rg.rowSelectionChanged', function(e, params) {
-    // show button only if the grid has selection enabled
-    let grid = params.grid;
-    if(!grid.setup.selectable) return;
-    grid.button('selectAllFiltered').fadeIn();
-  });
-  $(document).on('rg.button.selectAllFiltered', '.RockGrid2', function(e, grid) {
-    // select all filtered rows on click
-    grid.table.selectRow(grid.table.getRows(true));
-  });
