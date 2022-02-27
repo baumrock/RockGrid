@@ -1,6 +1,15 @@
-# RockGrid2
+# ROCKGRID2
 
 RockGrid2 is the successor of [RockDataTables](https://processwire.com/talk/topic/15524-previewdiscussion-rockdatatables/), [RockGrid](https://processwire.com/talk/topic/19539-deprecated-rockgrid-powerful-performant-and-beautiful-data-listing-tool/), [RockTabulator](https://processwire.com/talk/topic/21984-rocktabulator-powerful-performant-and-versatile-data-grids-for-processwire/); As you can see I've taken many approaches to get easy and versatile data listings for the PW backend. Hopefully RockGrid2 will finally be the best solution available!
+
+## Do not distribute
+
+This service/software is authorized for use only for the site it was
+purchased for. It should not be distributed beyond the site you
+registered it for, except for staging and/or development servers
+related to the site.
+
+![img](hr.svg)
 
 ## Setup
 
@@ -102,6 +111,8 @@ if(!$group->editable()) throw new WireException("No access");
 $finder = ...
 ```
 
+![img](hr.svg)
+
 ## Frontend styling
 
 RockGrid will automatically add a JS file for your grid that helps you setting up the grid on the frontend. You can then alter any of your columns in the `autoColumnsDefinitions` section of that file. The most important parts are `cell formatters` (see http://tabulator.info/docs/5.0/format#format) and `cell mutators` (see http://tabulator.info/docs/5.0/mutators). Here is an example:
@@ -133,6 +144,8 @@ else if(field == prefix+"end") {
 
 As you can see there are several helpers available via `RockGrid2` - in the example above we use RockGrid2.icon() to display an icon with a tooltip as column header.
 
+![img](hr.svg)
+
 ## Loading additional libraries
 
 For some functionality you need additional libraries to load. Do this in your grid constructor:
@@ -146,6 +159,8 @@ class YourGrid extends Grid {
 ```
 
 By default all additional scripts are NOT loaded. If you need one of the scripts, just set the flag to TRUE. Never ever set the flag to FALSE because this might overwrite the setting for another grid needing this library! The reason is that external scripts are loaded only once for all grids and the setting is based on the flag on RockGrid2 master module.
+
+![img](hr.svg)
 
 ## Buttons
 

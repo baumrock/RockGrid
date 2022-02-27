@@ -1,31 +1,31 @@
 <?php namespace ProcessWire;
 /**
- * RockGrid Main Module
- *
  * @author Bernhard Baumrock, 19.02.2021
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class RockGrid2 extends WireData implements Module, ConfigurableModule {
+class RockGrid2 extends WireData implements Module {
 
   public $assetsDir;
   public $path; // path to module
 
   private $dirs = []; // additional grid dirs to scan for files
   private $grids = []; // grid cache
+  public $gridsAll = []; // grids that are setup in grid dirs
   private $loadAssets = false;
 
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2',
-      'version' => '0.0.7',
+      'version' => '1.0.0',
       'summary' => 'RockGrid2 Main Module',
-      'autoload' => true,
+      'autoload' => true, // necessary for url hooks
       'singular' => true,
       'icon' => 'table',
       'requires' => [],
       'installs' => [
         'InputfieldRockGrid2',
+        'ProcessRockGrid2',
       ],
     ];
   }
@@ -37,9 +37,19 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     $this->loadAssets();
     $this->createAssetsFolder();
     $this->handleAjax();
+    $this->addDir($this->wire->config->paths->assets."RockGrid2");
 
     // attach hooks
     $this->addHookAfter("/rockgrid2/jump/{pageID}", $this, "jumpToPage");
+
+    // hooks to enable dynamic menu items
+    // ingenuity by RobinS https://bit.ly/35gf4Fj
+    $this->addHookBefore('ProcessController::execute', $this, 'beforeProcessController');
+    $this->addHookAfter('AdminThemeFramework::getPrimaryNavArray', $this, 'afterPrimaryNavArray');
+  }
+
+  public function ready() {
+    $this->findGrids();
   }
 
   /**
@@ -71,6 +81,51 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   }
 
   /**
+   * After AdminThemeFramework::getPrimaryNavArray
+   */
+  protected function afterPrimaryNavArray(HookEvent $event) {
+    $items = $event->return;
+    $url = rtrim($this->wire->pages->get(2)->url, "/");
+    foreach($items as $i=>$item) {
+      if($item['name']==='grids') {
+        $url = $item['url'];
+
+        // setup children
+        $children = [];
+        foreach($this->gridsAll as $name=>$grid) {
+          $children[] = [
+            'id' => null,
+            'parent_id' => null,
+            'name' => null,
+            'title' => $grid['title'],
+            'url' => $url."?grid=$name",
+            'children' => [],
+            'icon' => $grid['icon'],
+            'navJSON' => false,
+          ];
+        }
+
+        // add new grid
+        if($this->wire->user->isSuperuser()) {
+          $children[] = [
+            'id' => null,
+            'parent_id' => null,
+            'name' => null,
+            'title' => 'Create New Grid',
+            'url' => $url."new",
+            'children' => [],
+            'icon' => 'plus',
+            'navJSON' => false,
+          ];
+        }
+
+        $items[$i]['children'] = $children;
+      }
+    }
+    $event->return = $items;
+  }
+
+  /**
    * Register classes folder for autoloading
    * @return void
    */
@@ -80,6 +135,15 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
       $name = str_replace("RockGrid2\\", "", $class);
       require_once(__DIR__."/classes/$name.php");
     });
+  }
+
+  /**
+   * Before ProcessController::execute
+   */
+  protected function beforeProcessController(HookEvent $event) {
+    // Prevent admin menus from being cached
+    $this->wire()->session->removeFor('AdminThemeUikit', 'prnav');
+    $this->wire()->session->removeFor('AdminThemeUikit', 'sidenav');
   }
 
   /**
@@ -107,6 +171,30 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     $content = str_replace("{grid}", $grid->name, $stub);
     $this->wire->files->filePutContents($js, $content);
     return $js;
+  }
+
+  /**
+   * Find all grid files
+   * @return array
+   */
+  public function findGrids() {
+    if($this->gridsAll) return $this->gridsAll;
+    $grids = [];
+    $opt = ['extensions'=>['php']];
+    foreach($this->dirs as $dir) {
+      foreach($this->wire->files->find($dir, $opt) as $file) {
+        $name = pathinfo($file, PATHINFO_FILENAME);
+        $class = "\\RockGrid2\\$name";
+        require_once($file);
+        $tmp = new $class();
+        $grids[$name] = [
+          'title' => $tmp->info()->title,
+          'icon' => $tmp->info()->icon,
+          'file' => $file,
+        ];
+      }
+    }
+    return $this->gridsAll = $grids;
   }
 
   /**
@@ -144,11 +232,9 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
   public function getFile($file, $ext = 'php') {
     // is it already a file? then return it!
     if(is_file($file)) return $file;
-
     foreach($this->getPossibleFilenames($file, $ext) as $f) {
       if(is_file($f)) return $f;
     }
-
     return false;
   }
 
@@ -182,12 +268,7 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
    */
   public function getPossibleFilenames($file, $ext = 'php') {
     $arr = [];
-
-    // first, try the assets folder
-    // then add all dirs that where added via $rg->addDir(...);
-    $arr[] = $this->assetsDir.$file.".$ext";
     foreach($this->dirs as $dir) $arr[] = $dir.$file.".$ext";
-
     return $arr;
   }
 
@@ -203,8 +284,10 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
 
       // ACCESS CONTROL
       if(!$grid->isViewable()) {
+        $hint = "<br>Add an isViewable() method to your grid.";
+        if(!$this->wire->user->isSuperuser()) $hint = '';
         return json_encode(['error' => "<strong>Error</strong><br>"
-          ."You don't have access to view data of grid '$this'"]);
+          ."You don't have access to view data of grid $grid.$hint"]);
       }
 
       if($this->wire->config->ajax) $grid->sendJSON();
@@ -352,11 +435,4 @@ class RockGrid2 extends WireData implements Module, ConfigurableModule {
     return str_replace($config->paths->root, $config->urls->root, $path);
   }
 
-  /**
-  * Config inputfields
-  * @param InputfieldWrapper $inputfields
-  */
-  public function getModuleConfigInputfields($inputfields) {
-    return $inputfields;
-  }
 }

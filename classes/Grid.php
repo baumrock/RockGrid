@@ -26,6 +26,16 @@ class Grid extends Wire {
     $this->setFile();
   }
 
+  public function info() {
+    $data = $this->wire(new WireData()); /** @var WireData $data */
+    $data->setArray([
+      'name' => $this->className,
+      'title' => $this->className,
+      'icon' => 'table',
+    ]);
+    return $data;
+  }
+
   /**
    * This method is called when a grid is loaded the very first time
    * This is only called when a grid is loaded so it is not the right place
