@@ -72,6 +72,7 @@ class ProcessRockGrid2 extends Process {
         $stub = $this->wire->files->fileGetContents(__DIR__."/stubs/Grid.php");
         $content = str_replace("{name}", $name, $stub);
         $this->wire->files->filePutContents($filename, $content);
+        $this->warning("Created grid at $filename");
         $this->wire->session->redirect("./?grid=$name");
       }
       else $error = "Grid $name does already exist!";
