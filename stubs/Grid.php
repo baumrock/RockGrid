@@ -18,7 +18,7 @@ class {name} extends Grid {
 
   public function getData() {}
 
-  public function isVisible() {
+  public function isViewable() {
     return false;
   }
 
