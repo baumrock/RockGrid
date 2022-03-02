@@ -77,15 +77,9 @@ Most likely you'll want the grid to display a set of ProcessWire pages. Simply a
   }
 ```
 
-The getData method can return different types of data like a plain PHP array or a RockFinder3. If using a RockFinder3 you get the benefit of quick and easy development or debugging because you can utilize RockFinder3's Tracy dumping feature:
+The getData method can return different types of data like a plain PHP array or a RockFinder3.
 
-```php
-$rg = $modules->get('RockGrid2');
-$grid = $rg->getGrid('ListInvoices');
-$grid->dump();
-```
-
-![img](https://i.imgur.com/O9DFR7H.png)
+Important: Make sure that the `getData` method does not echo any output otherwise the AJAX request of the grid would fail! For debugging I recommend using tracy and the `bd()` method.
 
 ### Dynamic Data
 
