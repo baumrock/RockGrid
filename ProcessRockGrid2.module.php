@@ -1,5 +1,4 @@
 <?php namespace ProcessWire;
-// info snippet
 class ProcessRockGrid2 extends Process {
 
   const permission = "rockgrid2";
