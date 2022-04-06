@@ -11,10 +11,7 @@ use RockGrid2\Grid;
  */
 class InputfieldRockGrid2 extends InputfieldTextarea {
 
-  // url segment string used for the ajax request
-  // can be set as inputfield property
-  // eg $f->urlSegmentStr = '/foo/bar';
-  public $urlSegmentStr;
+  public $ajaxParams;
 
   public static function getModuleInfo() {
     return [
@@ -62,6 +59,7 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
     try {
       $out = "<div>";
       $grid = $this->main()->getGrid($this);
+      $grid->setAjaxParams($this->ajaxParams);
       if(!$grid) {
         $file = $this->getFile();
         if(!$file) {
@@ -74,7 +72,7 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
         return "File $file not found";
       }
       $out .= "</div>";
-      return $grid->render($this->urlSegmentStr);
+      return $grid->render();
     } catch (\Throwable $th) {
       if($this->wire->user->isSuperuser()) return $th->getMessage();
       else return "Error rendering grid";

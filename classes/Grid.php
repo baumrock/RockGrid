@@ -13,6 +13,7 @@ use ReflectionClass;
 class Grid extends Wire {
 
   public $admin; // url to admin
+  private $ajaxParams;
   public $file;
   public $id;
   public $name;
@@ -233,7 +234,7 @@ class Grid extends Wire {
   public function ___render() {
     $file = $this->rg2->path."layouts/default.php";
     return $this->wire->files->render($file, ['grid' => $this])
-      ."<script>RockGrid2.init('{$this->name}');</script>";
+      ."<script>RockGrid2.init('{$this->name}', {$this->settings()});</script>";
   }
 
   /**
@@ -254,12 +255,39 @@ class Grid extends Wire {
   }
 
   /**
+   * Set ajax params
+   * @return array
+   */
+  public function setAjaxParams($params) {
+    if(!$params) return;
+    $p = $this->wire(new WireData()); /** @var WireData $params */
+    $p->setArray($params);
+    return $this->ajaxParams = $p->getArray();
+  }
+
+  /**
    * Set path to file of this grid
    * @return void
    */
   public function setFile() {
     $class = new ReflectionClass($this);
     $this->file = Paths::normalizeSeparators($class->getFilename());
+  }
+
+  /**
+   * Get json object that represents the JS settings
+   * @return string
+   */
+  public function settings() {
+    // get ajax params
+    // be default these will be set from the "ajaxParams" property of your field
+    // if that property is not filled the grid will send the available GET
+    // query parameters with every ajax request that requests data from the grid
+    $params = $this->ajaxParams;
+    if(!$params) $params = $this->setAjaxParams($this->wire->input->get->getArray());
+    return json_encode([
+      'ajaxParams' => $params,
+    ]);
   }
 
   /**

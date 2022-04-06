@@ -83,26 +83,26 @@ Important: Make sure that the `getData` method does not echo any output otherwis
 
 ### Dynamic Data
 
-Sometimes you want to use one grid to show different chunks of the same data on different pages. You can do so by providing an url segment string:
+Sometimes you want to use one grid to show different chunks of the same data on different pages. This is possible in two ways:
+
+1) Set get parameters in your URL, eg /your/grid/?course=123
+2) Set the `ajaxParams` property of your field:
 
 ```php
+/** @var InputfieldForm $form */
+$form = $this->modules->get('InputfieldForm');
+$page = $this->process->getPage();
 $form->add([
   'type' => 'RockGrid2',
-  'label' => 'Dynamic Grid',
-  'grid' => 'DynamicGridDemo',
-  'urlSegmentStr' => "/$page",
+  'label' => false,
+  'skipLabel' => Inputfield::skipLabelBlank,
+  'themeBorder' => 'none',
+  'grid' => 'Tickets',
+  'icon' => 'ticket',
+  'ajaxParams' => [
+    'course' => $page->course, // get course from page data
+  ],
 ]);
-```
-
-You can then access and parse this urlsegmentstring in the getData() method of your grid:
-
-```php
-// get group from urlsegmentstr
-$groupid = trim($grid->urlSegmentStr, "/");
-$group = $mailer->getGroup($groupid);
-if(!$group->id) throw new WireException("Group not found");
-if(!$group->editable()) throw new WireException("No access");
-$finder = ...
 ```
 
 ![img](hr.svg)

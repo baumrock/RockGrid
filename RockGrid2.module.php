@@ -17,7 +17,7 @@ class RockGrid2 extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2',
-      'version' => '1.0.1',
+      'version' => '1.1.0',
       'summary' => 'RockGrid2 Main Module',
       'autoload' => true, // necessary for url hooks
       'singular' => true,
@@ -278,6 +278,8 @@ class RockGrid2 extends WireData implements Module {
    */
   public function handleAjax() {
     // hook for grid data
+    // this hook is used either in the debugger using GET
+    // or for the grid's ajax request to fetch data via POST
     $this->addHook('/rockgrid2/{grid}', function($event) {
       $grid = $this->getGrid($event->grid);
       if(!$grid) throw new Wire404Exception("Grid not found");

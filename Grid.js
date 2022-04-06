@@ -4,6 +4,7 @@ function RG2Grid(name, setup) {
   this.setup = setup; // setup data object
   this.table; // table instance (when initialized)
   this.rf3; // stores rockfinder3 data after ajax call
+  this.settings = {}; // grid settings, eg applied filters
 
   this.callbacks = {};
 

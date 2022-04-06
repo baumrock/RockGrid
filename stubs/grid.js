@@ -11,6 +11,8 @@ $(document).on('RockGrid2', function() {
 
     // column definitions
     autoColumnsDefinitions:function(definitions) {
+      // if you need to access the grid itself you can do this
+      // let grid = rg2.getGrid('{grid}');
 
       // you can add custom columns from JS like this:
       definitions.push({

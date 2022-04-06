@@ -12,7 +12,7 @@ function RockGrid2() {
       // rockgrid ajax endpoint
       ajaxURL:true,
       ajaxConfig: {
-        method:"POST",
+        method:"GET",
         headers: {
           "X-Requested-With": 'XMLHttpRequest',
           "Content-type": 'application/json; charset=utf-8',
@@ -280,12 +280,29 @@ RockGrid2.prototype.icon = function(name, tooltip) {
   return '<i class="fa fa-'+name+'"'+tooltip+'></i>';
 }
 
-RockGrid2.prototype.init = function(name) {
+/**
+ * Initialize a grid's tabulator
+ *
+ * The grid itself is added BEFORE this init().
+ *
+ * @param string name
+ * @param object settings
+ * @returns void
+ */
+RockGrid2.prototype.init = function(name, settings) {
+  // console.log('init', name);
   let grid = this.getGrid(name);
   if(!grid) return;
   grid.$root = $('#rg2-'+grid.name);
   grid.$el = grid.$root.find('.rg-grid');
   grid.el = grid.$el[0];
+
+  // now we set the settings of the grid before tabulator is created
+  // the settings come from PHP's grid->settings() method and can hold
+  // data from the server side or from url get parameters
+  grid.settings = settings;
+  grid.setup.ajaxParams = settings.ajaxParams;
+
   grid.table = new Tabulator(grid.el, grid.setup);
   grid.addListeners();
 }
