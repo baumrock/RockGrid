@@ -8,6 +8,11 @@ class {name} extends Grid {
     ]);
   }
 
+  public function getButtons() {
+    // add or modify buttons at the top right of the grid
+    return parent::getButtons();
+  }
+
   public function getButtonsCenter() {
     // add or modify buttons at the top center of the grid
     return parent::getButtonsCenter();
@@ -16,11 +21,6 @@ class {name} extends Grid {
   public function getButtonsLeft() {
     // add or modify buttons at the top left of the grid
     return parent::getButtonsLeft();
-  }
-
-  public function getButtonsRight() {
-    // add or modify buttons at the top right of the grid
-    return parent::getButtonsRight();
   }
 
   public function getData() {
