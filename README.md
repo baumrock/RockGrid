@@ -240,7 +240,7 @@ You can either set a confirm message via the `confirm` property (single string) 
 
 JS
 
-Note that if you only refer to selected IDs you need to add this JS to your project as it is already in place and you can simply use it by referencing it from within your button setup! Nonetheless it is easy to add custom callbacks if you need. For reference the implementation of `sendIDs` is shown here:
+Note that if you only refer to selected IDs you do not need to add this JS to your project as it is already in place and you can simply use it by referencing it from within your button setup! Nonetheless it is easy to add custom callbacks if you need. For reference the implementation of `sendIDs` is shown here:
 
 ```js
 grid.addCallback("sendIDs", function(grid, $button, modal) {
