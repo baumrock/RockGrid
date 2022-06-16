@@ -423,6 +423,7 @@ class RockGrid2 extends WireData implements Module {
    * @return string
    */
   public function m($file) {
+    if(!$file) return;
     $config = $this->wire->config;
     if(!is_file($file)) $file = $config->paths($this).$file;
     $m = "?m=".filemtime($file);
