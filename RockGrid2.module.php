@@ -17,7 +17,7 @@ class RockGrid2 extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'RockGrid2',
-      'version' => '1.1.0',
+      'version' => '1.1.1',
       'summary' => 'RockGrid2 Main Module',
       'autoload' => true, // necessary for url hooks
       'singular' => true,
@@ -25,6 +25,7 @@ class RockGrid2 extends WireData implements Module {
       'requires' => [],
       'installs' => [
         'InputfieldRockGrid2',
+        'FieldtypeRockGrid2',
         'ProcessRockGrid2',
       ],
     ];
