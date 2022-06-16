@@ -173,7 +173,7 @@ class Demo extends Grid {
       'name' => 'add',
       'icon' => 'plus',
       'value' => 'Demo button',
-      'href' => "/demo/page/add/?parent_id=123",
+      'href' => $this->admin."page/add/?parent_id=123",
       'secondary' => false,
     ])->addClass('rg-panel rg-panel-reload');
   }
