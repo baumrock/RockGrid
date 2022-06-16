@@ -9,11 +9,18 @@ class {name} extends Grid {
   }
 
   public function getButtonsCenter() {
+    // add or modify buttons at the top center of the grid
     return parent::getButtonsCenter();
   }
 
   public function getButtonsLeft() {
+    // add or modify buttons at the top left of the grid
     return parent::getButtonsLeft();
+  }
+
+  public function getButtonsRight() {
+    // add or modify buttons at the top right of the grid
+    return parent::getButtonsRight();
   }
 
   public function getData() {
@@ -27,7 +34,14 @@ class {name} extends Grid {
     return $data;
   }
 
+  /**
+   * This method defines who can view the grid
+   * By default only superusers can view data. Adjust this to your needs.
+   * @return bool
+   */
   public function isViewable() {
+    if($this->wire->user->isSuperuser()) return true;
+    // if($this->wire->user->hasRole('foo')) return true;
     return false;
   }
 
