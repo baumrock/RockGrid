@@ -7,50 +7,50 @@ function RockGrid2() {
   this.grids = {};
   this.markup = {}; // markup helper functions
   this.setups = {
-    'default': {
+    default: {
       // TRUE is a custom flag that tells rockgrid to use the default
       // rockgrid ajax endpoint
-      ajaxURL:true,
+      ajaxURL: true,
       ajaxConfig: {
-        method:"GET",
+        method: "GET",
         headers: {
-          "X-Requested-With": 'XMLHttpRequest',
-          "Content-type": 'application/json; charset=utf-8',
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-type": "application/json; charset=utf-8",
         },
       },
 
-      placeholder:"No data",
+      placeholder: "No data",
 
       // column setup
-      layout:"fitColumns",
-      autoColumns:true,
+      layout: "fitColumns",
+      autoColumns: true,
       columnDefaults: {
         headerFilter: true,
-        headerFilterFunc: 'rg2.smart',
+        headerFilterFunc: "rg2.smart",
       },
       // footerElement:
       //   "<span class='uk-float-left rg-footer-left'>left</span>"
       //   +"<span class='rg-footer-right'>right</span>",
 
       // http://tabulator.info/docs/5.1/select
-      selectable:true,
-      selectableRangeMode:"click",
+      selectable: true,
+      selectableRangeMode: "click",
 
       // http://tabulator.info/docs/5.1/page#local
-      pagination:true,
-      paginationSize:10,
-      paginationSizeSelector:true,
-      paginationCounter:"rows",
+      pagination: true,
+      paginationSize: 10,
+      paginationSizeSelector: true,
+      paginationCounter: "rows",
     },
-  }
+  };
 
   // predefined color codes
   // see https://davidpiesse.github.io/tailwind-md-colours/
   this.colors = {
-    "transparent": "transparent",
-    "black": "#000000",
-    "white": "#ffffff",
-    "red": "#f44336",
+    transparent: "transparent",
+    black: "#000000",
+    white: "#ffffff",
+    red: "#f44336",
     "red-50": "#ffebee",
     "red-100": "#ffcdd2",
     "red-200": "#ef9a9a",
@@ -65,7 +65,7 @@ function RockGrid2() {
     "red-200-accent": "#ff5252",
     "red-400-accent": "#ff1744",
     "red-700-accent": "#d50000",
-    "blue": "#2196f3",
+    blue: "#2196f3",
     "blue-50": "#e3f2fd",
     "blue-100": "#bbdefb",
     "blue-200": "#90caf9",
@@ -80,7 +80,7 @@ function RockGrid2() {
     "blue-200-accent": "#448aff",
     "blue-400-accent": "#2979ff",
     "blue-700-accent": "#2962ff",
-    "green": "#4caf50",
+    green: "#4caf50",
     "green-50": "#e8f5e9",
     "green-100": "#c8e6c9",
     "green-200": "#a5d6a7",
@@ -95,7 +95,7 @@ function RockGrid2() {
     "green-200-accent": "#69f0ae",
     "green-400-accent": "#00e676",
     "green-700-accent": "#00c853",
-    "yellow": "#ffeb3b",
+    yellow: "#ffeb3b",
     "yellow-50": "#fffde7",
     "yellow-100": "#fff9c4",
     "yellow-200": "#fff59d",
@@ -110,7 +110,7 @@ function RockGrid2() {
     "yellow-200-accent": "#ffff00",
     "yellow-400-accent": "#ffea00",
     "yellow-700-accent": "#ffd600",
-    "orange": "#ff9800",
+    orange: "#ff9800",
     "orange-50": "#fff3e0",
     "orange-100": "#ffe0b2",
     "orange-200": "#ffcc80",
@@ -125,7 +125,7 @@ function RockGrid2() {
     "orange-200-accent": "#ffab40",
     "orange-400-accent": "#ff9100",
     "orange-700-accent": "#ff6d00",
-    "grey": "#9e9e9e",
+    grey: "#9e9e9e",
     "grey-50": "#fafafa",
     "grey-100": "#f5f5f5",
     "grey-200": "#eeeeee",
@@ -136,21 +136,21 @@ function RockGrid2() {
     "grey-700": "#616161",
     "grey-800": "#424242",
     "grey-900": "#212121",
-  }
+  };
 }
 
 /**
  * Add a grid to the main object using custom setup base on a base setup
  * If no base setup is defined the grid will use the default one
  */
-RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
+RockGrid2.prototype.add = function (gridName, customSetup, baseSetup) {
   // create an immutable copy of the setup to prevent modifying the original
   // setup and using the same setup for several grids
-  let setup = $.extend({}, this.setups[baseSetup || 'default']);
+  let setup = $.extend({}, this.setups[baseSetup || "default"]);
 
   // by default we set the ajax url to the current grid
   // if you dont want an ajax grid set ajaxURL = false in your setup
-  if(setup.ajaxURL === true) setup.ajaxURL = "/rockgrid2/"+gridName;
+  if (setup.ajaxURL === true) setup.ajaxURL = "/rockgrid2/" + gridName;
 
   // create setup object
   // first we take one of the predefined setups and merge user setup data
@@ -163,122 +163,124 @@ RockGrid2.prototype.add = function(gridName, customSetup, baseSetup) {
   this.grids[gridName] = grid;
 
   // add callbacks
-  grid.addCallback("sendIDs", function(grid, $button, modal) {
+  grid.addCallback("sendIDs", function (grid, $button, modal) {
     let rows = grid.table.getSelectedRows();
-    let ids = rows.map(row => row.getData().id);
-    let data = {ids: ids}
+    let ids = rows.map((row) => row.getData().id);
+    let data = { ids: ids };
     // we have no modal on shift-click
-    if(modal) {
-      $(modal.$el).find('input').each(function(i, el) {
-        data[$(el).attr('name')] = $(el).val();
-      });
+    if (modal) {
+      $(modal.$el)
+        .find("input")
+        .each(function (i, el) {
+          data[$(el).attr("name")] = $(el).val();
+        });
     }
     // console.log(data);
     // grid.ajax($button.attr('name'), data, $button, modal);
-    grid.sse($button.attr('name'), data, $button, modal);
+    grid.sse($button.attr("name"), data, $button, modal);
   });
-}
+};
 
 /**
  * Add column definition to definitions array
  */
-RockGrid2.prototype.addDef = function(coldef, definitions) {
+RockGrid2.prototype.addDef = function (coldef, definitions) {
   definitions.push(coldef);
-}
+};
 
 /**
  * Add column definition after other column
  * RockGrid2.addDefAfter('id', {...}, definitions);
  */
-RockGrid2.prototype.addDefAfter = function(col, coldef, definitions) {
-  let arr = definitions.map(x=>x.field);
+RockGrid2.prototype.addDefAfter = function (col, coldef, definitions) {
+  let arr = definitions.map((x) => x.field);
   let index = arr.indexOf(col);
-  definitions.splice(index+1, 0, coldef);
-}
+  definitions.splice(index + 1, 0, coldef);
+};
 
 /**
  * Add column definition before other column
  */
-RockGrid2.prototype.addDefBefore = function(col, coldef, definitions) {
-  let fields = definitions.map(x=>x.field);
+RockGrid2.prototype.addDefBefore = function (col, coldef, definitions) {
+  let fields = definitions.map((x) => x.field);
   let index = fields.indexOf(col);
   definitions.splice(index, 0, coldef);
-}
+};
 
 /**
  * Return fill pattern to use for ExcelJS
  * @return object
  */
-RockGrid2.prototype.bg = function(color) {
+RockGrid2.prototype.bg = function (color) {
   return {
     type: "pattern",
     pattern: "solid",
-    fgColor: { argb: this.colors[color].replace('#','') },
-  }
-}
+    fgColor: { argb: this.colors[color].replace("#", "") },
+  };
+};
 
-RockGrid2.prototype.buttonClick = function(button) {
-  let $button = $(button).closest('button');
+RockGrid2.prototype.buttonClick = function (button) {
+  let $button = $(button).closest("button");
   let grid = this.getGrid(button);
   // trigger event on grid root element, eg "button.reload"
   // see grid.js for sample button events
-  grid.$el.trigger("rg.button."+$button.attr('name'), [grid, $button]);
-}
+  grid.$el.trigger("rg.button." + $button.attr("name"), [grid, $button]);
+};
 
 /**
  * Add callbacks to the grid
  */
-RockGrid2.prototype.callbacks = function() {
+RockGrid2.prototype.callbacks = function () {
   let rg = this;
   return {
-    ajaxResponse:function(url, params, response) {
+    ajaxResponse: function (url, params, response) {
       // if the ajax response returns RockFinder3 data we need to do some
       // additional actions before returning table data (eg storing data
       // of relations to the grid)
       return rg.setAjaxData(this, response);
     },
-  }
-}
+  };
+};
 
 /**
  * Return url to edit a page in the PW backend
  */
-RockGrid2.prototype.editUrl = function(id) {
-  return this.urls.admin+"page/edit/?id="+id;
-}
+RockGrid2.prototype.editUrl = function (id) {
+  return this.urls.admin + "page/edit/?id=" + id;
+};
 
 /**
  * Get grid by name or dom element
  */
-RockGrid2.prototype.getGrid = function(name) {
-  if(typeof name == 'object') {
+RockGrid2.prototype.getGrid = function (name) {
+  if (typeof name == "object") {
     // is it a tabulator object? then it has an "element" property
-    if(name.element) name = name.element;
+    if (name.element) name = name.element;
 
     // get grid by dom element
     // get name of grid from ID of root element
-    let $el = $(name).closest('.RockGrid2');
-    name = $el.attr('id').replace('rg2-', '');
+    let $el = $(name).closest(".RockGrid2");
+    name = $el.attr("id").replace("rg2-", "");
   }
   // grid was requested by name
   return this.grids[name] || false;
-}
+};
 
-RockGrid2.prototype.getSetup = function(name) {
-  return this.setups[name || 'default'];
-}
+RockGrid2.prototype.getSetup = function (name) {
+  return this.setups[name || "default"];
+};
 
 /**
  * Return icon markup
  */
-RockGrid2.prototype.icon = function(name, tooltip) {
-  if(!name) return '';
-  if(tooltip) {
-    tooltip = tooltip.replace(/(<([^>]+)>)/gi, "").replace(/["|']/gi,'');
-    tooltip = ' title="'+tooltip+'" uk-tooltip';
+RockGrid2.prototype.icon = function (name, tooltip) {
+  if (!name) return "";
+  if (tooltip) {
+    tooltip = tooltip.replace(/(<([^>]+)>)/gi, "").replace(/["|']/gi, "");
+    tooltip = ' title="' + tooltip + '" uk-tooltip';
   }
-  return '<i class="fa fa-'+name+'"'+tooltip+'></i>';
-}
+  return '<i class="fa fa-' + name + '"' + tooltip + "></i>";
+};
 
 /**
  * Initialize a grid's tabulator
@@ -289,12 +291,12 @@ RockGrid2.prototype.icon = function(name, tooltip) {
  * @param object settings
  * @returns void
  */
-RockGrid2.prototype.init = function(name, settings) {
+RockGrid2.prototype.init = function (name, settings) {
   // console.log('init', name);
   let grid = this.getGrid(name);
-  if(!grid) return;
-  grid.$root = $('#rg2-'+grid.name);
-  grid.$el = grid.$root.find('.rg-grid');
+  if (!grid) return;
+  grid.$root = $("#rg2-" + grid.name);
+  grid.$el = grid.$root.find(".rg-grid");
   grid.el = grid.$el[0];
 
   // now we set the settings of the grid before tabulator is created
@@ -305,7 +307,7 @@ RockGrid2.prototype.init = function(name, settings) {
 
   grid.table = new Tabulator(grid.el, grid.setup);
   grid.addListeners();
-}
+};
 
 /**
  * Return link markup
@@ -320,68 +322,76 @@ RockGrid2.prototype.init = function(name, settings) {
  *   reload: true,
  * });
  */
-RockGrid2.prototype.link = function(data) {
-  data = data || {}
-  let href = data.href || '#';
-  let panel = data.panel !== false ? ' rg-panel' : '';
-  let reload = data.reload ? ' rg-panel-reload' : '';
-  let cls = " class='"+data.class+panel+reload+"' ";
+RockGrid2.prototype.link = function (data) {
+  data = data || {};
+  let href = data.href || "#";
+  let panel = data.panel !== false ? " rg-panel" : "";
+  let reload = data.reload ? " rg-panel-reload" : "";
+  let cls = " class='" + data.class + panel + reload + "' ";
   let icon = this.icon(data.icon, data.tooltip);
-  let label = data.label||'';
-  label = icon + (label?' '+label:'');
-  let tooltip = data.tooltip ? " title='"+data.tooltip+"' uk-tooltip" : '';
-  return "<a href='"+href+"' "+cls+tooltip+">"+label+"</a>";
-}
+  let label = data.label || "";
+  label = icon + (label ? " " + label : "");
+  let tooltip = data.tooltip ? " title='" + data.tooltip + "' uk-tooltip" : "";
+  return "<a href='" + href + "' " + cls + tooltip + ">" + label + "</a>";
+};
 
 /**
  * Move one column of the definitions after another
  */
-RockGrid2.prototype.moveColAfter = function(columnToMove, otherColumn, definitions) {
-  let fields = definitions.map(x=>x.field);
+RockGrid2.prototype.moveColAfter = function (
+  columnToMove,
+  otherColumn,
+  definitions
+) {
+  let fields = definitions.map((x) => x.field);
   let oldIndex = fields.indexOf(columnToMove);
   let col = definitions[oldIndex];
   delete definitions[oldIndex];
   this.addDefAfter(otherColumn, col, definitions);
-}
+};
 
 /**
  * Move one column of the definitions before another
  */
-RockGrid2.prototype.moveColBefore = function(columnToMove, otherColumn, definitions) {
-  let fields = definitions.map(x=>x.field);
+RockGrid2.prototype.moveColBefore = function (
+  columnToMove,
+  otherColumn,
+  definitions
+) {
+  let fields = definitions.map((x) => x.field);
   let oldIndex = fields.indexOf(columnToMove);
   let col = definitions[oldIndex];
   delete definitions[oldIndex];
   this.addDefBefore(otherColumn, col, definitions);
-}
+};
 
 /**
  * Set ajax data for this grid after an ajax response was received
  * This is necessary to support RockFinder3 as data source of grids
  */
-RockGrid2.prototype.setAjaxData = function(table, response) {
-  if(!response || typeof response != 'object') {
+RockGrid2.prototype.setAjaxData = function (table, response) {
+  if (!response || typeof response != "object") {
     UIkit.modal.alert("Invalid data received");
     return [];
   }
-  if(response.error) {
+  if (response.error) {
     UIkit.modal.alert(response.error);
     return [];
   }
-  if(response.type == 'RockFinder3') {
+  if (response.type == "RockFinder3") {
     let grid = this.getGrid(table);
     delete response.type;
     grid.rf3 = response;
     return response.rows;
   }
   return response;
-}
+};
 
-RockGrid2.prototype.setColDef = function(column, def, data) {
+RockGrid2.prototype.setColDef = function (column, def, data) {
   let coldef = this.coldefs[def];
-  if(typeof coldef == 'function') return coldef(column, data);
-  console.warn('coldef '+def+' not found');
-}
+  if (typeof coldef == "function") return coldef(column, data);
+  console.warn("coldef " + def + " not found");
+};
 
 /**
  * Usage:
@@ -392,89 +402,86 @@ RockGrid2.prototype.setColDef = function(column, def, data) {
  * The first item is taken as reference where to add the other columns.
  * Leading and trailing elements will stay untouched.
  */
-RockGrid2.prototype.setColOrder = function(order, definitions) {
+RockGrid2.prototype.setColOrder = function (order, definitions) {
   let defs = {};
-  definitions.forEach(def => defs[def.field] = def);
+  definitions.forEach((def) => (defs[def.field] = def));
 
   let newDefs = [];
   let pointer = 0;
-  $.each(definitions, function(i, col) {
+  $.each(definitions, function (i, col) {
     // if colum is part of order array remove it from original definitions
     // it will be added later
-    if(order.indexOf(col.field) < 0) newDefs.push(col);
-    if(col.field == order[0]) pointer = i;
+    if (order.indexOf(col.field) < 0) newDefs.push(col);
+    if (col.field == order[0]) pointer = i;
   });
 
   // now add the new orderd columns to the array
-  $.each(order, function(i, name) {
+  $.each(order, function (i, name) {
     newDefs.splice(pointer++, 0, defs[name]);
   });
 
   // overwrite the array
-  $.each(newDefs, function(i, def) {
+  $.each(newDefs, function (i, def) {
     definitions[i] = newDefs[i];
   });
-}
+};
 
-RockGrid2.prototype.tooltip = function(label, tooltip) {
-  return "<span title='"+tooltip+"' uk-tooltip>"+label+"</span>";
-}
+RockGrid2.prototype.tooltip = function (label, tooltip) {
+  return "<span title='" + tooltip + "' uk-tooltip>" + label + "</span>";
+};
 
-RockGrid2.prototype.trigger = function(table, event, params) {
+RockGrid2.prototype.trigger = function (table, event, params) {
   let grid = this.getGrid(table);
-  $(document).trigger('rg.'+event, {grid, params});
-}
+  $(document).trigger("rg." + event, { grid, params });
+};
 
 /**
  * Return jump-url of page with given id
  */
- RockGrid2.prototype.url = function(id) {
-  return "/rockgrid2/jump/"+id;
-}
+RockGrid2.prototype.url = function (id) {
+  return "/rockgrid2/jump/" + id;
+};
 
-RockGrid2.prototype.util = function() {
+RockGrid2.prototype.util = function () {
   return UIkit.util;
-}
+};
 
 /**
  * Custom Tabulator Formatters
  * Usage: col.formatter = 'rg2.checkbox'
  */
 Tabulator.extendModule("format", "formatters", {
-
   // format the value of a checkbox
   // you can provide a NULL value to the cell to prevent rendering of YES/NO
-  "rg2.checkbox": function(cell, formatterParams) {
+  "rg2.checkbox": function (cell, formatterParams) {
     let value = cell.getValue();
     let $el = $(cell.getElement());
-    if(!value) return;
-    if(value === 'yes') {
-      $el.css('background', RockGrid2.colors['green-100']);
-      return RockGrid2.icon('check', value);
-    }
-    else {
-      $el.css('background', RockGrid2.colors['red-100']);
-      return RockGrid2.icon('times', value);
+    if (!value) return;
+    if (value === "yes") {
+      $el.css("background", RockGrid2.colors["green-100"]);
+      return RockGrid2.icon("check", value);
+    } else {
+      $el.css("background", RockGrid2.colors["red-100"]);
+      return RockGrid2.icon("times", value);
     }
   },
 
   // link to edit item in pw page editor
-  "rg2.editlink": function(cell) {
+  "rg2.editlink": function (cell) {
     let val = cell.getValue();
-    let id = cell.getRow().getData()['id'];
-    if(!id) return val;
-    return "<a href='"+RockGrid2.editUrl(id)+"'>"+val+"</a>";
+    let id = cell.getRow().getData()["id"];
+    if (!id) return val;
+    return "<a href='" + RockGrid2.editUrl(id) + "'>" + val + "</a>";
   },
 
   // link to page id jumplink
   // makes it possible to link to a page by id rather than by page url
-  "rg2.link": function(cell) {
+  "rg2.link": function (cell) {
     let val = cell.getValue();
-    let id = cell.getRow().getData()['id'];
-    if(!id) return val;
-    return "<a href='"+RockGrid2.url(id)+"'>"+val+"</a>";
+    let id = cell.getRow().getData()["id"];
+    if (!id) return val;
+    return "<a href='" + RockGrid2.url(id) + "'>" + val + "</a>";
   },
-
 });
 
 /**
@@ -483,30 +490,28 @@ Tabulator.extendModule("format", "formatters", {
  */
 Tabulator.extendModule("filter", "filters", {
   // smart filter
-  "rg2.smart": function(headerValue, rowValue, rowData, filterParams){
+  "rg2.smart": function (headerValue, rowValue, rowData, filterParams) {
     let filters = this;
     let search = headerValue;
     let val = rowValue;
 
     // searching . returns all non-empty cells
-    if(search === '.') return val!==null;
-
+    if (search === ".") return val !== null;
     // searching ! returns all empty cells
-    else if(search === '!') return val===null;
-
-    else if(search.indexOf("<=")===0) return val<=search.substring(2);
-    else if(search.indexOf(">=")===0) return val>=search.substring(2);
-    else if(search.indexOf("<")===0) return val<search.substring(1);
-    else if(search.indexOf(">")===0) return val>search.substring(1);
+    else if (search === "!") return val === null;
+    else if (search.indexOf("<=") === 0) return val <= search.substring(2);
+    else if (search.indexOf(">=") === 0) return val >= search.substring(2);
+    else if (search.indexOf("<") === 0) return val < search.substring(1);
+    else if (search.indexOf(">") === 0) return val > search.substring(1);
 
     // otherwise we use the regular like filter
-    return filters['like'](search, val, rowData, filterParams);
-  }
+    return filters["like"](search, val, rowData, filterParams);
+  },
 });
 
 // init class and trigger initial event
 var RockGrid2 = new RockGrid2();
-$(document).trigger('RockGrid2');
+$(document).trigger("RockGrid2");
 
 /**
  * Add coldefs that change many column properties at once
@@ -515,27 +520,29 @@ $(document).trigger('RockGrid2');
  * Usage: RockGrid2.setColDef(col, 'checkbox');
  */
 RockGrid2.coldefs = {
-  checkbox: function(col) {
-    col.mutator = function(value) { return value ? 'yes' : 'no'; };
-    col.formatter = 'rg2.checkbox';
-    col.hozAlign = 'center';
+  checkbox: function (col) {
+    col.mutator = function (value) {
+      return value ? "yes" : "no";
+    };
+    col.formatter = "rg2.checkbox";
+    col.hozAlign = "center";
     col.width = 60;
   },
-  edit: function(col) {
-    col.formatter = 'rg2.editlink';
+  edit: function (col) {
+    col.formatter = "rg2.editlink";
   },
-  money: function(col) {
-    col.formatter = 'money';
+  money: function (col) {
+    col.formatter = "money";
     col.formatterParams = {
-      decimal:",",
-      thousand:".",
+      decimal: ",",
+      thousand: ".",
     };
-    col.hozAlign = 'right';
-    col.bottomCalc = 'sum';
-    col.bottomCalcFormatter = 'money';
+    col.hozAlign = "right";
+    col.bottomCalc = "sum";
+    col.bottomCalcFormatter = "money";
     col.bottomCalcFormatterParams = {
-      decimal:",",
-      thousand:".",
+      decimal: ",",
+      thousand: ".",
     };
   },
 };
@@ -544,23 +551,25 @@ RockGrid2.coldefs = {
  * Event listeners
  */
 
-  // button clicks
-  $(document).on('click', '.rg-button', function(e) {
-    e.preventDefault();
-    RockGrid2.buttonClick(e.target);
+// button clicks
+$(document).on("click", ".rg-button", function (e) {
+  e.preventDefault();
+  RockGrid2.buttonClick(e.target);
+});
+
+// custom panel fix
+$(document).on("click", ".rg-panel:not(rg-panel-init)", function (e) {
+  e.preventDefault();
+  let $el = $(e.target).closest(".rg-panel");
+  $el.addClass("rg-panel-init");
+
+  // setup link element
+  let $a = $el.closest("a[href]");
+  if ($el.hasClass("rg-panel-reload")) $a.addClass("pw-panel-reload");
+
+  // add panel and trigger click
+  $.when(pwPanels.addPanel($a)).then(function () {
+    $a.click();
   });
-
-  // custom panel fix
-  $(document).on('click', '.rg-panel:not(rg-panel-init)', function(e) {
-    e.preventDefault();
-    let $el = $(e.target).closest('.rg-panel');
-    $el.addClass('rg-panel-init');
-
-    // setup link element
-    let $a = $el.closest('a[href]');
-    if($el.hasClass('rg-panel-reload')) $a.addClass('pw-panel-reload');
-
-    // add panel and trigger click
-    $.when(pwPanels.addPanel($a)).then(function() { $a.click(); });
-    return false;
-  });
+  return false;
+});
