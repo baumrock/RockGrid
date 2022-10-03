@@ -496,13 +496,24 @@ Tabulator.extendModule("filter", "filters", {
     let val = rowValue;
 
     // searching . returns all non-empty cells
-    if (search === ".") return val !== null;
+    if (search === ".") {
+      if (val === null || val == "") return false;
+      return true;
+    }
     // searching ! returns all empty cells
-    else if (search === "!") return val === null;
-    else if (search.indexOf("<=") === 0) return val <= search.substring(2);
-    else if (search.indexOf(">=") === 0) return val >= search.substring(2);
-    else if (search.indexOf("<") === 0) return val < search.substring(1);
-    else if (search.indexOf(">") === 0) return val > search.substring(1);
+    else if (search === "!") {
+      if (val === null || val == "") return true;
+      return false;
+    }
+    // number comparisons
+    else if (search.indexOf("<=") === 0)
+      return val <= parseFloat(search.substring(2));
+    else if (search.indexOf(">=") === 0)
+      return val >= parseFloat(search.substring(2));
+    else if (search.indexOf("<") === 0)
+      return val < parseFloat(search.substring(1));
+    else if (search.indexOf(">") === 0)
+      return val > parseFloat(search.substring(1));
 
     // otherwise we use the regular like filter
     return filters["like"](search, val, rowData, filterParams);
