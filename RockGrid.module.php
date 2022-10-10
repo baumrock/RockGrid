@@ -22,7 +22,7 @@ class RockGrid extends WireData implements Module
   {
     return [
       'title' => 'RockGrid',
-      'version' => '1.1.1',
+      'version' => '2.0.0',
       'summary' => 'RockGrid Main Module',
       'autoload' => true, // necessary for url hooks
       'singular' => true,
@@ -97,13 +97,14 @@ class RockGrid extends WireData implements Module
   {
     $items = $event->return;
     $url = rtrim($this->wire->pages->get(2)->url, "/");
+
     foreach ($items as $i => $item) {
       if ($item['name'] === 'grids') {
         $url = $item['url'];
 
         // setup children
         $children = [];
-        foreach ($this->gridsAll as $name => $grid) {
+        foreach ($this->findGrids() as $name => $grid) {
           $children[] = [
             'id' => null,
             'parent_id' => null,
