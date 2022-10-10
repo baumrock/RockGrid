@@ -1,23 +1,29 @@
-<?php namespace ProcessWire;
+<?php
+
+namespace ProcessWire;
+
 /**
  * @author Bernhard Baumrock, 16.06.2022
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class FieldtypeRockGrid2 extends FieldtypeText {
+class FieldtypeRockGrid extends FieldtypeText
+{
 
-  public static function getModuleInfo() {
+  public static function getModuleInfo()
+  {
     return [
-      'title' => 'RockGrid2',
+      'title' => 'RockGrid',
       'version' => '1.0.0',
-      'summary' => 'Module to display a RockGrid2 in the page editor',
+      'summary' => 'Module to display a RockGrid in the page editor',
       'icon' => 'table',
-      'requires' => ['RockGrid2'],
+      'requires' => ['RockGrid'],
       'installs' => [],
     ];
   }
 
-  public function init() {
+  public function init()
+  {
     parent::init();
   }
 
@@ -30,7 +36,8 @@ class FieldtypeRockGrid2 extends FieldtypeText {
    * @return InputfieldWrapper
    *
    */
-  public function ___getConfigInputfields(Field $field) {
+  public function ___getConfigInputfields(Field $field)
+  {
     $inputfields = parent::___getConfigInputfields($field);
     $inputfields->remove('textformatters');
     $inputfields->remove('_text_fieldset');
@@ -53,10 +60,10 @@ class FieldtypeRockGrid2 extends FieldtypeText {
    * @return Inputfield
    *
    */
-  public function getInputfield(Page $page, Field $field) {
-    $f = $this->wire(new InputfieldRockGrid2());
+  public function getInputfield(Page $page, Field $field)
+  {
+    $f = $this->wire(new InputfieldRockGrid());
     $f->grid = $field->get('grid');
     return $f;
   }
-
 }

@@ -1,6 +1,6 @@
 # ROCKGRID2
 
-RockGrid2 is the successor of [RockDataTables](https://processwire.com/talk/topic/15524-previewdiscussion-rockdatatables/), [RockGrid](https://processwire.com/talk/topic/19539-deprecated-rockgrid-powerful-performant-and-beautiful-data-listing-tool/), [RockTabulator](https://processwire.com/talk/topic/21984-rocktabulator-powerful-performant-and-versatile-data-grids-for-processwire/); As you can see I've taken many approaches to get easy and versatile data listings for the PW backend. Hopefully RockGrid2 will finally be the best solution available!
+RockGrid is the successor of [RockDataTables](https://processwire.com/talk/topic/15524-previewdiscussion-rockdatatables/), [RockGrid](https://processwire.com/talk/topic/19539-deprecated-rockgrid-powerful-performant-and-beautiful-data-listing-tool/), [RockTabulator](https://processwire.com/talk/topic/21984-rocktabulator-powerful-performant-and-versatile-data-grids-for-processwire/); As you can see I've taken many approaches to get easy and versatile data listings for the PW backend. Hopefully RockGrid will finally be the best solution available!
 
 ## Do not distribute
 
@@ -13,7 +13,7 @@ related to the site.
 
 ## Setup
 
-The display part is done via the inputfield `InputfieldRockGrid2`. In a ProcessModule all you need to do is to add such a field to your form:
+The display part is done via the inputfield `InputfieldRockGrid`. In a ProcessModule all you need to do is to add such a field to your form:
 
 ```php
 <?php namespace ProcessWire;
@@ -29,7 +29,7 @@ class ProcessFoo extends Process {
     $form = $this->modules->get('InputfieldForm');
 
     $form->add([
-      'type' => 'RockGrid2',
+      'type' => 'RockGrid',
       'label' => 'Foo',
       'grid' => 'FooGrid',
     ]);
@@ -39,11 +39,11 @@ class ProcessFoo extends Process {
 }
 ```
 
-Next, setup the `FooGrid` object by placing a file in `/site/assets/RockGrid2/`:
+Next, setup the `FooGrid` object by placing a file in `/site/assets/RockGrid/`:
 
 ```php
-// file /site/assets/RockGrid2/FooGrid.php
-<?php namespace RockGrid2;
+// file /site/assets/RockGrid/FooGrid.php
+<?php namespace RockGrid;
 class FooGrid extends Grid {
 }
 ```
@@ -51,8 +51,8 @@ class FooGrid extends Grid {
 If you want/need to place your grids in a dedicated folder somewhere else you can add that folder to RockGrid on init()
 
 ```php
-/** @var RockGrid2 $rg */
-$rg = $this->wire()->modules->get('RockGrid2');
+/** @var RockGrid $rg */
+$rg = $this->wire()->modules->get('RockGrid');
 $rg->addDir("/path/to/your/rock/grids");
 ```
 
@@ -85,15 +85,15 @@ Important: Make sure that the `getData` method does not echo any output otherwis
 
 Sometimes you want to use one grid to show different chunks of the same data on different pages. This is possible in two ways:
 
-1) Set get parameters in your URL, eg /your/grid/?course=123
-2) Set the `ajaxParams` property of your field:
+1. Set get parameters in your URL, eg /your/grid/?course=123
+2. Set the `ajaxParams` property of your field:
 
 ```php
 /** @var InputfieldForm $form */
 $form = $this->modules->get('InputfieldForm');
 $page = $this->process->getPage();
 $form->add([
-  'type' => 'RockGrid2',
+  'type' => 'RockGrid',
   'label' => false,
   'skipLabel' => Inputfield::skipLabelBlank,
   'themeBorder' => 'none',
@@ -113,7 +113,7 @@ RockGrid will automatically add a JS file for your grid that helps you setting u
 
 ```js
 else if(field == "starthour") {
-  col.title = RockGrid2.icon('flag-o', "Beginn");
+  col.title = RockGrid.icon('flag-o', "Beginn");
   col.width = 50;
   col.hozAlign = 'center';
   col.mutator = function(value, data) {
@@ -122,7 +122,7 @@ else if(field == "starthour") {
   }
 }
 else if(field == prefix+"end") {
-  col.title = RockGrid2.icon('flag-checkered', "Ende");
+  col.title = RockGrid.icon('flag-checkered', "Ende");
   col.width = 50;
   col.hozAlign = 'center';
   col.formatter = function(cell) {
@@ -136,7 +136,7 @@ else if(field == prefix+"end") {
 }
 ```
 
-As you can see there are several helpers available via `RockGrid2` - in the example above we use RockGrid2.icon() to display an icon with a tooltip as column header.
+As you can see there are several helpers available via `RockGrid` - in the example above we use RockGrid.icon() to display an icon with a tooltip as column header.
 
 ![img](hr.svg)
 
@@ -152,7 +152,7 @@ class YourGrid extends Grid {
   }
 ```
 
-By default all additional scripts are NOT loaded. If you need one of the scripts, just set the flag to TRUE. Never ever set the flag to FALSE because this might overwrite the setting for another grid needing this library! The reason is that external scripts are loaded only once for all grids and the setting is based on the flag on RockGrid2 master module.
+By default all additional scripts are NOT loaded. If you need one of the scripts, just set the flag to TRUE. Never ever set the flag to FALSE because this might overwrite the setting for another grid needing this library! The reason is that external scripts are loaded only once for all grids and the setting is based on the flag on RockGrid master module.
 
 ![img](hr.svg)
 
@@ -161,7 +161,7 @@ By default all additional scripts are NOT loaded. If you need one of the scripts
 Buttons can be added in the grid's php file:
 
 ```php
-<?php namespace RockGrid2;
+<?php namespace RockGrid;
 class Demo extends Grid {
   /**
    * Get left buttons for this grid
@@ -186,7 +186,7 @@ class Demo extends Grid {
 You can modify button behaviour on the frontend via JavaScript:
 
 ```js
-$(document).on('rg.button.add', '.RockGrid2', function(e, grid) {
+$(document).on('rg.button.add', '.RockGrid', function(e, grid) {
   ...
 });
 ```
@@ -237,26 +237,26 @@ public function getButtonsCenter() {
 
 You can either set a confirm message via the `confirm` property (single string) or you can provide a css selector in the `confirmmarkup` property to fetch the html from (useful for adding inputfields to your confirm message).
 
-
 JS
 
 Note that if you only refer to selected IDs you do not need to add this JS to your project as it is already in place and you can simply use it by referencing it from within your button setup! Nonetheless it is easy to add custom callbacks if you need. For reference the implementation of `sendIDs` is shown here:
 
 ```js
-grid.addCallback("sendIDs", function(grid, $button, modal) {
+grid.addCallback("sendIDs", function (grid, $button, modal) {
   let rows = grid.table.getSelectedRows();
-  let ids = rows.map(row => row.getData().id);
-  let data = {ids: ids}
-  $(modal.$el).find('input').each(function(i, el) {
-    data[$(el).attr('name')] = $(el).val();
-  });
+  let ids = rows.map((row) => row.getData().id);
+  let data = { ids: ids };
+  $(modal.$el)
+    .find("input")
+    .each(function (i, el) {
+      data[$(el).attr("name")] = $(el).val();
+    });
   // console.log(data);
-  grid.ajax($button.attr('name'), data, $button, modal);
+  grid.ajax($button.attr("name"), data, $button, modal);
 });
 ```
 
 ![img](https://i.imgur.com/qrprt0w.png)
-
 
 ### XLSX Download
 
@@ -264,17 +264,17 @@ Example download button:
 
 ```js
 // download button
-$(document).on('rg.button.download', '.RockGrid2', function(e, grid) {
+$(document).on("rg.button.download", ".RockGrid", function (e, grid) {
   grid.xls({
-    name: 'baumrock',
+    name: "baumrock",
     sheets: {
-      'Invoices': {
-        rowRange: 'active', // show only filtered rows in xls
-        rowAdded:function(row, index) {
-          if(index === 0) row.font = { name: 'Comic Sans MS', bold: true };
-        }
-      }
-    }
+      Invoices: {
+        rowRange: "active", // show only filtered rows in xls
+        rowAdded: function (row, index) {
+          if (index === 0) row.font = { name: "Comic Sans MS", bold: true };
+        },
+      },
+    },
   });
 });
 ```

@@ -1,6 +1,8 @@
-<?php namespace ProcessWire;
+<?php
 
-use RockGrid2\Grid;
+namespace ProcessWire;
+
+use RockGrid\Grid;
 
 /**
  * RockGrid Inputfield using tabulator.info
@@ -9,18 +11,20 @@ use RockGrid2\Grid;
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class InputfieldRockGrid2 extends InputfieldTextarea {
+class InputfieldRockGrid extends InputfieldTextarea
+{
 
   public $ajaxParams;
 
-  public static function getModuleInfo() {
+  public static function getModuleInfo()
+  {
     return [
-      'title' => 'RockGrid2 Inputfield',
+      'title' => 'RockGrid Inputfield',
       'version' => '0.0.1',
       'summary' => 'RockGrid Inputfield using tabulator.info',
       'icon' => 'table',
       'requires' => [
-        'RockGrid2',
+        'RockGrid',
       ],
       'installs' => [],
     ];
@@ -30,41 +34,45 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
    * Get file path for given grid
    * @return string
    */
-  public function getFile($ext = "php") {
+  public function getFile($ext = "php")
+  {
     return $this->main()->getFile($this->grid, $ext);
   }
 
   /**
    * Get main module instance
-   * @return RockGrid2
+   * @return RockGrid
    */
-  public function main() {
-    return $this->wire->modules->get('RockGrid2');
+  public function main()
+  {
+    return $this->wire->modules->get('RockGrid');
   }
 
   /**
-  * Process the Inputfield's input
-  * @return $this
-  */
-  public function ___processInput($input) {
+   * Process the Inputfield's input
+   * @return $this
+   */
+  public function ___processInput($input)
+  {
     return false;
   }
 
   /**
-  * Render the Inputfield
-  * @return string
-  */
-  public function ___render() {
+   * Render the Inputfield
+   * @return string
+   */
+  public function ___render()
+  {
     // output must be wrapped in a div to make ajax inputfields work!
     try {
       $out = "<div>";
       $grid = $this->main()->getGrid($this);
       $grid->setAjaxParams($this->ajaxParams);
-      if(!$grid) {
+      if (!$grid) {
         $file = $this->getFile();
-        if(!$file) {
+        if (!$file) {
           $out .= "<strong>No file for this grid found!</strong> Tried these...";
-          foreach($this->main()->getPossibleFilenames($this->grid) as $f) {
+          foreach ($this->main()->getPossibleFilenames($this->grid) as $f) {
             $out .= "<div>$f</div>";
           }
           return $out;
@@ -74,12 +82,13 @@ class InputfieldRockGrid2 extends InputfieldTextarea {
       $out .= "</div>";
       return $grid->render();
     } catch (\Throwable $th) {
-      if($this->wire->user->isSuperuser()) return $th->getMessage();
+      if ($this->wire->user->isSuperuser()) return $th->getMessage();
       else return "Error rendering grid";
     }
   }
 
-  public function ___renderValue() {
+  public function ___renderValue()
+  {
     return $this->___render();
   }
 }

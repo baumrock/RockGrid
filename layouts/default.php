@@ -1,4 +1,4 @@
-<div class='RockGrid2' id='<?= $grid->id ?>'>
+<div class='RockGrid' id='<?= $grid->id ?>'>
   <div class='rg-filter'><?= $grid->getFilters() ?></div>
   <div class='rg-header uk-child-width-1-1 uk-child-width-auto@m' uk-grid>
     <div class='uk-text-left rg-left'>

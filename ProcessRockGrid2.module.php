@@ -1,21 +1,26 @@
-<?php namespace ProcessWire;
-class ProcessRockGrid2 extends Process {
+<?php
+
+namespace ProcessWire;
+
+class ProcessRockGrid extends Process
+{
 
   const permission = "rockgrid2";
 
-  public static function getModuleInfo() {
+  public static function getModuleInfo()
+  {
     return [
-      'title' => 'RockGrid2 Process Module',
+      'title' => 'RockGrid Process Module',
       'version' => '0.0.1',
       'summary' => '',
       'icon' => 'table',
       'requires' => [
-        'RockGrid2',
+        'RockGrid',
       ],
       'installs' => [],
 
       'permission' => self::permission,
-      'permissions' => [self::permission => 'May run the RockGrid2 process module'],
+      'permissions' => [self::permission => 'May run the RockGrid process module'],
 
       'page' => [
         'name' => 'grids',
@@ -25,33 +30,35 @@ class ProcessRockGrid2 extends Process {
     ];
   }
 
-  public function init() {
+  public function init()
+  {
     parent::init(); // always remember to call the parent init
   }
 
-  public function execute() {
+  public function execute()
+  {
     $this->headline('Grids');
     $this->browserTitle('Grids');
     $grid = $this->wire->input->get('grid', 'text');
-    if(!$grid) return "No grid selected";
+    if (!$grid) return "No grid selected";
 
     // get grid
-    $grid = $this->wire->modules->get("RockGrid2")->getGrid($grid);
+    $grid = $this->wire->modules->get("RockGrid")->getGrid($grid);
     $info = $grid->info();
 
     /** @var InputfieldForm $form */
     $form = $this->modules->get('InputfieldForm');
 
     $notes = '';
-    if($this->wire->user->isSuperuser()) {
-      $url = "/rockgrid2/".$grid->name;
+    if ($this->wire->user->isSuperuser()) {
+      $url = "/rockgrid2/" . $grid->name;
       $notes = "[$url]($url)";
-      if(!$this->wire->modules->isInstalled("TracyDebugger")) {
+      if (!$this->wire->modules->isInstalled("TracyDebugger")) {
         $notes .= "\nMake sure to install TracyDebugger to make your life easier!";
       }
     }
     $form->add([
-      'type' => 'RockGrid2',
+      'type' => 'RockGrid',
       'label' => $info->title,
       'grid' => $info->name,
       'notes' => "Superuser note: Debug grid via $notes",
@@ -60,11 +67,12 @@ class ProcessRockGrid2 extends Process {
     return $form->render();
   }
 
-  public function executeNew() {
+  public function executeNew()
+  {
     $this->headline('Grids');
     $this->browserTitle('Grids');
 
-    if(!$this->wire->user->isSuperuser()) throw new Wire404Exception("No access");
+    if (!$this->wire->user->isSuperuser()) throw new Wire404Exception("No access");
 
     /** @var InputfieldForm $form */
     $form = $this->modules->get('InputfieldForm');
@@ -74,18 +82,17 @@ class ProcessRockGrid2 extends Process {
     $name = ucFirst($this->wire->sanitizer->camelCase($name));
 
     $error = false;
-    if($name) {
+    if ($name) {
       // create grid if it does not exist
       $grid = $this->master()->getGrid($name);
-      if(!$grid) {
-        $filename = $this->wire->config->paths->assets."RockGrid2/$name.php";
-        $stub = $this->wire->files->fileGetContents(__DIR__."/stubs/Grid.php");
+      if (!$grid) {
+        $filename = $this->wire->config->paths->assets . "RockGrid/$name.php";
+        $stub = $this->wire->files->fileGetContents(__DIR__ . "/stubs/Grid.php");
         $content = str_replace("{name}", $name, $stub);
         $this->wire->files->filePutContents($filename, $content);
         $this->warning("Created grid at $filename");
         $this->wire->session->redirect("./?grid=$name");
-      }
-      else $error = "Grid $name does already exist!";
+      } else $error = "Grid $name does already exist!";
     }
 
     $form->add([
@@ -95,7 +102,7 @@ class ProcessRockGrid2 extends Process {
       'value' => $name,
     ]);
     $f = $form->children()->last();
-    if($error) $f->error($error);
+    if ($error) $f->error($error);
 
     $form->add([
       'type' => 'submit',
@@ -104,14 +111,13 @@ class ProcessRockGrid2 extends Process {
     ]);
 
     return $form->render();
-
   }
 
   /**
-   * @return RockGrid2
+   * @return RockGrid
    */
-  public function master() {
-    return $this->wire->modules->get('RockGrid2');
+  public function master()
+  {
+    return $this->wire->modules->get('RockGrid');
   }
-
 }

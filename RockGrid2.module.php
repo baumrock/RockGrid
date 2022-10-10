@@ -1,10 +1,14 @@
-<?php namespace ProcessWire;
+<?php
+
+namespace ProcessWire;
+
 /**
  * @author Bernhard Baumrock, 19.02.2021
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class RockGrid2 extends WireData implements Module {
+class RockGrid extends WireData implements Module
+{
 
   public $assetsDir;
   public $path; // path to module
@@ -14,31 +18,33 @@ class RockGrid2 extends WireData implements Module {
   public $gridsAll = []; // grids that are setup in grid dirs
   private $loadAssets = false;
 
-  public static function getModuleInfo() {
+  public static function getModuleInfo()
+  {
     return [
-      'title' => 'RockGrid2',
+      'title' => 'RockGrid',
       'version' => '1.1.1',
-      'summary' => 'RockGrid2 Main Module',
+      'summary' => 'RockGrid Main Module',
       'autoload' => true, // necessary for url hooks
       'singular' => true,
       'icon' => 'table',
       'requires' => [],
       'installs' => [
-        'InputfieldRockGrid2',
-        'FieldtypeRockGrid2',
-        'ProcessRockGrid2',
+        'InputfieldRockGrid',
+        'FieldtypeRockGrid',
+        'ProcessRockGrid',
       ],
     ];
   }
 
-  public function init() {
+  public function init()
+  {
     $this->wire('rockgrid2', $this);
     $this->path = $this->wire->config->paths($this);
     $this->autoloader();
     $this->loadAssets();
     $this->createAssetsFolder();
     $this->handleAjax();
-    $this->addDir($this->wire->config->paths->assets."RockGrid2");
+    $this->addDir($this->wire->config->paths->assets . "RockGrid");
 
     // attach hooks
     $this->addHookAfter("/rockgrid2/jump/{pageID}", $this, "jumpToPage");
@@ -49,57 +55,61 @@ class RockGrid2 extends WireData implements Module {
     $this->addHookAfter('AdminThemeFramework::getPrimaryNavArray', $this, 'afterPrimaryNavArray');
   }
 
-  public function ready() {
+  public function ready()
+  {
     $this->findGrids();
   }
 
   /**
    * Add dir to array of scanned directories
-   * Usage: $modules->get('RockGrid2')->addDir(/my/module/grids);
+   * Usage: $modules->get('RockGrid')->addDir(/my/module/grids);
    * @return void
    */
-  public function addDir($dir) {
-    $dir = Paths::normalizeSeparators(rtrim($dir,"/")."/");
+  public function addDir($dir)
+  {
+    $dir = Paths::normalizeSeparators(rtrim($dir, "/") . "/");
     $this->dirs[] = $dir;
   }
 
   /**
    * Add stylesheet to assets
    */
-  public function addStylesheet() {
+  public function addStylesheet()
+  {
     $config = $this->wire->config;
     // If debug is true and RockLESS is installed this will auto-generate
     // the css stylesheet that will be used on production.
     $less = $this->wire->modules->isInstalled("RockLESS");
-    if($config->debug AND $less AND $this->wire->user->isSuperuser()) {
+    if ($config->debug and $less and $this->wire->user->isSuperuser()) {
       /** @var RockLESS $less */
       $less = $this->wire('modules')->get('RockLESS');
-      $less->saveCSS(__DIR__."/RockGrid2.css", __DIR__."/RockGrid2.less", [
-        'parserOptions' => ['compress'=>true],
+      $less->saveCSS(__DIR__ . "/RockGrid.css", __DIR__ . "/RockGrid.less", [
+        'parserOptions' => ['compress' => true],
       ]);
     }
-    $config->styles->add($this->m("RockGrid2.css"));
+    $config->styles->add($this->m("RockGrid.css"));
   }
 
   /**
    * After AdminThemeFramework::getPrimaryNavArray
    */
-  protected function afterPrimaryNavArray(HookEvent $event) {
+  protected function afterPrimaryNavArray(HookEvent $event)
+  {
     $items = $event->return;
     $url = rtrim($this->wire->pages->get(2)->url, "/");
-    foreach($items as $i=>$item) {
-      if($item['name']==='grids') {
+    foreach ($items as $i => $item) {
+      if ($item['name'] === 'grids') {
         $url = $item['url'];
 
         // setup children
         $children = [];
-        foreach($this->gridsAll as $name=>$grid) {
+        foreach ($this->gridsAll as $name => $grid) {
           $children[] = [
             'id' => null,
             'parent_id' => null,
             'name' => null,
             'title' => $grid['title'],
-            'url' => $url."?grid=$name",
+            'url' => $url . "?grid=$name",
             'children' => [],
             'icon' => $grid['icon'],
             'navJSON' => false,
@@ -107,13 +117,13 @@ class RockGrid2 extends WireData implements Module {
         }
 
         // add new grid
-        if($this->wire->user->isSuperuser()) {
+        if ($this->wire->user->isSuperuser()) {
           $children[] = [
             'id' => null,
             'parent_id' => null,
             'name' => null,
             'title' => 'Create New Grid',
-            'url' => $url."new",
+            'url' => $url . "new",
             'children' => [],
             'icon' => 'plus',
             'navJSON' => false,
@@ -130,18 +140,20 @@ class RockGrid2 extends WireData implements Module {
    * Register classes folder for autoloading
    * @return void
    */
-  public function autoloader() {
-    spl_autoload_register(function($class) {
-      if(strpos($class, "RockGrid2") !== 0) return;
-      $name = str_replace("RockGrid2\\", "", $class);
-      require_once(__DIR__."/classes/$name.php");
+  public function autoloader()
+  {
+    spl_autoload_register(function ($class) {
+      if (strpos($class, "RockGrid") !== 0) return;
+      $name = str_replace("RockGrid\\", "", $class);
+      require_once(__DIR__ . "/classes/$name.php");
     });
   }
 
   /**
    * Before ProcessController::execute
    */
-  protected function beforeProcessController(HookEvent $event) {
+  protected function beforeProcessController(HookEvent $event)
+  {
     // Prevent admin menus from being cached
     $this->wire()->session->removeFor('AdminThemeUikit', 'prnav');
     $this->wire()->session->removeFor('AdminThemeUikit', 'sidenav');
@@ -151,9 +163,10 @@ class RockGrid2 extends WireData implements Module {
    * Create assets folder
    * @return void
    */
-  public function createAssetsFolder() {
-    $this->assetsDir = $this->wire->config->paths->assets.$this->className()."/";
-    if(!is_dir($this->assetsDir)) $this->wire->files->mkdir($this->assetsDir);
+  public function createAssetsFolder()
+  {
+    $this->assetsDir = $this->wire->config->paths->assets . $this->className() . "/";
+    if (!is_dir($this->assetsDir)) $this->wire->files->mkdir($this->assetsDir);
   }
 
   /**
@@ -161,14 +174,15 @@ class RockGrid2 extends WireData implements Module {
    * This helps on setting up new grids :)
    * @return void
    */
-  public function createJS($inputfield) {
+  public function createJS($inputfield)
+  {
     $file = $inputfield->getFile();
     $grid = $this->getGrid($inputfield);
     $base = substr($file, 0, -4);
-    if(!$base) return;
+    if (!$base) return;
     $js = "$base.js";
-    if(is_file($js)) return;
-    $stub = $this->wire->files->fileGetContents(__DIR__."/stubs/grid.js");
+    if (is_file($js)) return;
+    $stub = $this->wire->files->fileGetContents(__DIR__ . "/stubs/grid.js");
     $content = str_replace("{grid}", $grid->name, $stub);
     $this->wire->files->filePutContents($js, $content);
     return $js;
@@ -178,14 +192,15 @@ class RockGrid2 extends WireData implements Module {
    * Find all grid files
    * @return array
    */
-  public function findGrids() {
-    if($this->gridsAll) return $this->gridsAll;
+  public function findGrids()
+  {
+    if ($this->gridsAll) return $this->gridsAll;
     $grids = [];
-    $opt = ['extensions'=>['php']];
-    foreach($this->dirs as $dir) {
-      foreach($this->wire->files->find($dir, $opt) as $file) {
+    $opt = ['extensions' => ['php']];
+    foreach ($this->dirs as $dir) {
+      foreach ($this->wire->files->find($dir, $opt) as $file) {
         $name = pathinfo($file, PATHINFO_FILENAME);
-        $class = "\\RockGrid2\\$name";
+        $class = "\\RockGrid\\$name";
         require_once($file);
         $tmp = new $class();
         $grids[$name] = [
@@ -209,17 +224,18 @@ class RockGrid2 extends WireData implements Module {
    *
    * @return array
    */
-  public function findRaw($selector, array $fields) {
+  public function findRaw($selector, array $fields)
+  {
     $raw = $this->wire->pages->findRaw($selector, $fields);
     // bdb($raw, "raw");
 
     // prepare keys that we need in the results
     $keys = [];
-    foreach($fields as $k=>$v) $keys[$v] = '';
+    foreach ($fields as $k => $v) $keys[$v] = '';
     // db($keys, 'keys');
 
     // create array of objects
-    $array = array_values(array_map(function($item) use($keys) {
+    $array = array_values(array_map(function ($item) use ($keys) {
       return (object)array_merge($keys, $item);
     }, $raw));
 
@@ -230,11 +246,12 @@ class RockGrid2 extends WireData implements Module {
    * Return path of file that sets up this grid
    * @return string
    */
-  public function getFile($file, $ext = 'php') {
+  public function getFile($file, $ext = 'php')
+  {
     // is it already a file? then return it!
-    if(is_file($file)) return $file;
-    foreach($this->getPossibleFilenames($file, $ext) as $f) {
-      if(is_file($f)) return $f;
+    if (is_file($file)) return $file;
+    foreach ($this->getPossibleFilenames($file, $ext) as $f) {
+      if (is_file($f)) return $f;
     }
     return false;
   }
@@ -243,19 +260,20 @@ class RockGrid2 extends WireData implements Module {
    * Load grid instance
    * @return Grid|false
    */
-  public function getGrid($data) {
-    if($data instanceof InputfieldRockGrid2) $data = $data->grid;
+  public function getGrid($data)
+  {
+    if ($data instanceof InputfieldRockGrid) $data = $data->grid;
     $file = $this->getFile($data);
-    if(!is_file($file)) return false;
+    if (!is_file($file)) return false;
     require_once($file);
     $name = pathinfo($file, PATHINFO_FILENAME);
 
     // try to get grid from cache
-    if(array_key_exists($name, $this->grids)) return $this->grids[$name];
+    if (array_key_exists($name, $this->grids)) return $this->grids[$name];
 
     // grid is not in cache, so we create it and trigger the "load" event
     // this is done only once for each grid!
-    $class = "\RockGrid2\\".$name;
+    $class = "\RockGrid\\" . $name;
     $grid = new $class();
     $grid->load();
 
@@ -267,9 +285,10 @@ class RockGrid2 extends WireData implements Module {
    * Return all possible filenames for this grid
    * @return array
    */
-  public function getPossibleFilenames($file, $ext = 'php') {
+  public function getPossibleFilenames($file, $ext = 'php')
+  {
     $arr = [];
-    foreach($this->dirs as $dir) $arr[] = $dir.$file.".$ext";
+    foreach ($this->dirs as $dir) $arr[] = $dir . $file . ".$ext";
     return $arr;
   }
 
@@ -277,62 +296,64 @@ class RockGrid2 extends WireData implements Module {
    * Add hook to handle AJAX requests of grids
    * @return void
    */
-  public function handleAjax() {
+  public function handleAjax()
+  {
     // hook for grid data
     // this hook is used either in the debugger using GET
     // or for the grid's ajax request to fetch data via POST
-    $this->addHook('/rockgrid2/{grid}', function($event) {
+    $this->addHook('/rockgrid2/{grid}', function ($event) {
       $grid = $this->getGrid($event->grid);
-      if(!$grid) throw new Wire404Exception("Grid not found");
+      if (!$grid) throw new Wire404Exception("Grid not found");
 
       // ACCESS CONTROL
-      if(!$grid->isViewable()) {
+      if (!$grid->isViewable()) {
         $hint = "<br>Add an isViewable() method to your grid.";
-        if(!$this->wire->user->isSuperuser()) $hint = '';
+        if (!$this->wire->user->isSuperuser()) $hint = '';
         return json_encode(['error' => "<strong>Error</strong><br>"
-          ."You don't have access to view data of grid $grid.$hint"]);
+          . "You don't have access to view data of grid $grid.$hint"]);
       }
 
-      if($this->wire->config->ajax) $grid->sendJSON();
+      if ($this->wire->config->ajax) $grid->sendJSON();
       else $event->return = $grid->debug();
     });
-    $this->addHook('/rockgrid2/{grid}/ajax/{callback}', function($event) {
+    $this->addHook('/rockgrid2/{grid}/ajax/{callback}', function ($event) {
       $grid = $this->getGrid($event->grid);
-      if(!$grid) throw new Wire404Exception("Grid not found");
+      if (!$grid) throw new Wire404Exception("Grid not found");
 
       // ACCESS CONTROL
-      if(!$grid->isViewable()) {
+      if (!$grid->isViewable()) {
         return json_encode(['error' => "<strong>Error</strong><br>"
-          ."You don't have access to view data of grid '$this'"]);
+          . "You don't have access to view data of grid '$this'"]);
       }
 
       $callback = $grid->getCallbacks($event->callback);
-      if(!$callback) throw new WireException("Callback not found");
-      if(!$this->wire->config->ajax) throw new WireException("Not allowed");
+      if (!$callback) throw new WireException("Callback not found");
+      if (!$this->wire->config->ajax) throw new WireException("Not allowed");
 
       // execute callback
       $data = file_get_contents('php://input');
       $data = json_decode($data, TRUE);
-      $input = $this->wire(new WireData()); /** @var WireData $input */
+      $input = $this->wire(new WireData());
+      /** @var WireData $input */
       $input->setArray($data);
       $result = $callback->__invoke($input, $grid);
 
       return json_encode($result);
     });
-    $this->addHook('/rockgrid2/{grid}/sse/{callback}', function($event) {
+    $this->addHook('/rockgrid2/{grid}/sse/{callback}', function ($event) {
       $grid = $this->getGrid($event->grid);
-      if(!$grid) throw new Wire404Exception("Grid not found");
+      if (!$grid) throw new Wire404Exception("Grid not found");
 
       // ACCESS CONTROL
-      if(!$grid->isViewable()) {
+      if (!$grid->isViewable()) {
         return json_encode(['error' => "<strong>Error</strong><br>"
-          ."You don't have access to view data of grid '$this'"]);
+          . "You don't have access to view data of grid '$this'"]);
       }
 
       // payload key
       $sessionkey = "sse-{$event->grid}-{$event->callback}";
 
-      if($this->wire->config->ajax) {
+      if ($this->wire->config->ajax) {
         // ajax request with payload
         $data = file_get_contents('php://input');
         $this->wire->session->set($sessionkey, $data);
@@ -346,12 +367,12 @@ class RockGrid2 extends WireData implements Module {
       header("Content-Type: text/event-stream");
 
       $callback = $grid->getCallbacks($event->callback);
-      if(!$callback) throw new WireException("Callback not found");
+      if (!$callback) throw new WireException("Callback not found");
 
       // execute callback
       $input = json_decode($this->wire->session->get($sessionkey));
       $callback->__invoke($input, $grid);
-      if(connection_aborted()) return 'aborted';
+      if (connection_aborted()) return 'aborted';
       return 'success';
     });
   }
@@ -360,11 +381,12 @@ class RockGrid2 extends WireData implements Module {
    * Jump to page via id
    * @return void
    */
-  public function jumpToPage(HookEvent $event) {
-    if(!$this->wire->user->isLoggedin()) return;
-    if(!$id = (int)$event->pageID) return;
-    if(!$page = $this->wire->pages->get($id) OR !$page->id) return;
-    if(!$page->viewable()) return;
+  public function jumpToPage(HookEvent $event)
+  {
+    if (!$this->wire->user->isLoggedin()) return;
+    if (!$id = (int)$event->pageID) return;
+    if (!$page = $this->wire->pages->get($id) or !$page->id) return;
+    if (!$page->viewable()) return;
     $this->wire->session->redirect($page->url);
   }
 
@@ -374,30 +396,31 @@ class RockGrid2 extends WireData implements Module {
    * if you need.
    * @return void
    */
-  public function ___loadAssets() {
+  public function ___loadAssets()
+  {
     $rg = $this;
 
     // add the grid's js file on renderready
-    $this->addHookAfter("InputfieldRockGrid2::renderReadyHook", function(HookEvent $event) use($rg) {
+    $this->addHookAfter("InputfieldRockGrid::renderReadyHook", function (HookEvent $event) use ($rg) {
       // set flag to load assets for rockgrid
       $rg->loadAssets = true;
       $inputfield = $event->object;
       $js = $inputfield->getFile('js');
-      if(!$js) $js = $this->createJS($inputfield);
+      if (!$js) $js = $this->createJS($inputfield);
       $this->wire->config->scripts->add($rg->m($js));
     });
 
     // if any rockgrid field is present we add the necessary libraries
     // this is done AFTER all field's scripts are loaded so that the first
-    // init() call of RockGrid2.js fires for all grids but all files are
+    // init() call of RockGrid.js fires for all grids but all files are
     // still only loaded once
-    $this->addHookBefore('AdminTheme::getExtraMarkup', function (HookEvent $event) use($rg) {
-      if(!$rg->loadAssets) return;
+    $this->addHookBefore('AdminTheme::getExtraMarkup', function (HookEvent $event) use ($rg) {
+      if (!$rg->loadAssets) return;
       $config = $this->wire->config;
 
       // load moment
       $config->scripts->add($rg->m("lib/moment.min.js"));
-      if($rg->momentTZ) {
+      if ($rg->momentTZ) {
         $config->scripts->add($rg->m("lib/moment-timezone-with-data.min.js"));
       }
 
@@ -407,11 +430,11 @@ class RockGrid2 extends WireData implements Module {
 
       // rockgrid
       $config->scripts->add($rg->m("Grid.js"));
-      $config->scripts->add($rg->m("RockGrid2.js"));
+      $config->scripts->add($rg->m("RockGrid.js"));
       $rg->addStylesheet();
 
       // load exceljs and filesaver.js
-      if($rg->loadXLS) {
+      if ($rg->loadXLS) {
         $config->scripts->add($rg->m("lib/exceljs.min.js"));
         $config->scripts->add($rg->m("lib/FileSaver.min.js"));
       }
@@ -422,21 +445,22 @@ class RockGrid2 extends WireData implements Module {
    * Return url including timestamp (cache buster)
    * @return string
    */
-  public function m($file) {
-    if(!$file) return;
+  public function m($file)
+  {
+    if (!$file) return;
     $config = $this->wire->config;
-    if(!is_file($file)) $file = $config->paths($this).$file;
-    $m = "?m=".filemtime($file);
-    return str_replace($config->paths->root, $config->urls->root, $file).$m;
+    if (!is_file($file)) $file = $config->paths($this) . $file;
+    $m = "?m=" . filemtime($file);
+    return str_replace($config->paths->root, $config->urls->root, $file) . $m;
   }
 
   /**
    * Return url of given file
    * @return string
    */
-  public function url($path) {
+  public function url($path)
+  {
     $config = $this->wire->config;
     return str_replace($config->paths->root, $config->urls->root, $path);
   }
-
 }

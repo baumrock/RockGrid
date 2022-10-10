@@ -1,7 +1,7 @@
 "use strict";
 
 // setup class
-function RockGrid2() {
+function RockGrid() {
   this.urls = ProcessWire.config.urls;
   this.coldefs = {};
   this.grids = {};
@@ -143,7 +143,7 @@ function RockGrid2() {
  * Add a grid to the main object using custom setup base on a base setup
  * If no base setup is defined the grid will use the default one
  */
-RockGrid2.prototype.add = function (gridName, customSetup, baseSetup) {
+RockGrid.prototype.add = function (gridName, customSetup, baseSetup) {
   // create an immutable copy of the setup to prevent modifying the original
   // setup and using the same setup for several grids
   let setup = $.extend({}, this.setups[baseSetup || "default"]);
@@ -184,15 +184,15 @@ RockGrid2.prototype.add = function (gridName, customSetup, baseSetup) {
 /**
  * Add column definition to definitions array
  */
-RockGrid2.prototype.addDef = function (coldef, definitions) {
+RockGrid.prototype.addDef = function (coldef, definitions) {
   definitions.push(coldef);
 };
 
 /**
  * Add column definition after other column
- * RockGrid2.addDefAfter('id', {...}, definitions);
+ * RockGrid.addDefAfter('id', {...}, definitions);
  */
-RockGrid2.prototype.addDefAfter = function (col, coldef, definitions) {
+RockGrid.prototype.addDefAfter = function (col, coldef, definitions) {
   let arr = definitions.map((x) => x.field);
   let index = arr.indexOf(col);
   definitions.splice(index + 1, 0, coldef);
@@ -201,7 +201,7 @@ RockGrid2.prototype.addDefAfter = function (col, coldef, definitions) {
 /**
  * Add column definition before other column
  */
-RockGrid2.prototype.addDefBefore = function (col, coldef, definitions) {
+RockGrid.prototype.addDefBefore = function (col, coldef, definitions) {
   let fields = definitions.map((x) => x.field);
   let index = fields.indexOf(col);
   definitions.splice(index, 0, coldef);
@@ -211,7 +211,7 @@ RockGrid2.prototype.addDefBefore = function (col, coldef, definitions) {
  * Return fill pattern to use for ExcelJS
  * @return object
  */
-RockGrid2.prototype.bg = function (color) {
+RockGrid.prototype.bg = function (color) {
   return {
     type: "pattern",
     pattern: "solid",
@@ -219,7 +219,7 @@ RockGrid2.prototype.bg = function (color) {
   };
 };
 
-RockGrid2.prototype.buttonClick = function (button) {
+RockGrid.prototype.buttonClick = function (button) {
   let $button = $(button).closest("button");
   let grid = this.getGrid(button);
   // trigger event on grid root element, eg "button.reload"
@@ -230,7 +230,7 @@ RockGrid2.prototype.buttonClick = function (button) {
 /**
  * Add callbacks to the grid
  */
-RockGrid2.prototype.callbacks = function () {
+RockGrid.prototype.callbacks = function () {
   let rg = this;
   return {
     ajaxResponse: function (url, params, response) {
@@ -245,35 +245,35 @@ RockGrid2.prototype.callbacks = function () {
 /**
  * Return url to edit a page in the PW backend
  */
-RockGrid2.prototype.editUrl = function (id) {
+RockGrid.prototype.editUrl = function (id) {
   return this.urls.admin + "page/edit/?id=" + id;
 };
 
 /**
  * Get grid by name or dom element
  */
-RockGrid2.prototype.getGrid = function (name) {
+RockGrid.prototype.getGrid = function (name) {
   if (typeof name == "object") {
     // is it a tabulator object? then it has an "element" property
     if (name.element) name = name.element;
 
     // get grid by dom element
     // get name of grid from ID of root element
-    let $el = $(name).closest(".RockGrid2");
+    let $el = $(name).closest(".RockGrid");
     name = $el.attr("id").replace("rg2-", "");
   }
   // grid was requested by name
   return this.grids[name] || false;
 };
 
-RockGrid2.prototype.getSetup = function (name) {
+RockGrid.prototype.getSetup = function (name) {
   return this.setups[name || "default"];
 };
 
 /**
  * Return icon markup
  */
-RockGrid2.prototype.icon = function (name, tooltip) {
+RockGrid.prototype.icon = function (name, tooltip) {
   if (!name) return "";
   if (tooltip) {
     tooltip = tooltip.replace(/(<([^>]+)>)/gi, "").replace(/["|']/gi, "");
@@ -291,7 +291,7 @@ RockGrid2.prototype.icon = function (name, tooltip) {
  * @param object settings
  * @returns void
  */
-RockGrid2.prototype.init = function (name, settings) {
+RockGrid.prototype.init = function (name, settings) {
   // console.log('init', name);
   let grid = this.getGrid(name);
   if (!grid) return;
@@ -312,17 +312,17 @@ RockGrid2.prototype.init = function (name, settings) {
 /**
  * Return link markup
  * Usage:
- * RockGrid2.link({
+ * RockGrid.link({
  *   icon: 'edit',
  *   label: 'foo bar',
  *   tooltip: 'Edit this page',
- *   href: RockGrid2.editUrl(id),
+ *   href: RockGrid.editUrl(id),
  *   class: 'my-class',
  *   panel: true, // default
  *   reload: true,
  * });
  */
-RockGrid2.prototype.link = function (data) {
+RockGrid.prototype.link = function (data) {
   data = data || {};
   let href = data.href || "#";
   let panel = data.panel !== false ? " rg-panel" : "";
@@ -338,7 +338,7 @@ RockGrid2.prototype.link = function (data) {
 /**
  * Move one column of the definitions after another
  */
-RockGrid2.prototype.moveColAfter = function (
+RockGrid.prototype.moveColAfter = function (
   columnToMove,
   otherColumn,
   definitions
@@ -353,7 +353,7 @@ RockGrid2.prototype.moveColAfter = function (
 /**
  * Move one column of the definitions before another
  */
-RockGrid2.prototype.moveColBefore = function (
+RockGrid.prototype.moveColBefore = function (
   columnToMove,
   otherColumn,
   definitions
@@ -369,7 +369,7 @@ RockGrid2.prototype.moveColBefore = function (
  * Set ajax data for this grid after an ajax response was received
  * This is necessary to support RockFinder3 as data source of grids
  */
-RockGrid2.prototype.setAjaxData = function (table, response) {
+RockGrid.prototype.setAjaxData = function (table, response) {
   if (!response || typeof response != "object") {
     UIkit.modal.alert("Invalid data received");
     return [];
@@ -387,7 +387,7 @@ RockGrid2.prototype.setAjaxData = function (table, response) {
   return response;
 };
 
-RockGrid2.prototype.setColDef = function (column, def, data) {
+RockGrid.prototype.setColDef = function (column, def, data) {
   let coldef = this.coldefs[def];
   if (typeof coldef == "function") return coldef(column, data);
   console.warn("coldef " + def + " not found");
@@ -396,13 +396,13 @@ RockGrid2.prototype.setColDef = function (column, def, data) {
 /**
  * Usage:
  * Given a definitions array [def1, foo, def2, bar]
- * RockGrid2.setColOrder([foo, bar], definitions);
+ * RockGrid.setColOrder([foo, bar], definitions);
  * Result = [def1, foo, bar, def2]
  *
  * The first item is taken as reference where to add the other columns.
  * Leading and trailing elements will stay untouched.
  */
-RockGrid2.prototype.setColOrder = function (order, definitions) {
+RockGrid.prototype.setColOrder = function (order, definitions) {
   let defs = {};
   definitions.forEach((def) => (defs[def.field] = def));
 
@@ -426,11 +426,11 @@ RockGrid2.prototype.setColOrder = function (order, definitions) {
   });
 };
 
-RockGrid2.prototype.tooltip = function (label, tooltip) {
+RockGrid.prototype.tooltip = function (label, tooltip) {
   return "<span title='" + tooltip + "' uk-tooltip>" + label + "</span>";
 };
 
-RockGrid2.prototype.trigger = function (table, event, params) {
+RockGrid.prototype.trigger = function (table, event, params) {
   let grid = this.getGrid(table);
   $(document).trigger("rg." + event, { grid, params });
 };
@@ -438,11 +438,11 @@ RockGrid2.prototype.trigger = function (table, event, params) {
 /**
  * Return jump-url of page with given id
  */
-RockGrid2.prototype.url = function (id) {
+RockGrid.prototype.url = function (id) {
   return "/rockgrid2/jump/" + id;
 };
 
-RockGrid2.prototype.util = function () {
+RockGrid.prototype.util = function () {
   return UIkit.util;
 };
 
@@ -458,11 +458,11 @@ Tabulator.extendModule("format", "formatters", {
     let $el = $(cell.getElement());
     if (!value) return;
     if (value === "yes") {
-      $el.css("background", RockGrid2.colors["green-100"]);
-      return RockGrid2.icon("check", value);
+      $el.css("background", RockGrid.colors["green-100"]);
+      return RockGrid.icon("check", value);
     } else {
-      $el.css("background", RockGrid2.colors["red-100"]);
-      return RockGrid2.icon("times", value);
+      $el.css("background", RockGrid.colors["red-100"]);
+      return RockGrid.icon("times", value);
     }
   },
 
@@ -471,7 +471,7 @@ Tabulator.extendModule("format", "formatters", {
     let val = cell.getValue();
     let id = cell.getRow().getData()["id"];
     if (!id) return val;
-    return "<a href='" + RockGrid2.editUrl(id) + "'>" + val + "</a>";
+    return "<a href='" + RockGrid.editUrl(id) + "'>" + val + "</a>";
   },
 
   // link to page id jumplink
@@ -480,7 +480,7 @@ Tabulator.extendModule("format", "formatters", {
     let val = cell.getValue();
     let id = cell.getRow().getData()["id"];
     if (!id) return val;
-    return "<a href='" + RockGrid2.url(id) + "'>" + val + "</a>";
+    return "<a href='" + RockGrid.url(id) + "'>" + val + "</a>";
   },
 });
 
@@ -521,16 +521,16 @@ Tabulator.extendModule("filter", "filters", {
 });
 
 // init class and trigger initial event
-var RockGrid2 = new RockGrid2();
-$(document).trigger("RockGrid2");
+var RockGrid = new RockGrid();
+$(document).trigger("RockGrid");
 
 /**
  * Add coldefs that change many column properties at once
- * You can add custom coldefs easily on the RockGrid2 event
+ * You can add custom coldefs easily on the RockGrid event
  *
- * Usage: RockGrid2.setColDef(col, 'checkbox');
+ * Usage: RockGrid.setColDef(col, 'checkbox');
  */
-RockGrid2.coldefs = {
+RockGrid.coldefs = {
   checkbox: function (col) {
     col.mutator = function (value) {
       return value ? "yes" : "no";
@@ -565,7 +565,7 @@ RockGrid2.coldefs = {
 // button clicks
 $(document).on("click", ".rg-button", function (e) {
   e.preventDefault();
-  RockGrid2.buttonClick(e.target);
+  RockGrid.buttonClick(e.target);
 });
 
 // custom panel fix

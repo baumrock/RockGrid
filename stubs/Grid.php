@@ -1,4 +1,4 @@
-<?php namespace RockGrid2;
+<?php namespace RockGrid;
 class {name} extends Grid {
 
   public function info() {
