@@ -5,7 +5,7 @@ namespace ProcessWire;
 class ProcessRockGrid extends Process
 {
 
-  const permission = "rockgrid2";
+  const permission = "rockgrid";
 
   public static function getModuleInfo()
   {
