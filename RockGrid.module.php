@@ -22,7 +22,7 @@ class RockGrid extends WireData implements Module
   {
     return [
       'title' => 'RockGrid',
-      'version' => '2.0.0',
+      'version' => '2.1.0',
       'summary' => 'RockGrid Main Module',
       'autoload' => true, // necessary for url hooks
       'singular' => true,
