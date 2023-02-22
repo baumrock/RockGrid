@@ -1,5 +1,5 @@
 "use strict";
-function RG2Grid(name, setup) {
+function RGGrid(name, setup) {
   this.name = name; // grid name
   this.setup = setup; // setup data object
   this.table; // table instance (when initialized)
@@ -14,14 +14,14 @@ function RG2Grid(name, setup) {
   this.$root; // root container
 }
 
-RG2Grid.prototype.addCallback = function (name, callback) {
+RGGrid.prototype.addCallback = function (name, callback) {
   this.callbacks[name] = callback;
 };
 
 /**
  * Listen to events
  */
-RG2Grid.prototype.addListeners = function () {
+RGGrid.prototype.addListeners = function () {
   let grid = this;
 
   // hide/unhide buttions with the data-hidden property when selection changes
@@ -56,8 +56,8 @@ RG2Grid.prototype.addListeners = function () {
   });
 };
 
-RG2Grid.prototype.ajax = function (callback, data, $button, modal) {
-  let url = "/rockgrid2/" + this.name + "/ajax/" + callback;
+RGGrid.prototype.ajax = function (callback, data, $button, modal) {
+  let url = "/rockgrid/" + this.name + "/ajax/" + callback;
   if (modal) {
     $(modal.$el).find(".rg-callback-confirm").fadeOut();
     let $body = $(modal.$el).find(".uk-modal-body");
@@ -84,8 +84,8 @@ RG2Grid.prototype.ajax = function (callback, data, $button, modal) {
     });
 };
 
-RG2Grid.prototype.sse = function (callback, data, $button, modal) {
-  let url = "/rockgrid2/" + this.name + "/sse/" + callback;
+RGGrid.prototype.sse = function (callback, data, $button, modal) {
+  let url = "/rockgrid/" + this.name + "/sse/" + callback;
 
   if (modal) {
     $(modal.$el).find(".rg-callback-confirm").fadeOut();
@@ -128,8 +128,8 @@ RG2Grid.prototype.sse = function (callback, data, $button, modal) {
     });
 };
 
-RG2Grid.prototype.ajax = function (callback, data, $button, modal) {
-  let url = "/rockgrid2/" + this.name + "/cc/" + callback;
+RGGrid.prototype.ajax = function (callback, data, $button, modal) {
+  let url = "/rockgrid/" + this.name + "/cc/" + callback;
   if (modal) {
     $(modal.$el).find(".rg-callback-confirm").fadeOut();
     let $body = $(modal.$el).find(".uk-modal-body");
@@ -156,15 +156,15 @@ RG2Grid.prototype.ajax = function (callback, data, $button, modal) {
     });
 };
 
-RG2Grid.prototype.button = function (name) {
+RGGrid.prototype.button = function (name) {
   return this.$root.find(".rg-buttons button[name=" + name + "]");
 };
 
-RG2Grid.prototype.getCallback = function (name) {
+RGGrid.prototype.getCallback = function (name) {
   return this.callbacks[name];
 };
 
-RG2Grid.prototype.hasHeaderFilter = function () {
+RGGrid.prototype.hasHeaderFilter = function () {
   if (!this.table) return false;
   return !!this.table.getHeaderFilters().length;
 };
@@ -172,7 +172,7 @@ RG2Grid.prototype.hasHeaderFilter = function () {
 /**
  * Reload ajax grid
  */
-RG2Grid.prototype.reload = function () {
+RGGrid.prototype.reload = function () {
   let table = this.table;
   var headerFilters = table.getHeaderFilters();
   table.setData().then(function () {
@@ -183,18 +183,16 @@ RG2Grid.prototype.reload = function () {
   });
 };
 
-RG2Grid.prototype.util = function () {
+RGGrid.prototype.util = function () {
   return UIkit.util;
 };
 
 /**
  * Create an xls file from grid data
  */
-RG2Grid.prototype.xls = async function (opt) {
+RGGrid.prototype.xls = async function (opt) {
   if (typeof ExcelJS == "undefined") {
-    alert(
-      "Set $this->rg2->loadXLS = true; in grid constructor to load ExcelJS"
-    );
+    alert("Set $this->rg->loadXLS = true; in grid constructor to load ExcelJS");
     return;
   }
 

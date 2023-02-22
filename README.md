@@ -1,6 +1,8 @@
-# ROCKGRID2
+# RockGrid
 
-RockGrid is the successor of [RockDataTables](https://processwire.com/talk/topic/15524-previewdiscussion-rockdatatables/), [RockGrid](https://processwire.com/talk/topic/19539-deprecated-rockgrid-powerful-performant-and-beautiful-data-listing-tool/), [RockTabulator](https://processwire.com/talk/topic/21984-rocktabulator-powerful-performant-and-versatile-data-grids-for-processwire/); As you can see I've taken many approaches to get easy and versatile data listings for the PW backend. Hopefully RockGrid will finally be the best solution available!
+<img src=https://i.imgur.com/EODtQXT.gif height=300>
+
+RockGrid is the successor of [RockDataTables](https://processwire.com/talk/topic/15524-previewdiscussion-rockdatatables/), [RockGrid1](https://processwire.com/talk/topic/19539-deprecated-rockgrid-powerful-performant-and-beautiful-data-listing-tool/), [RockTabulator](https://processwire.com/talk/topic/21984-rocktabulator-powerful-performant-and-versatile-data-grids-for-processwire/); As you can see I've taken many approaches to get easy and versatile data listings for the PW backend and finally I'm very happy with the solution 😎
 
 ## Do not distribute
 
@@ -11,77 +13,73 @@ related to the site.
 
 ![img](hr.svg)
 
+## How it works / Limitations
+
+RockGrid uses https://tabulator.info/ to display data stored in the PW backend. The main difference to Lister or ListerPro is that it loads **all** the data into the grid at once. This makes it super convenient for the client to work with the data as filtering and sorting are instant. The drawback is that this has limitations in terms of scalability - though I've never hit that limit in my projects and tabulator.info states in its docs that it can easily handle thousands of rows. Nonetheless it is important for you as a developer to keep that limitation in mind!
+
+The performance of the grid will not only depend on the number of rows but also on the complexity of the grid (columns, formatters, etc) and also the power of the clients computer!
+
 ## Setup
 
-The display part is done via the inputfield `InputfieldRockGrid`. In a ProcessModule all you need to do is to add such a field to your form:
+After installing the module you can create a new grid by clicking "Create New Grid" in the menu:
 
-```php
-<?php namespace ProcessWire;
-class ProcessFoo extends Process {
-  public static function getModuleInfo() {
-    return [...];
-  }
+<img src=https://i.imgur.com/zEDu3UY.png height=150>
 
-  public function execute() {
-    $this->headline('...');
-    $this->browserTitle('...');
-    /** @var InputfieldForm $form */
-    $form = $this->modules->get('InputfieldForm');
+I recommend you create two grids:
 
-    $form->add([
-      'type' => 'RockGrid',
-      'label' => 'Foo',
-      'grid' => 'FooGrid',
-    ]);
+- one with the verbose JS boilerplate
+- and one with the minimal JS boilerplate
 
-    return $form->render();
-  }
-}
-```
-
-Next, setup the `FooGrid` object by placing a file in `/site/assets/RockGrid/`:
-
-```php
-// file /site/assets/RockGrid/FooGrid.php
-<?php namespace RockGrid;
-class FooGrid extends Grid {
-}
-```
-
-If you want/need to place your grids in a dedicated folder somewhere else you can add that folder to RockGrid on init()
-
-```php
-/** @var RockGrid $rg */
-$rg = $this->wire()->modules->get('RockGrid');
-$rg->addDir("/path/to/your/rock/grids");
-```
-
-Once you load your field the JS file that defines all visual and frontend logic parts will be created automatically making it really easy to setup.
+Both show important concepts and have comments that will help you to understand RockGrid and get started quickly.
 
 ## Data
 
-Most likely you'll want the grid to display a set of ProcessWire pages. Simply add a `getData()` method to your PHP file that defines the grid:
+RockGrid can view these types of data:
 
-```php
-  /**
-   * Get data for this grid
-   */
-  public function getData() {
-    /** @var RockFinder3Master $finder */
-    $finder = $this->wire->rockfinder;
-    $data = $finder->find([
-        'template' => 'foo',
-        'sort' => '-id',
-      ])->addColumnsFromTemplate('foo');
-    return $data;
-  }
-```
+- ProcessWire PageArrays
+- RockFinder results
+- Plain PHP arrays
 
-The getData method can return different types of data like a plain PHP array or a RockFinder3.
+Important: Make sure that the `getData` method does not echo any output otherwise the AJAX request of the grid will fail! You can use TracyDebugger and its `bd()` method.
 
-Important: Make sure that the `getData` method does not echo any output otherwise the AJAX request of the grid would fail! For debugging I recommend using tracy and the `bd()` method.
+## Formatting
 
-### Dynamic Data
+The presentation side of RockGrid is done in the grid's JS file. This part is basically working with tabulator as shown in the [tabulator docs](https://tabulator.info/docs/) - make sure to read the latest quickstart guide there!
+
+The most important concept to understand is that the grid can display data in a different way than it is stored (or received from PHP)! There are two main mechanisms:
+
+- mutators
+- formatters
+
+Create a new grid with the verbose JavaScript boilerplate and see the difference!
+
+### Mutators
+
+Mutators take the cell value from the AJAX request and CHANGE the value in the grid's internal data storage. This means they do not only DISPLAY a different value but they also HOLD a different value.
+
+This is important to understand, because filters and sorting can need different values internally than they display to the user.
+
+In the verbose example try to filter the `created` column by `mut` --> it will show all rows, because the phrase `mutator: ...` is not only part of the presentation but also part of the internal data!
+
+See https://tabulator.info/docs/5.4/mutators
+
+### Formatters
+
+Formatters on the other hand only change the way the data is PRESENTED to the user. For example you could have a `date` column with a mutator present that makes sure the date is stored internally as something like `20230221123300`. You could then have a formatter that renders that value like `21st of February 2023 @ 12:33:00`.
+
+Having both the mutator and the formatter in place makes it possible to **sort** the column by date! Even though the presenation is showing a string value (where you would get wrong results when sorting that column) the internal sorter is using the number value that is properly setup to support simple number sorting.
+
+In the verbose example try to filter the `modified` column by `form` --> it will show 0 results, because the phrase `formatter: ...` is only the visual representation of the column and the internal data does not contain the string `form`!
+
+See https://tabulator.info/docs/5.4/format
+
+## Debugging
+
+Every grid comes with a custom endpoint that shows the raw data without the applied tabulator JS formatting instructions.
+
+<img src=https://i.imgur.com/9yCKKpI.png height=100>
+
+## Dynamic Data
 
 Sometimes you want to use one grid to show different chunks of the same data on different pages. This is possible in two ways:
 
@@ -107,38 +105,41 @@ $form->add([
 
 ![img](hr.svg)
 
-## Frontend styling
+## Frontend Helpers
 
-RockGrid will automatically add a JS file for your grid that helps you setting up the grid on the frontend. You can then alter any of your columns in the `autoColumnsDefinitions` section of that file. The most important parts are `cell formatters` (see http://tabulator.info/docs/5.0/format#format) and `cell mutators` (see http://tabulator.info/docs/5.0/mutators). Here is an example:
+RockGrid comes with several helper functions that prevent reinventing the wheel for common tasks. One example is that you often want to show an edit icon instead of the id:
+
+Before:
+
+<img src=https://i.imgur.com/VO3YkSU.png height=130>
+
+Code:
 
 ```js
-else if(field == "starthour") {
-  col.title = RockGrid.icon('flag-o', "Beginn");
+if (name == "id") {
   col.width = 50;
-  col.hozAlign = 'center';
-  col.mutator = function(value, data) {
-    let start = data[prefix+"start"];
-    if(start) return moment(start).format('HH:mm');
-  }
-}
-else if(field == prefix+"end") {
-  col.title = RockGrid.icon('flag-checkered', "Ende");
-  col.width = 50;
-  col.hozAlign = 'center';
-  col.formatter = function(cell) {
-    let end = cell.getValue();
-    if(end) return moment(end).format('HH:mm');
-  }
-  col.headerFilterFunc = function(search, cell) {
-    cell = moment(cell).format("HH:mm");
-    return cell.indexOf(search) > -1;
-  }
+  col.hozAlign = "center";
+  col.formatter = function (cell) {
+    let id = cell.getValue();
+    return rg.link({
+      icon: "edit",
+      href: rg.editUrl(id),
+      tooltip: "Edit this page",
+      panel: true,
+    });
+  };
 }
 ```
 
-As you can see there are several helpers available via `RockGrid` - in the example above we use RockGrid.icon() to display an icon with a tooltip as column header.
+Note: We use `rg.link()` for creating the link icon and `rg.editUrl()` to get the ProcessWire url from the page id.
 
-![img](hr.svg)
+For all the available helper methods see `RockGrid.js` or use DevTools to inspect the `RockGrid` object and its methods:
+
+<img src=https://i.imgur.com/U7JQYtM.png height=350>
+
+After:
+
+<img src=https://i.imgur.com/aiATrXQ.png height=130>
 
 ## Loading additional libraries
 
@@ -148,7 +149,7 @@ For some functionality you need additional libraries to load. Do this in your gr
 class YourGrid extends Grid {
   public function __construct() {
     parent::__construct(); // dont forget to call the parent constructor!
-    $this->rg2->loadXLSX = true; // load excel library to enable XLSX download
+    $this->rg->loadXLSX = true; // load excel library to enable XLSX download
   }
 ```
 

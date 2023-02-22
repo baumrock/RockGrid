@@ -26,8 +26,8 @@ class Grid extends Wire
     parent::__construct();
     $this->admin = $this->wire->pages->get(2)->url;
     $this->name = $this->className(); // unique name of grid
-    $this->id = "rg2-" . $this->className(); // id of dom element
-    $this->rg2 = $this->wire->modules->get('RockGrid');
+    $this->id = "rg-" . $this->className(); // id of dom element
+    $this->rg = $this->wire->modules->get('RockGrid');
     $this->setFile();
   }
 
@@ -62,8 +62,8 @@ class Grid extends Wire
     if (!$this->wire->user->isSuperuser()) return;
     $data = $this->getData();
     if ($data instanceof RockFinder3) $data = $data->getRowArray();
-    return $this->wire->files->render($this->rg2->path . "debug.php", [
-      'rg' => $this->rg2,
+    return $this->wire->files->render($this->rg->path . "debug.php", [
+      'rg' => $this->rg,
       'data' => $this->getJSON($data),
     ]);
   }
@@ -255,7 +255,7 @@ class Grid extends Wire
    */
   public function ___render()
   {
-    $file = $this->rg2->path . "layouts/default.php";
+    $file = $this->rg->path . "layouts/default.php";
     return $this->wire->files->render($file, ['grid' => $this])
       . "<script>RockGrid.init('{$this->name}', {$this->settings()});</script>";
   }

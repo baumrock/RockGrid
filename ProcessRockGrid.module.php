@@ -2,6 +2,8 @@
 
 namespace ProcessWire;
 
+use RockGrid\Grid;
+
 class ProcessRockGrid extends Process
 {
 
@@ -35,10 +37,22 @@ class ProcessRockGrid extends Process
     parent::init(); // always remember to call the parent init
   }
 
+  private function addHelp($form, Grid $grid)
+  {
+    $form->add([
+      'type' => 'markup',
+      'label' => 'Setup Info',
+      'icon' => 'life-ring',
+      'value' => "
+        <p><strong>This is an example setup!</strong> <i>Please see readme for detailed instructions.</i></p>
+        <p>This grid is using the file <strong>{$grid->file}</strong> for its definition and backend stuff (like getting data or defining access) and the corresponding JS file for all the client side magic (like defining presentation or user interactions like filters).</p>
+      ",
+      'notes' => "You can hide this setup info by setting 'help' to 'false' in the grid's PHP file's info() method!",
+    ]);
+  }
+
   public function execute()
   {
-    $this->headline('Grids');
-    $this->browserTitle('Grids');
     $grid = $this->wire->input->get('grid', 'text');
     if (!$grid) return "No grid selected";
 
@@ -46,21 +60,27 @@ class ProcessRockGrid extends Process
     $grid = $this->wire->modules->get("RockGrid")->getGrid($grid);
     $info = $grid->info();
 
+    // page title
+    $this->headline($info->title);
+    $this->browserTitle($info->title);
+
     /** @var InputfieldForm $form */
     $form = $this->modules->get('InputfieldForm');
 
     $notes = '';
     if ($this->wire->user->isSuperuser()) {
-      $url = "/rockgrid2/" . $grid->name;
+      $url = "/rockgrid/" . $grid->name;
       $notes = "[$url]($url)";
       if (!$this->wire->modules->isInstalled("TracyDebugger")) {
         $notes .= "\nMake sure to install TracyDebugger to make your life easier!";
       }
     }
+    if ($info->help) $this->addHelp($form, $grid);
     $form->add([
       'type' => 'RockGrid',
       'label' => $info->title,
       'grid' => $info->name,
+      'icon' => 'table',
       'notes' => "Superuser note: Debug grid via $notes",
     ]);
 
@@ -80,6 +100,7 @@ class ProcessRockGrid extends Process
 
     $name = $this->wire->input->post('grid', 'text');
     $name = ucFirst($this->wire->sanitizer->camelCase($name));
+    $js = $this->wire->input->post('js', 'text');
 
     $error = false;
     if ($name) {
@@ -89,6 +110,7 @@ class ProcessRockGrid extends Process
         $filename = $this->wire->config->paths->assets . "RockGrid/$name.php";
         $stub = $this->wire->files->fileGetContents(__DIR__ . "/stubs/Grid.php");
         $content = str_replace("{name}", $name, $stub);
+        $content = str_replace("{js}", $js, $content);
         $this->wire->files->filePutContents($filename, $content);
         $this->warning("Created grid at $filename");
         $this->wire->session->redirect("./?grid=$name");
@@ -103,6 +125,16 @@ class ProcessRockGrid extends Process
     ]);
     $f = $form->children()->last();
     if ($error) $f->error($error);
+
+    // js stubfile
+    $f = new InputfieldSelect();
+    $f->name = 'js';
+    $f->label = "JavaScript Boilerplate";
+    $f->addOption("verbose", "verbose");
+    $f->addOption("minimal", "minimal");
+    $f->required = true;
+    $form->add($f);
+
 
     $form->add([
       'type' => 'submit',

@@ -14,6 +14,8 @@ function RockGrid() {
       ajaxConfig: {
         method: "GET",
         headers: {
+          // this makes tracy debugger catch ajax requests in the debug bar
+          // which is super helpful for debugging!
           "X-Requested-With": "XMLHttpRequest",
           "Content-type": "application/json; charset=utf-8",
         },
@@ -26,7 +28,7 @@ function RockGrid() {
       autoColumns: true,
       columnDefaults: {
         headerFilter: true,
-        headerFilterFunc: "rg2.smart",
+        headerFilterFunc: "rg.smart",
       },
       // footerElement:
       //   "<span class='uk-float-left rg-footer-left'>left</span>"
@@ -150,7 +152,7 @@ RockGrid.prototype.add = function (gridName, customSetup, baseSetup) {
 
   // by default we set the ajax url to the current grid
   // if you dont want an ajax grid set ajaxURL = false in your setup
-  if (setup.ajaxURL === true) setup.ajaxURL = "/rockgrid2/" + gridName;
+  if (setup.ajaxURL === true) setup.ajaxURL = "/rockgrid/" + gridName;
 
   // create setup object
   // first we take one of the predefined setups and merge user setup data
@@ -159,7 +161,7 @@ RockGrid.prototype.add = function (gridName, customSetup, baseSetup) {
   setup = $.extend(setup, customSetup, this.callbacks());
 
   // now create the grid object
-  let grid = new RG2Grid(gridName, setup);
+  let grid = new RGGrid(gridName, setup);
   this.grids[gridName] = grid;
 
   // add callbacks
@@ -260,7 +262,7 @@ RockGrid.prototype.getGrid = function (name) {
     // get grid by dom element
     // get name of grid from ID of root element
     let $el = $(name).closest(".RockGrid");
-    name = $el.attr("id").replace("rg2-", "");
+    name = $el.attr("id").replace("rg-", "");
   }
   // grid was requested by name
   return this.grids[name] || false;
@@ -295,7 +297,7 @@ RockGrid.prototype.init = function (name, settings) {
   // console.log('init', name);
   let grid = this.getGrid(name);
   if (!grid) return;
-  grid.$root = $("#rg2-" + grid.name);
+  grid.$root = $("#rg-" + grid.name);
   grid.$el = grid.$root.find(".rg-grid");
   grid.el = grid.$el[0];
 
@@ -439,7 +441,7 @@ RockGrid.prototype.trigger = function (table, event, params) {
  * Return jump-url of page with given id
  */
 RockGrid.prototype.url = function (id) {
-  return "/rockgrid2/jump/" + id;
+  return "/rockgrid/jump/" + id;
 };
 
 RockGrid.prototype.util = function () {
@@ -448,12 +450,12 @@ RockGrid.prototype.util = function () {
 
 /**
  * Custom Tabulator Formatters
- * Usage: col.formatter = 'rg2.checkbox'
+ * Usage: col.formatter = 'rg.checkbox'
  */
 Tabulator.extendModule("format", "formatters", {
   // format the value of a checkbox
   // you can provide a NULL value to the cell to prevent rendering of YES/NO
-  "rg2.checkbox": function (cell, formatterParams) {
+  "rg.checkbox": function (cell, formatterParams) {
     let value = cell.getValue();
     let $el = $(cell.getElement());
     if (!value) return;
@@ -467,7 +469,7 @@ Tabulator.extendModule("format", "formatters", {
   },
 
   // link to edit item in pw page editor
-  "rg2.editlink": function (cell) {
+  "rg.editlink": function (cell) {
     let val = cell.getValue();
     let id = cell.getRow().getData()["id"];
     if (!id) return val;
@@ -476,7 +478,7 @@ Tabulator.extendModule("format", "formatters", {
 
   // link to page id jumplink
   // makes it possible to link to a page by id rather than by page url
-  "rg2.link": function (cell) {
+  "rg.link": function (cell) {
     let val = cell.getValue();
     let id = cell.getRow().getData()["id"];
     if (!id) return val;
@@ -486,11 +488,11 @@ Tabulator.extendModule("format", "formatters", {
 
 /**
  * Filters
- * Usage: col.headerFilterFunc = "rg2.smart";
+ * Usage: col.headerFilterFunc = "rg.smart";
  */
 Tabulator.extendModule("filter", "filters", {
   // smart filter
-  "rg2.smart": function (headerValue, rowValue, rowData, filterParams) {
+  "rg.smart": function (headerValue, rowValue, rowData, filterParams) {
     let filters = this;
     let search = headerValue;
     let val = rowValue;
@@ -535,12 +537,12 @@ RockGrid.coldefs = {
     col.mutator = function (value) {
       return value ? "yes" : "no";
     };
-    col.formatter = "rg2.checkbox";
+    col.formatter = "rg.checkbox";
     col.hozAlign = "center";
     col.width = 60;
   },
   edit: function (col) {
-    col.formatter = "rg2.editlink";
+    col.formatter = "rg.editlink";
   },
   money: function (col) {
     col.formatter = "money";

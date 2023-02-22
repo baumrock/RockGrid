@@ -38,7 +38,7 @@ class RockGrid extends WireData implements Module
 
   public function init()
   {
-    $this->wire('rockgrid2', $this);
+    $this->wire('rockgrid', $this);
     $this->path = $this->wire->config->paths($this);
     $this->autoloader();
     $this->loadAssets();
@@ -47,7 +47,7 @@ class RockGrid extends WireData implements Module
     $this->addDir($this->wire->config->paths->assets . "RockGrid");
 
     // attach hooks
-    $this->addHookAfter("/rockgrid2/jump/{pageID}", $this, "jumpToPage");
+    $this->addHookAfter("/rockgrid/jump/{pageID}", $this, "jumpToPage");
 
     // hooks to enable dynamic menu items
     // ingenuity by RobinS https://bit.ly/35gf4Fj
@@ -183,7 +183,9 @@ class RockGrid extends WireData implements Module
     if (!$base) return;
     $js = "$base.js";
     if (is_file($js)) return;
-    $stub = $this->wire->files->fileGetContents(__DIR__ . "/stubs/grid.js");
+
+    $stub = $grid->info()->stub ?: "verbose";
+    $stub = $this->wire->files->fileGetContents(__DIR__ . "/stubs/$stub.js");
     $content = str_replace("{grid}", $grid->name, $stub);
     $this->wire->files->filePutContents($js, $content);
     return $js;
@@ -302,7 +304,7 @@ class RockGrid extends WireData implements Module
     // hook for grid data
     // this hook is used either in the debugger using GET
     // or for the grid's ajax request to fetch data via POST
-    $this->addHook('/rockgrid2/{grid}', function ($event) {
+    $this->addHook('/rockgrid/{grid}', function ($event) {
       $grid = $this->getGrid($event->grid);
       if (!$grid) throw new Wire404Exception("Grid not found");
 
@@ -317,7 +319,7 @@ class RockGrid extends WireData implements Module
       if ($this->wire->config->ajax) $grid->sendJSON();
       else $event->return = $grid->debug();
     });
-    $this->addHook('/rockgrid2/{grid}/ajax/{callback}', function ($event) {
+    $this->addHook('/rockgrid/{grid}/ajax/{callback}', function ($event) {
       $grid = $this->getGrid($event->grid);
       if (!$grid) throw new Wire404Exception("Grid not found");
 
@@ -341,7 +343,7 @@ class RockGrid extends WireData implements Module
 
       return json_encode($result);
     });
-    $this->addHook('/rockgrid2/{grid}/sse/{callback}', function ($event) {
+    $this->addHook('/rockgrid/{grid}/sse/{callback}', function ($event) {
       $grid = $this->getGrid($event->grid);
       if (!$grid) throw new Wire404Exception("Grid not found");
 
