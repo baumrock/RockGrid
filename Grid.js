@@ -57,7 +57,7 @@ RGGrid.prototype.addListeners = function () {
 };
 
 RGGrid.prototype.ajax = function (callback, data, $button, modal) {
-  let url = "/rockgrid/" + this.name + "/ajax/" + callback;
+  let url = this.urls.root + "rockgrid/" + this.name + "/ajax/" + callback;
   if (modal) {
     $(modal.$el).find(".rg-callback-confirm").fadeOut();
     let $body = $(modal.$el).find(".uk-modal-body");
@@ -85,7 +85,7 @@ RGGrid.prototype.ajax = function (callback, data, $button, modal) {
 };
 
 RGGrid.prototype.sse = function (callback, data, $button, modal) {
-  let url = "/rockgrid/" + this.name + "/sse/" + callback;
+  let url = this.urls.root + "rockgrid/" + this.name + "/sse/" + callback;
 
   if (modal) {
     $(modal.$el).find(".rg-callback-confirm").fadeOut();
@@ -129,7 +129,7 @@ RGGrid.prototype.sse = function (callback, data, $button, modal) {
 };
 
 RGGrid.prototype.ajax = function (callback, data, $button, modal) {
-  let url = "/rockgrid/" + this.name + "/cc/" + callback;
+  let url = this.urls.root + "rockgrid/" + this.name + "/cc/" + callback;
   if (modal) {
     $(modal.$el).find(".rg-callback-confirm").fadeOut();
     let $body = $(modal.$el).find(".uk-modal-body");

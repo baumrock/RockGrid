@@ -69,7 +69,7 @@ class ProcessRockGrid extends Process
 
     $notes = '';
     if ($this->wire->user->isSuperuser()) {
-      $url = "/rockgrid/" . $grid->name;
+      $url = $this->wire->config->urls->root . "rockgrid/" . $grid->name;
       $notes = "[$url]($url)";
       if (!$this->wire->modules->isInstalled("TracyDebugger")) {
         $notes .= "\nMake sure to install TracyDebugger to make your life easier!";

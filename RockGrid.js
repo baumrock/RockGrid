@@ -152,7 +152,9 @@ RockGrid.prototype.add = function (gridName, customSetup, baseSetup) {
 
   // by default we set the ajax url to the current grid
   // if you dont want an ajax grid set ajaxURL = false in your setup
-  if (setup.ajaxURL === true) setup.ajaxURL = "/rockgrid/" + gridName;
+  if (setup.ajaxURL === true) {
+    setup.ajaxURL = this.urls.root + "rockgrid/" + gridName;
+  }
 
   // create setup object
   // first we take one of the predefined setups and merge user setup data
@@ -441,7 +443,7 @@ RockGrid.prototype.trigger = function (table, event, params) {
  * Return jump-url of page with given id
  */
 RockGrid.prototype.url = function (id) {
-  return "/rockgrid/jump/" + id;
+  return this.urls.root + "rockgrid/jump/" + id;
 };
 
 RockGrid.prototype.util = function () {
