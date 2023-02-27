@@ -6,8 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RockGrid Debugger</title>
-  <script type='text/javascript' src='/site/modules/RockGrid/tabulator/js/tabulator.min.js'></script>
-  <link type='text/css' href='/site/modules/RockGrid/tabulator/css/tabulator.min.css' rel='stylesheet' />
+  <script type='text/javascript' src='<?= $config->urls->root ?>site/modules/RockGrid/tabulator/js/tabulator.min.js'></script>
+  <link type='text/css' href='<?= $config->urls->root ?>site/modules/RockGrid/tabulator/css/tabulator.min.css' rel='stylesheet' />
   <style>
     html,
     body {
