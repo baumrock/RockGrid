@@ -8,7 +8,7 @@ class {name} extends Grid
   public function info()
   {
     return parent::info()->setArray([
-      'title' => 'Grid',
+      'title' => 'Grid {name}',
       'icon' => 'check',
       'help' => true, // you can remove this after setup
       'stub' => '{js}', // you can remove this after setup
