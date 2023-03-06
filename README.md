@@ -19,6 +19,8 @@ RockGrid uses https://tabulator.info/ to display data stored in the PW backend. 
 
 The performance of the grid will not only depend on the number of rows but also on the complexity of the grid (columns, formatters, etc) and also the power of the clients computer!
 
+RockGrid is at the moment NOT intended for being used on the Frontend!
+
 ## Setup
 
 After installing the module you can create a new grid by clicking "Create New Grid" in the menu:
