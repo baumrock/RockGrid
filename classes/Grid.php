@@ -20,6 +20,7 @@ class Grid extends Wire
   public $file;
   public $id;
   public $name;
+  public $rg;
 
   public function __construct()
   {
