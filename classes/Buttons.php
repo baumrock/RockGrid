@@ -7,12 +7,25 @@ use ProcessWire\WireException;
 
 class Buttons extends \ProcessWire\WireArray
 {
+  public $grid;
+  public $name;
+
+  public function __construct($name, $grid)
+  {
+    parent::__construct();
+    $this->name = $name;
+    $this->grid = $grid;
+  }
 
   /**
    * Add a button to this array
+   *
+   * Returns itself to support chaining
+   * $buttons->add(...)->add(...);
+   *
    * @return Button
    */
-  public function add($data, $prepend = false)
+  public function add($data, $prepend = false): self
   {
     $button = $this->wire(new Button());
     $button->id = uniqid();
@@ -57,7 +70,7 @@ class Buttons extends \ProcessWire\WireArray
     }
     if ($prepend) parent::prepend($button);
     else parent::add($button);
-    return $button;
+    return $this;
   }
 
   /**
@@ -93,10 +106,19 @@ class Buttons extends \ProcessWire\WireArray
    * Render all buttons
    * @return string
    */
-  public function render($align = 'rg-buttons-right')
+  public function ___render()
   {
     $buttons = '';
     foreach ($this as $button) $buttons .= $button->render();
-    return "<div class='rg-buttons $align'>$buttons</div>";
+    return $buttons;
+  }
+
+  public function __debugInfo()
+  {
+    return [
+      'name' => $this->name,
+      'grid' => $this->grid,
+      'items' => $this->getArray(),
+    ];
   }
 }

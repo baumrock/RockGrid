@@ -45,15 +45,6 @@ class Grid extends Wire
   }
 
   /**
-   * This method is called when a grid is loaded the very first time
-   * This is only called when a grid is loaded so it is not the right place
-   * for attaching hooks like you'd to in init()
-   */
-  public function load()
-  {
-  }
-
-  /**
    * Render debug tabulator
    * @return string
    */
@@ -113,7 +104,7 @@ class Grid extends Wire
    */
   public function getButtons()
   {
-    $buttons = $this->wire(new Buttons());
+    $buttons = $this->wire(new Buttons('right', $this));
     $buttons->add([
       'name' => 'clearSelection',
       'tooltip' => 'Clear selection',
@@ -146,7 +137,7 @@ class Grid extends Wire
    */
   public function getButtonsCenter()
   {
-    $buttons = $this->wire(new Buttons());
+    $buttons = $this->wire(new Buttons('center', $this));
     $buttons->add([
       'name' => 'trashSelected',
       'icon' => 'trash',
@@ -177,7 +168,7 @@ class Grid extends Wire
    */
   public function getButtonsLeft()
   {
-    $buttons = $this->wire(new Buttons());
+    $buttons = $this->wire(new Buttons('left', $this));
     return $buttons;
   }
 
@@ -251,6 +242,15 @@ class Grid extends Wire
   }
 
   /**
+   * This method is called when a grid is loaded the very first time
+   * This is only called when a grid is loaded so it is not the right place
+   * for attaching hooks like you'd to in init()
+   */
+  public function onLoad()
+  {
+  }
+
+  /**
    * Render this grid
    * @return string
    */
@@ -259,6 +259,11 @@ class Grid extends Wire
     $file = $this->rg->path . "layouts/default.php";
     return $this->wire->files->render($file, ['grid' => $this])
       . "<script>RockGrid.init('{$this->name}', {$this->settings()});</script>";
+  }
+
+  public function rockgrid(): RockGrid
+  {
+    return $this->wire->modules->get('RockGrid');
   }
 
   /**

@@ -2,6 +2,8 @@
 
 namespace ProcessWire;
 
+use RockGrid\Grid;
+
 /**
  * @author Bernhard Baumrock, 19.02.2021
  * @license COMMERCIAL DO NOT DISTRIBUTE
@@ -22,7 +24,7 @@ class RockGrid extends WireData implements Module
   {
     return [
       'title' => 'RockGrid',
-      'version' => '2.1.2',
+      'version' => '2.2.0',
       'summary' => 'RockGrid Main Module',
       'autoload' => true, // necessary for url hooks
       'singular' => true,
@@ -53,6 +55,7 @@ class RockGrid extends WireData implements Module
     // ingenuity by RobinS https://bit.ly/35gf4Fj
     $this->addHookBefore('ProcessController::execute', $this, 'beforeProcessController');
     $this->addHookAfter('AdminThemeFramework::getPrimaryNavArray', $this, 'afterPrimaryNavArray');
+    $this->addHookAfter("Buttons::render", $this, "hookRenderButtons");
   }
 
   public function ready()
@@ -278,7 +281,8 @@ class RockGrid extends WireData implements Module
     // this is done only once for each grid!
     $class = "\RockGrid\\" . $name;
     $grid = new $class();
-    $grid->load();
+    /** @var Grid $grid */
+    $grid->onLoad();
 
     // save to cache and return grid
     return $this->grids[$name] = $grid;
@@ -379,6 +383,25 @@ class RockGrid extends WireData implements Module
       if (connection_aborted()) return 'aborted';
       return 'success';
     });
+  }
+
+  /**
+   * Hook that calls renderButtonsLeft/Center/Right from grid
+   *
+   * Usage in YourGrid.php:
+   * public function renderButtonsLeft($markup) {
+   *   return $markup . "<span>FOO!</span>";
+   * }
+   */
+  public function hookRenderButtons(HookEvent $event)
+  {
+    $buttons = $event->object;
+    $grid = $buttons->grid;
+    $method = "renderButtons" . ucfirst($buttons->name);
+    if (method_exists($grid, $method)) {
+      $markup = $grid->$method($event->return, $buttons);
+      $event->return = $markup;
+    }
   }
 
   /**
