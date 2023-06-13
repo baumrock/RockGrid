@@ -21,6 +21,10 @@ The performance of the grid will not only depend on the number of rows but also 
 
 RockGrid is at the moment NOT intended for being used on the Frontend!
 
+### Future ideas
+
+- get column titles from PW field labels
+
 ## Setup
 
 After installing the module you can create a new grid by clicking "Create New Grid" in the menu:
