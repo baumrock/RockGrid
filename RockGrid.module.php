@@ -46,7 +46,12 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     $this->loadAssets();
     $this->createAssetsFolder();
     $this->handleAjax();
+
+    // add folders to scan for grids
+    // add custom folders in init() of your modules:
+    // $modules->get('RockGrid')->addDir("/custom/path/to/RockGrid");
     $this->addDir($this->wire->config->paths->assets . "RockGrid");
+    $this->addDir($this->wire->config->paths->templates . "RockGrid");
 
     // attach hooks
     $this->addHookAfter("/rockgrid/jump/{pageID}", $this, "jumpToPage");
@@ -108,6 +113,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         // setup children
         $children = [];
         foreach ($this->findGrids() as $name => $grid) {
+          if ($grid['hidden']) continue;
           $children[] = [
             'id' => null,
             'parent_id' => null,
@@ -212,6 +218,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         $grids[$name] = [
           'title' => $tmp->info()->title,
           'icon' => $tmp->info()->icon,
+          'hidden' => $tmp->info()->hidden ?: false,
           'file' => $file,
         ];
       }
