@@ -81,11 +81,11 @@ class Grid extends Wire
    *
    * @return array
    */
-  public function findRaw($selector, array $fields)
+  public function findRaw($selector, array $fields, array $options = [])
   {
     /** @var RockGrid $rg */
     $rg = $this->wire->modules->get('RockGrid');
-    return $rg->findRaw($selector, $fields);
+    return $rg->findRaw($selector, $fields, $options);
   }
 
   /**
