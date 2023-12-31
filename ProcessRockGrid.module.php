@@ -57,7 +57,7 @@ class ProcessRockGrid extends Process
   public function execute()
   {
     $grid = $this->wire->input->get('grid', 'text');
-    if (!$grid) return "No grid selected";
+    if (!$grid) $this->wire->session->redirect("./new");
 
     // get grid
     $grid = $this->wire->modules->get("RockGrid")->getGrid($grid);
