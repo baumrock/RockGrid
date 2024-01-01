@@ -473,8 +473,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       }
 
       // tabulator
-      $config->scripts->add($rg->m("tabulator/js/tabulator.min.js"));
-      $config->styles->add($rg->m("tabulator/css/tabulator.min.css"));
+      $config->scripts->add($rg->m("tabulator/tabulator.min.js"));
+      $config->styles->add($rg->m("tabulator/tabulator.min.css"));
 
       // rockgrid
       $config->scripts->add($rg->m("Grid.js"));
