@@ -12,6 +12,9 @@ function RGGrid(name, setup) {
   this.el; // table
   this.$el; // table
   this.$root; // root container
+
+  // get processwire urls for ajax and sse endpoints
+  this.urls = ProcessWire.config.urls;
 }
 
 RGGrid.prototype.addCallback = function (name, callback) {

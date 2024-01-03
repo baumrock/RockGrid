@@ -46,10 +46,16 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     $this->loadAssets();
     $this->createAssetsFolder();
     $this->handleAjax();
+
+    // add folders to scan for grids
+    // add custom folders in init() of your modules:
+    // $modules->get('RockGrid')->addDir("/custom/path/to/RockGrid");
     $this->addDir($this->wire->config->paths->assets . "RockGrid");
+    $this->addDir($this->wire->config->paths->templates . "RockGrid");
 
     // attach hooks
-    $this->addHookAfter("/rockgrid/jump/{pageID}", $this, "jumpToPage");
+    $this->addHookAfter("/rockgrid/view/{pageID}", $this, "viewPage");
+    $this->addHookAfter("/rockgrid/edit/{pageID}", $this, "editPage");
 
     // hooks to enable dynamic menu items
     // ingenuity by RobinS https://bit.ly/35gf4Fj
@@ -108,6 +114,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         // setup children
         $children = [];
         foreach ($this->findGrids() as $name => $grid) {
+          if ($grid['hidden']) continue;
           $children[] = [
             'id' => null,
             'parent_id' => null,
@@ -195,6 +202,19 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
+   * Edit page via ID
+   * @return void
+   */
+  public function editPage(HookEvent $event)
+  {
+    if (!$this->wire->user->isLoggedin()) return;
+    if (!$id = (int)$event->pageID) return;
+    if (!$page = $this->wire->pages->get($id) or !$page->id) return;
+    if (!$page->editable()) return;
+    $this->wire->session->redirect($page->editUrl());
+  }
+
+  /**
    * Find all grid files
    * @return array
    */
@@ -212,6 +232,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         $grids[$name] = [
           'title' => $tmp->info()->title,
           'icon' => $tmp->info()->icon,
+          'hidden' => $tmp->info()->hidden ?: false,
           'file' => $file,
         ];
       }
@@ -230,9 +251,9 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    *
    * @return array
    */
-  public function findRaw($selector, array $fields)
+  public function findRaw($selector, array $fields, array $options = [])
   {
-    $raw = $this->wire->pages->findRaw($selector, $fields);
+    $raw = $this->wire->pages->findRaw($selector, $fields, $options);
     // bdb($raw, "raw");
 
     // prepare keys that we need in the results
@@ -405,16 +426,16 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
-   * Jump to page via id
+   * View page via ID
    * @return void
    */
-  public function jumpToPage(HookEvent $event)
+  public function viewPage(HookEvent $event)
   {
     if (!$this->wire->user->isLoggedin()) return;
     if (!$id = (int)$event->pageID) return;
     if (!$page = $this->wire->pages->get($id) or !$page->id) return;
     if (!$page->viewable()) return;
-    $this->wire->session->redirect($page->url);
+    $this->wire->session->redirect($page->url());
   }
 
   /**
@@ -452,8 +473,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       }
 
       // tabulator
-      $config->scripts->add($rg->m("tabulator/js/tabulator.min.js"));
-      $config->styles->add($rg->m("tabulator/css/tabulator.min.css"));
+      $config->scripts->add($rg->m("tabulator/tabulator.min.js"));
+      $config->styles->add($rg->m("tabulator/tabulator.min.css"));
 
       // rockgrid
       $config->scripts->add($rg->m("Grid.js"));

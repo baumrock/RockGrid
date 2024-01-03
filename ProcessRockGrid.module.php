@@ -24,9 +24,12 @@ class ProcessRockGrid extends Process
       'permission' => self::permission,
       'permissions' => [self::permission => 'May run the RockGrid process module'],
 
+      // create page under the setup tab
+      // todo: new grid not working any more
+      // changed in favor of settings item in menu
       'page' => [
         'name' => 'grids',
-        'parent' => 2,
+        'parent' => 22, // setup
         'title' => 'Grids'
       ],
     ];
@@ -54,7 +57,7 @@ class ProcessRockGrid extends Process
   public function execute()
   {
     $grid = $this->wire->input->get('grid', 'text');
-    if (!$grid) return "No grid selected";
+    if (!$grid) $this->wire->session->redirect("./new");
 
     // get grid
     $grid = $this->wire->modules->get("RockGrid")->getGrid($grid);

@@ -311,6 +311,11 @@ RockGrid.prototype.init = function (name, settings) {
 
   grid.table = new Tabulator(grid.el, grid.setup);
   grid.addListeners();
+
+  // trigger the rockgrid-init event
+  // this is so that you can add event listeners to your grid
+  // see https://tabulator.info/docs/5.5/events
+  $(document).trigger("rockgrid-init", grid);
 };
 
 /**
@@ -337,6 +342,24 @@ RockGrid.prototype.link = function (data) {
   label = icon + (label ? " " + label : "");
   let tooltip = data.tooltip ? " title='" + data.tooltip + "' uk-tooltip" : "";
   return "<a href='" + href + "' " + cls + tooltip + ">" + label + "</a>";
+};
+
+/**
+ * Format a number as currency string
+ * @param {number} number
+ * @param {string} locale
+ * @param {string} currency
+ * @returns string
+ */
+RockGrid.prototype.money = function (
+  number,
+  locale = "de-DE",
+  currency = "EUR"
+) {
+  return number.toLocaleString(locale, {
+    style: "currency",
+    currency: currency,
+  });
 };
 
 /**
