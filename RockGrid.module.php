@@ -53,7 +53,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     $this->addDir($this->wire->config->paths->assets . "RockGrid");
     $this->addDir($this->wire->config->paths->templates . "RockGrid");
 
-    // attach hooks
+    // attach url hooks for page view+edit
     $this->addHookAfter("/rockgrid/view/{pageID}", $this, "viewPage");
     $this->addHookAfter("/rockgrid/edit/{pageID}", $this, "editPage");
 
