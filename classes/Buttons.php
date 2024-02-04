@@ -9,6 +9,8 @@ class Buttons extends \ProcessWire\WireArray
 {
   public $grid;
   public $name;
+  public $prependMarkup = '';
+  public $appendMarkup = '';
 
   public function __construct($name, $grid)
   {
@@ -110,7 +112,7 @@ class Buttons extends \ProcessWire\WireArray
   {
     $buttons = '';
     foreach ($this as $button) $buttons .= $button->render();
-    return $buttons;
+    return $this->prependMarkup . $buttons . $this->appendMarkup;
   }
 
   public function __debugInfo()
@@ -118,6 +120,8 @@ class Buttons extends \ProcessWire\WireArray
     return [
       'name' => $this->name,
       'grid' => $this->grid,
+      'prependMarkup' => $this->prependMarkup,
+      'appendMarkup' => $this->appendMarkup,
       'items' => $this->getArray(),
     ];
   }

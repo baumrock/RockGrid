@@ -10,11 +10,11 @@ You can add buttons to your grid in three areas:
 
 ## Custom Markup
 
-You can add custom markup to any of these areas by adding a `renderButonsXXX` method to your grid's PHP file, where `XXX` stands for either `Left`, `Center` or `Right`:
-
 ```php
-public function renderButtonsLeft($markup)
-{
-  return $markup . "<span>FOO!</span>";
-}
+  public function getButtonsLeft()
+  {
+    $buttons = parent::getButtonsLeft();
+    $buttons->prependMarkup = "<div id='loading'>Data updating...</div>";
+    return $buttons;
+  }
 ```
