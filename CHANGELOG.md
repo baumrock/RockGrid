@@ -1,12 +1,11 @@
-# 0.1.0 (2024-01-03)
+## [0.2.0](https://github.com/baumrock/RockGrid/compare/v0.1.0...v0.2.0) (2024-02-04)
 
 
-### Bug Fixes
+### Features
 
-* debugger asset urls ([c295e34](https://github.com/baumrock/RockGrid/commit/c295e34483b746dee305a85a1125c7c80e650190))
-* define property "rg" to prevent php8.2 error ([039975c](https://github.com/baumrock/RockGrid/commit/039975c2b2d376462265966a5b319fa3421bfda1))
-* fix trash not working due to missing endpoint urls ([66b2570](https://github.com/baumrock/RockGrid/commit/66b25709e45b18e3c3145c7117880c4d802e9224))
-* rockgrid not working in sub-folder installations ([c9111c2](https://github.com/baumrock/RockGrid/commit/c9111c285aa0016fb80a1004435b563a65e504b8))
+* add prependMarkup / appendMarkup for buttons ([18a4bd1](https://github.com/baumrock/RockGrid/commit/18a4bd19de2486c2548602a6add6d2f8ea35febd))
+
+## [0.1.0](https://github.com/baumrock/RockGrid/compare/c9111c285aa0016fb80a1004435b563a65e504b8...v0.1.0) (2024-01-03)
 
 
 ### Features
@@ -22,4 +21,10 @@
 * update docs ([f87b09b](https://github.com/baumrock/RockGrid/commit/f87b09bd32009548a199661c3b8ab80e56cd15a4))
 
 
+### Bug Fixes
+
+* debugger asset urls ([c295e34](https://github.com/baumrock/RockGrid/commit/c295e34483b746dee305a85a1125c7c80e650190))
+* define property "rg" to prevent php8.2 error ([039975c](https://github.com/baumrock/RockGrid/commit/039975c2b2d376462265966a5b319fa3421bfda1))
+* fix trash not working due to missing endpoint urls ([66b2570](https://github.com/baumrock/RockGrid/commit/66b25709e45b18e3c3145c7117880c4d802e9224))
+* rockgrid not working in sub-folder installations ([c9111c2](https://github.com/baumrock/RockGrid/commit/c9111c285aa0016fb80a1004435b563a65e504b8))
 
