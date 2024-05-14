@@ -2,6 +2,8 @@
 
 namespace ProcessWire;
 
+use RockGrid\Grid;
+
 function rockgrid(): RockGrid
 {
   return wire()->modules->get('RockGrid');
@@ -12,14 +14,118 @@ function rockgrid(): RockGrid
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class RockGrid extends WireData implements Module, ConfigurableModule
+class RockGrid extends WireData implements Module
 {
+  const gridsArrayCache = 'rockgrid-grids';
+
   /**
-   * Config inputfields
-   * @param InputfieldWrapper $inputfields
+   * @var WireData
    */
-  public function getModuleConfigInputfields($inputfields)
+  public $grids;
+
+  /**
+   * @var array
+   */
+  public $gridsArray = [];
+
+  public function init(): void
   {
-    return $inputfields;
+    $this->wire('rockgrid', $this);
+    $this->grids = new WireData();
+    $this->wire->classLoader->addNamespace('RockGrid', __DIR__ . '/classes');
+    $this->loadGridsArray();
+  }
+
+  public function getGrid($data): Grid
+  {
+    // first get the gridname
+    if ($data instanceof InputfieldRockGrid) $gridname = $data->grid;
+    else $gridname = (string)$data;
+
+    // if already loaded return it
+    /** @var Grid $grid */
+    $grid = $this->grids->get($gridname);
+    if ($grid) return $grid;
+
+    // load grid
+    $grid = new $gridname();
+    $grid->phpFile = $this->gridsArray[$gridname];
+    $grid->jsFile = substr($grid->phpFile, 0, -3) . 'js';
+    $grid->cssFile = is_file($f = substr($grid->phpFile, 0, -3) . 'css')
+      ? $f
+      : false;
+
+    return $grid;
+  }
+
+  public function getKeyFromFile($file): string
+  {
+    $file = Paths::normalizeSeparators($file);
+    $parts = explode('/', $file);
+    $parts = array_reverse($parts);
+    foreach ($parts as $i => $part) {
+      if ($part === 'RockGrid') {
+        $namespace = $parts[($i + 1)];
+        $grid = substr($parts[($i - 1)], 0, -4);
+        if ($namespace === 'templates') $namespace = 'RockGrid';
+        return "$namespace\\$grid";
+      }
+    }
+    return '';
+  }
+
+  public function getNamespaceFromFile($file): string
+  {
+    return explode('\\', $this->getKeyFromFile($file))[0];
+  }
+
+  private function loadGridsArray(): void
+  {
+    // reset cache on modules refresh
+    $this->wire->addHookAfter('Modules::refresh', function () {
+      $this->wire->cache->delete(self::gridsArrayCache);
+    });
+
+    // get grids array from cache or recreate it
+    $gridsArray = $this->wire->cache->get(
+      self::gridsArrayCache,
+      false, // use 0 to debug, false for production
+      function () {
+        $arr = [];
+        $files = array_merge(
+          glob($this->wire->config->paths->templates . "RockGrid/*.php"),
+          glob($this->wire->config->paths->siteModules . "*/RockGrid/*.php")
+        );
+        foreach ($files as $file) {
+          $arr[$this->getKeyFromFile($file)] = $file;
+        }
+        return $arr;
+      }
+    );
+
+    // add classloader for all namespaces
+    foreach ($gridsArray as $file) {
+      $this->wire->classLoader->addNamespace(
+        $this->getNamespaceFromFile($file),
+        dirname($file)
+      );
+    }
+
+    $this->gridsArray = $gridsArray;
+  }
+
+  /**
+   * Convert path to url
+   * @return string
+   */
+  public function url(string $path, $cachebuster = false): string
+  {
+    $url = str_replace(
+      $this->wire->config->paths->root,
+      $this->wire->config->urls->root,
+      $path
+    );
+    if ($cachebuster) $url = $this->wire->config->versionUrl($url);
+    return $url;
   }
 }

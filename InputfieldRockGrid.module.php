@@ -34,16 +34,7 @@ class InputfieldRockGrid extends InputfieldTextarea
    */
   public function getFile($ext = "php")
   {
-    return $this->main()->getFile($this->grid, $ext);
-  }
-
-  /**
-   * Get main module instance
-   * @return RockGrid
-   */
-  public function main()
-  {
-    return $this->wire->modules->get('RockGrid');
+    return rockgrid()->getFile($this->grid, $ext);
   }
 
   /**
@@ -63,23 +54,10 @@ class InputfieldRockGrid extends InputfieldTextarea
   {
     // output must be wrapped in a div to make ajax inputfields work!
     try {
-      $out = "<div>";
-      $grid = $this->main()->getGrid($this);
-      $grid->setAjaxParams($this->ajaxParams);
-      if (!$grid) {
-        $file = $this->getFile();
-        if (!$file) {
-          $out .= "<strong>No file for this grid found!</strong> Tried these...";
-          foreach ($this->main()->getPossibleFilenames($this->grid) as $f) {
-            $out .= "<div>$f</div>";
-          }
-          return $out;
-        }
-        return "File $file not found";
-      }
-      $out .= "</div>";
-      return $grid->render();
+      $grid = rockgrid()->getGrid($this);
+      return $grid->phpFile;
     } catch (\Throwable $th) {
+      $this->log($th->getMessage());
       if ($this->wire->user->isSuperuser()) return $th->getMessage();
       else return "Error rendering grid";
     }
@@ -88,5 +66,16 @@ class InputfieldRockGrid extends InputfieldTextarea
   public function ___renderValue()
   {
     return $this->___render();
+  }
+
+  public function renderReady(Inputfield $parent = null, $renderValueMode = false)
+  {
+    $grid = rockgrid()->getGrid($this);
+    if ($grid->cssFile) {
+      $this->wire->config->styles->add(
+        rockgrid()->url($grid->cssFile, true)
+      );
+    }
+    return parent::renderReady($parent, $renderValueMode);
   }
 }

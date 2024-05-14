@@ -9,8 +9,10 @@ $info = [
   'autoload' => true,
   'singular' => true,
   'icon' => 'table',
+  // PW 3.0.227 for $config->versionUrl()
   'requires' => [
     'PHP>=8.1',
+    'ProcessWire>=3.0.227',
   ],
   'installs' => [
     'FieldtypeRockGrid',
