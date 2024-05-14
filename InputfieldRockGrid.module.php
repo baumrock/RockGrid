@@ -2,8 +2,6 @@
 
 namespace ProcessWire;
 
-use RockGrid\Grid;
-
 /**
  * RockGrid Inputfield using tabulator.info
  *
@@ -20,8 +18,8 @@ class InputfieldRockGrid extends InputfieldTextarea
   {
     return [
       'title' => 'RockGrid Inputfield',
-      'version' => '0.0.1',
-      'summary' => 'RockGrid Inputfield using tabulator.info',
+      'version' => json_decode(file_get_contents(__DIR__ . "/package.json"))->version,
+      'summary' => 'Inputfield for RockGrid Data Listings.',
       'icon' => 'table',
       'requires' => [
         'RockGrid',

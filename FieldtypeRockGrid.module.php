@@ -7,15 +7,15 @@ namespace ProcessWire;
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class FieldtypeRockGrid extends FieldtypeText
+class FieldtypeRockGrid extends FieldtypeTextarea
 {
 
   public static function getModuleInfo()
   {
     return [
       'title' => 'RockGrid',
-      'version' => '1.0.0',
-      'summary' => 'Module to display a RockGrid in the page editor',
+      'version' => json_decode(file_get_contents(__DIR__ . "/package.json"))->version,
+      'summary' => 'Module to display a RockGrid in the page editor.',
       'icon' => 'table',
       'requires' => ['RockGrid'],
       'installs' => [],
