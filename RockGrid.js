@@ -10,6 +10,7 @@ var RockGrids = new _RockGrids();
 class RockGrid {
   div;
   li;
+  sleepValue;
   table;
   textarea;
   wrapper;
@@ -30,10 +31,11 @@ class RockGrid {
 
   afterInit() {
     this.table = Tabulator.findTable(this.div)[0];
+    this.table.on("tableBuilt", this.wakeup.bind(this));
     this.table.on("rowSelectionChanged", this.updateTextarea.bind(this));
   }
 
-  sleepValue() {
+  getSleepValue() {
     let selectedRows = this.table.getSelectedRows();
     let selectedIds = selectedRows.map((row) => row.getData().id);
     return {
@@ -42,8 +44,19 @@ class RockGrid {
   }
 
   updateTextarea() {
-    let sleepValue = this.sleepValue();
-    this.textarea.value = JSON.stringify(sleepValue);
+    let sleepValue = this.getSleepValue();
+    this.sleepValue = sleepValue;
+    document.dispatchEvent(
+      new CustomEvent("RockGrid:sleepValue", {
+        detail: { grid: this, value: sleepValue },
+      })
+    );
+    this.textarea.value = JSON.stringify(this.sleepValue);
+  }
+
+  wakeup() {
+    let data = JSON.parse(this.textarea.value);
+    this.table.selectRow(data.selected);
   }
 }
 
