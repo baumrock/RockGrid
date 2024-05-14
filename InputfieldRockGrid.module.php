@@ -43,10 +43,10 @@ class InputfieldRockGrid extends InputfieldTextarea
    */
   public function ___render()
   {
-    $markup = parent::___render();
-    // $markup = str_replace('></', 'hidden></', $markup);
+    $textarea = parent::___render();
+    // $textarea = str_replace('></', 'hidden></', $textarea);
 
-    $custom = $this->wire->files->render(
+    $gridMarkup = $this->wire->files->render(
       __DIR__ . '/layouts/default.php',
       [
         'grid' => rockgrid()->getGrid($this),
@@ -54,7 +54,11 @@ class InputfieldRockGrid extends InputfieldTextarea
       ]
     );
 
-    return $custom . $markup;
+    $gridMarkup .= "<script>new RockGrid('#{$this->id}')</script>";
+
+    // textarea first so that it exists in JS init() call
+    // then the grid
+    return $textarea . $gridMarkup;
   }
 
   public function ___renderValue()
