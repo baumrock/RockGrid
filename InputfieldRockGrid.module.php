@@ -38,29 +38,23 @@ class InputfieldRockGrid extends InputfieldTextarea
   }
 
   /**
-   * Process the Inputfield's input
-   * @return $this
-   */
-  public function ___processInput($input)
-  {
-    return false;
-  }
-
-  /**
    * Render the Inputfield
    * @return string
    */
   public function ___render()
   {
-    // output must be wrapped in a div to make ajax inputfields work!
-    try {
-      $grid = rockgrid()->getGrid($this);
-      return $grid->phpFile;
-    } catch (\Throwable $th) {
-      $this->log($th->getMessage());
-      if ($this->wire->user->isSuperuser()) return $th->getMessage();
-      else return "Error rendering grid";
-    }
+    $markup = parent::___render();
+    // $markup = str_replace('></', 'hidden></', $markup);
+
+    $custom = $this->wire->files->render(
+      __DIR__ . '/layouts/default.php',
+      [
+        'grid' => rockgrid()->getGrid($this),
+        'textarea' => $this->id,
+      ]
+    );
+
+    return $custom . $markup;
   }
 
   public function ___renderValue()
@@ -71,11 +65,28 @@ class InputfieldRockGrid extends InputfieldTextarea
   public function renderReady(Inputfield $parent = null, $renderValueMode = false)
   {
     $grid = rockgrid()->getGrid($this);
+
+    // load all dependencies
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/RockGrid.js', true)
+    );
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
+    );
+    $this->wire->config->styles->add(
+      rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
+    );
+
+    // load grid's js and css files
+    $this->wire->config->scripts->add(
+      rockgrid()->url($grid->jsFile, true)
+    );
     if ($grid->cssFile) {
       $this->wire->config->styles->add(
         rockgrid()->url($grid->cssFile, true)
       );
     }
+
     return parent::renderReady($parent, $renderValueMode);
   }
 }
