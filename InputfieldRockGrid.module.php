@@ -80,6 +80,9 @@ class InputfieldRockGrid extends InputfieldTextarea
     $this->wire->config->styles->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
     );
+    $this->wire->config->styles->add(
+      rockgrid()->url(__DIR__ . '/RockGrid.css', true)
+    );
 
     // load grid's js and css files
     $this->wire->config->scripts->add(

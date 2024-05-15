@@ -52,11 +52,16 @@ class RockGrid {
       })
     );
     this.textarea.value = JSON.stringify(this.sleepValue);
+    this.li.classList.add("InputfieldStateChanged");
   }
 
   wakeup() {
-    let data = JSON.parse(this.textarea.value);
-    this.table.selectRow(data.selected);
+    try {
+      let data = JSON.parse(this.textarea.value || "");
+      this.table.selectRow(data.selected);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 

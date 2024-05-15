@@ -1,0 +1,8 @@
+.tabulator-row.tabulator-selected.tabulator-row-even {
+  background-color: #424242;
+  color: white;
+}
+.tabulator-row.tabulator-selected.tabulator-row-odd {
+  background-color: #616161;
+  color: white;
+}
