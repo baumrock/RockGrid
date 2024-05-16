@@ -43,6 +43,10 @@ class InputfieldRockGrid extends InputfieldTextarea
    */
   public function ___render()
   {
+    if (!$this->name) {
+      return "Please set a name for your inputfield!";
+    }
+
     $textarea = parent::___render();
     // $textarea = str_replace('></', 'hidden></', $textarea);
 
@@ -54,7 +58,8 @@ class InputfieldRockGrid extends InputfieldTextarea
       ]
     );
 
-    $gridMarkup .= "<script>new RockGrid('#{$this->id}')</script>";
+    $hash = rockgrid()->hash($this->grid);
+    $gridMarkup .= "<script>new RockGrid('#{$this->id}', '$hash')</script>";
 
     // textarea first so that it exists in JS init() call
     // then the grid

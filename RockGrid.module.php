@@ -34,9 +34,21 @@ class RockGrid extends WireData implements Module
     $this->grids = new WireData();
     $this->wire->classLoader->addNamespace('RockGrid', __DIR__ . '/classes');
     $this->loadGridsArray();
+
+    // hooks
+    wire()->addHook('/rockgrid-ajax/{grid}/', $this, 'ajaxEndpoint');
   }
 
-  public function getGrid($data): Grid
+  protected function ajaxEndpoint(HookEvent $event)
+  {
+    $gridname = $this->unhash($event->grid);
+    $grid = $this->getGrid($gridname);
+    if (!$grid) return;
+    header('Content-Type: application/json; charset=utf-8');
+    return json_encode($grid->getData());
+  }
+
+  public function getGrid($data): Grid|null
   {
     // first get the gridname
     if ($data instanceof InputfieldRockGrid) $gridname = $data->grid;
@@ -48,12 +60,16 @@ class RockGrid extends WireData implements Module
     if ($grid) return $grid;
 
     // load grid
-    $grid = new $gridname();
-    $grid->phpFile = $this->gridsArray[$gridname];
-    $grid->jsFile = substr($grid->phpFile, 0, -3) . 'js';
-    $grid->cssFile = is_file($f = substr($grid->phpFile, 0, -3) . 'css')
-      ? $f
-      : false;
+    try {
+      $grid = new $gridname();
+      $grid->phpFile = $this->gridsArray[$gridname];
+      $grid->jsFile = substr($grid->phpFile, 0, -3) . 'js';
+      $grid->cssFile = is_file($f = substr($grid->phpFile, 0, -3) . 'css')
+        ? $f
+        : false;
+    } catch (\Throwable $th) {
+      $this->error($th->getMessage());
+    }
 
     return $grid;
   }
@@ -79,12 +95,20 @@ class RockGrid extends WireData implements Module
     return explode('\\', $this->getKeyFromFile($file))[0];
   }
 
+  /**
+   * Get hashed gridname
+   * @param mixed $gridname
+   * @return string
+   */
+  public function hash($gridname): string
+  {
+    return str_replace('\\', '-', $gridname);
+  }
+
   private function loadGridsArray(): void
   {
     // reset cache on modules refresh
-    $this->wire->addHookAfter('Modules::refresh', function () {
-      $this->wire->cache->delete(self::gridsArrayCache);
-    });
+    $this->wire->addHookAfter('Modules::refresh', $this, 'refresh');
 
     // get grids array from cache or recreate it
     $gridsArray = $this->wire->cache->get(
@@ -112,6 +136,21 @@ class RockGrid extends WireData implements Module
     }
 
     $this->gridsArray = $gridsArray;
+  }
+
+  public function refresh(): void
+  {
+    $this->wire->cache->delete(self::gridsArrayCache);
+  }
+
+  /**
+   * Get gridname from hash
+   * @param mixed $hash
+   * @return string
+   */
+  public function unhash($hash): string
+  {
+    return str_replace('-', '\\', $hash);
   }
 
   /**
