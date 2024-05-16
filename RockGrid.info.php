@@ -15,6 +15,7 @@ $info = [
     'ProcessWire>=3.0.227',
   ],
   'installs' => [
+    'ProcessRockGrid',
     'FieldtypeRockGrid',
     'InputfieldRockGrid',
   ],

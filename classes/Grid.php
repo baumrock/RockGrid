@@ -10,6 +10,13 @@ class Grid extends Wire
   public $jsFile;
   public $phpFile;
 
+  public function getData()
+  {
+    // return false indicates that no getData() method is implemented
+    // in the extending grid
+    return false;
+  }
+
   public function __debugInfo()
   {
     return [
