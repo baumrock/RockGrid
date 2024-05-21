@@ -62,8 +62,11 @@ class ProcessRockGrid extends Process
           else $dir = "site/modules/$namespace";
           $dir = $this->wire->config->paths->root . "$dir/RockGrid";
 
+          // create files from stub
           $files = wire()->files;
           $files->mkdir($dir, true);
+
+          // PHP
           $content = $files->fileGetContents(__DIR__ . '/stubs/Grid.txt');
           $replace = [
             '{namespace}' => $namespace,
@@ -77,6 +80,13 @@ class ProcessRockGrid extends Process
               $content
             )
           );
+
+          // JS
+          $content = $files->copy(
+            __DIR__ . '/stubs/Grid.js',
+            "$dir/$name.js"
+          );
+
           rockgrid()->refresh();
           $this->wire->session->redirect(
             './debug/?grid=' . rockgrid()->hash($gridname)
