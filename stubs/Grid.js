@@ -2,7 +2,7 @@ document.addEventListener("RockGrid:init", (e) => {
   let grid = e.detail;
 
   // do everything below only for this specific grid
-  if (grid.hash !== "{gridHash}") return;
+  if (grid.name !== "{gridHash}") return;
 
   // build the tabulator table
   var table = new Tabulator(grid.div, {

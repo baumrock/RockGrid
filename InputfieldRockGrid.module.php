@@ -60,7 +60,7 @@ class InputfieldRockGrid extends InputfieldTextarea
       ]
     );
 
-    $hash = rockgrid()->hash($this->grid);
+    $hash = rockgrid()->safeName($this->grid);
     $gridMarkup .= "<script>new RockGrid('#{$this->id}', '$hash')</script>";
 
     // textarea first so that it exists in JS init() call

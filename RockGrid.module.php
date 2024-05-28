@@ -47,7 +47,7 @@ class RockGrid extends WireData implements Module
       // these can break the json output and are not helpful in production
       error_reporting(E_ALL & ~E_DEPRECATED);
     }
-    $gridname = $this->unhash($event->grid);
+    $gridname = $this->rawName($event->grid);
     $grid = $this->getGrid($gridname);
     if (!$grid) return;
     header('Content-Type: application/json; charset=utf-8');
@@ -104,16 +104,6 @@ class RockGrid extends WireData implements Module
     return explode('\\', $this->getKeyFromFile($file))[0];
   }
 
-  /**
-   * Get hashed gridname
-   * @param mixed $gridname
-   * @return string
-   */
-  public function hash($gridname): string
-  {
-    return str_replace('\\', '-', $gridname);
-  }
-
   private function loadGridsArray(): void
   {
     // reset cache on modules refresh
@@ -147,19 +137,29 @@ class RockGrid extends WireData implements Module
     $this->gridsArray = $gridsArray;
   }
 
+  /**
+   * Get raw name from safename
+   * @param mixed $safename
+   * @return string
+   */
+  public function rawName($safename): string
+  {
+    return str_replace('-', '\\', $safename);
+  }
+
   public function refresh(): void
   {
     $this->wire->cache->delete(self::gridsArrayCache);
   }
 
   /**
-   * Get gridname from hash
-   * @param mixed $hash
+   * Get url- and js-safe gridname
+   * @param mixed $gridname
    * @return string
    */
-  public function unhash($hash): string
+  public function safeName($gridname): string
   {
-    return str_replace('-', '\\', $hash);
+    return str_replace('\\', '-', $gridname);
   }
 
   /**

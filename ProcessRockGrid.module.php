@@ -87,14 +87,14 @@ class ProcessRockGrid extends Process
             "$dir/$name.js",
             str_replace(
               '{gridHash}',
-              rockgrid()->hash($gridname),
+              rockgrid()->safeName($gridname),
               $content
             )
           );
 
           rockgrid()->refresh();
           $this->wire->session->redirect(
-            './debug/?grid=' . rockgrid()->hash($gridname)
+            './debug/?grid=' . rockgrid()->safeName($gridname)
           );
         }
       }
@@ -154,7 +154,7 @@ class ProcessRockGrid extends Process
    */
   public function executeDebug()
   {
-    $name = rockgrid()->unhash($this->wire->input->get->grid);
+    $name = rockgrid()->rawName($this->wire->input->get->grid);
 
     $this->headline("Debug $name");
     $this->browserTitle("Debug $name");
@@ -208,7 +208,7 @@ class ProcessRockGrid extends Process
     $out = '<table class="uk-table uk-table-small uk-table-striped">';
     $out .= '<tr><th>Name</th><th>Path</th></tr>';
     foreach (rockgrid()->gridsArray as $name => $path) {
-      $hash = rockgrid()->hash($name);
+      $hash = rockgrid()->safeName($name);
       $url = rockgrid()->url($path);
       $out .= "<tr><td><a href=./debug/?grid=$hash>$name</a></td><td>$url</td></tr>";
     }

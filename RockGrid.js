@@ -17,15 +17,15 @@ class RockGrid {
   ajaxURL;
   div;
   li;
-  hash;
+  name;
   sleepValue;
   table;
   textarea;
   wrapper;
 
-  constructor(textarea, hash) {
-    this.hash = hash;
-    this.ajaxURL = "/rockgrid-ajax/" + hash + "/";
+  constructor(textarea, name) {
+    this.name = name;
+    this.ajaxURL = "/rockgrid-ajax/" + name + "/";
     this.textarea = document.querySelector(textarea);
     this.li = this.textarea.closest("li.Inputfield");
     this.div = this.li.querySelector("div.RockGrid");
