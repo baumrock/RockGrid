@@ -200,6 +200,7 @@ class ProcessRockGrid extends Process
       'notes' => $grid->jsFile,
     ]);
 
+    if (function_exists('bd')) bd($grid);
     return $form->render();
   }
 

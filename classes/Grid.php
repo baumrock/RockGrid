@@ -10,6 +10,7 @@ class Grid extends Wire
   public $buttonsLeft;
   public $cssFile;
   public $jsFile;
+  public $name;
   public $phpFile;
 
   public function buildUI(): void
@@ -26,6 +27,7 @@ class Grid extends Wire
   public function __debugInfo()
   {
     return [
+      'name' => $this->name,
       'phpFile' => $this->phpFile,
       'jsFile' => $this->jsFile,
       'cssFile' => $this->cssFile,

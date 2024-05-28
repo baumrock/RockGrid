@@ -68,6 +68,7 @@ class RockGrid extends WireData implements Module
     // load grid
     try {
       $grid = new $gridname();
+      $grid->name = $this->safeName($gridname);
       $grid->phpFile = $this->gridsArray[$gridname];
       $grid->jsFile = substr($grid->phpFile, 0, -3) . 'js';
       $grid->cssFile = is_file($f = substr($grid->phpFile, 0, -3) . 'css')
