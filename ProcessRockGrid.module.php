@@ -82,9 +82,14 @@ class ProcessRockGrid extends Process
           );
 
           // JS
-          $content = $files->copy(
-            __DIR__ . '/stubs/Grid.js',
-            "$dir/$name.js"
+          $content = $files->fileGetContents(__DIR__ . '/stubs/Grid.js');
+          $files->filePutContents(
+            "$dir/$name.js",
+            str_replace(
+              '{gridHash}',
+              rockgrid()->hash($gridname),
+              $content
+            )
           );
 
           rockgrid()->refresh();
@@ -185,12 +190,14 @@ class ProcessRockGrid extends Process
       'type' => 'markup',
       'label' => 'Step 1: Define data of the grid in PHP getData()',
       'value' => $dump,
+      'notes' => $grid->phpFile,
     ]);
     $form->add([
       'type' => 'RockGrid',
       'name' => 'rockgrid-debug',
       'label' => 'Step 2: Define grid setup in JS',
       'grid' => $name,
+      'notes' => $grid->jsFile,
     ]);
 
     return $form->render();

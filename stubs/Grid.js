@@ -1,5 +1,10 @@
 document.addEventListener("RockGrid:init", (e) => {
   let grid = e.detail;
+
+  // do everything below only for this specific grid
+  if (grid.hash !== "{gridHash}") return;
+
+  // build the tabulator table
   var table = new Tabulator(grid.div, {
     layout: "fitDataStretch",
     ajaxURL: grid.ajaxURL,
@@ -13,4 +18,7 @@ document.addEventListener("RockGrid:init", (e) => {
       return definitions;
     },
   });
+
+  // fire tableBuilt event on RockGrid - don't remove this!
+  table.on("tableBuilt", () => grid.tableBuilt(table));
 });

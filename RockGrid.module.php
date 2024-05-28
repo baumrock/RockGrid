@@ -2,6 +2,7 @@
 
 namespace ProcessWire;
 
+use RockGrid\ButtonsArray;
 use RockGrid\Grid;
 
 function rockgrid(): RockGrid
@@ -41,6 +42,11 @@ class RockGrid extends WireData implements Module
 
   protected function ajaxEndpoint(HookEvent $event)
   {
+    if (!$this->wire->config->debug) {
+      // show deprecation warnings only in debug mode
+      // these can break the json output and are not helpful in production
+      error_reporting(E_ALL & ~E_DEPRECATED);
+    }
     $gridname = $this->unhash($event->grid);
     $grid = $this->getGrid($gridname);
     if (!$grid) return;
@@ -67,6 +73,9 @@ class RockGrid extends WireData implements Module
       $grid->cssFile = is_file($f = substr($grid->phpFile, 0, -3) . 'css')
         ? $f
         : false;
+      $grid->buttonsRight = new ButtonsArray();
+      $grid->buttonsLeft = new ButtonsArray();
+      $grid->buttonsRight = new ButtonsArray();
     } catch (\Throwable $th) {
       $this->error($th->getMessage());
     }

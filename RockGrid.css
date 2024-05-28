@@ -6,3 +6,16 @@
   background-color: #616161;
   color: white;
 }
+.RockGridWrapper .buttonsWrapper {
+  margin-bottom: 5px;
+}
+.RockGridWrapper .buttons {
+  display: inline-flex;
+  column-gap: 5px;
+}
+.RockGridWrapper .rockgridbutton {
+  border-radius: 5px;
+}
+.rockgridbutton.hidden {
+  display: none;
+}

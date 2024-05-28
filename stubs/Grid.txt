@@ -8,7 +8,14 @@ class {name} extends Grid
 {
   public function getData()
   {
-    // see docs for getdata
+    return $this->wire->pages->findRaw("id>0, limit=10", [
+      'id',
+      'title',
+      'modified',
+    ], [
+      'nulls' => true,
+      'indexed' => false,
+    ]);
   }
 
   /**

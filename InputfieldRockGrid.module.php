@@ -48,12 +48,14 @@ class InputfieldRockGrid extends InputfieldTextarea
     }
 
     $textarea = parent::___render();
-    // $textarea = str_replace('></', 'hidden></', $textarea);
+    $textarea = str_replace('<textarea ', '<textarea hidden ', $textarea);
 
+    $grid = rockgrid()->getGrid($this);
+    $grid->buildUI();
     $gridMarkup = $this->wire->files->render(
       __DIR__ . '/layouts/default.php',
       [
-        'grid' => rockgrid()->getGrid($this),
+        'grid' => $grid,
         'textarea' => $this->id,
       ]
     );

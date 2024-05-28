@@ -6,9 +6,15 @@ use ProcessWire\Wire;
 
 class Grid extends Wire
 {
+  public $buttonsRight;
+  public $buttonsLeft;
   public $cssFile;
   public $jsFile;
   public $phpFile;
+
+  public function buildUI(): void
+  {
+  }
 
   public function getData()
   {
