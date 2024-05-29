@@ -44,11 +44,17 @@ class RockGrid {
 
   tableBuilt(table) {
     this.table = table;
-    this.wakeup();
+
+    // add events necessary for all tables
     table.on("rowSelectionChanged", this.updateTextarea.bind(this));
+
+    // dispatch tableBuilt event so that grids can attach their own listeners
     document.dispatchEvent(
       new CustomEvent("RockGrid:tableBuilt", { detail: this })
     );
+
+    // wakeup the grid (load filters and selected rows)
+    this.wakeup();
   }
 
   updateTextarea() {
