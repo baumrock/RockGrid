@@ -135,13 +135,12 @@ document.addEventListener("click", (event) => {
     let grid = e.detail;
     let toggleButtons = function () {
       setTimeout(() => {
-        let rowsTotal = grid.table.getData().length;
-        let rowsFiltered = grid.table.getRows("active").length;
+        let headerFilters = grid.table.getHeaderFilters();
         let button = grid.wrapper.querySelector(
           '.rockgridbutton[data-name="removeFilters"]'
         );
         if (button) {
-          button.style.display = rowsTotal !== rowsFiltered ? "block" : "none";
+          button.style.display = headerFilters.length ? "block" : "none";
         }
       }, 0);
     };
