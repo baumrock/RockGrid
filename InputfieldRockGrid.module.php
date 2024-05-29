@@ -61,7 +61,7 @@ class InputfieldRockGrid extends InputfieldTextarea
     );
 
     $hash = rockgrid()->safeName($this->grid);
-    $gridMarkup .= "<script>new RockGrid('#{$this->id}', '$hash')</script>";
+    $gridMarkup .= "<script>new RockGridGrid('#{$this->id}', '$hash')</script>";
 
     // textarea first so that it exists in JS init() call
     // then the grid
@@ -76,13 +76,22 @@ class InputfieldRockGrid extends InputfieldTextarea
   public function renderReady(Inputfield $parent = null, $renderValueMode = false)
   {
     $grid = rockgrid()->getGrid($this);
+    wire()->modules->get('JqueryUI')->use('modal');
 
     // load all dependencies
+    // this can safely be called multiple times
+    // it will only load the assets once
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
+    );
     $this->wire->config->scripts->add(
       rockgrid()->url(__DIR__ . '/RockGrid.js', true)
     );
     $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
+      rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
+    );
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/formatters.js', true)
     );
     $this->wire->config->styles->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
