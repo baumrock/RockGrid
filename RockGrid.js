@@ -20,6 +20,7 @@ var RockGrid = new RockGridMaster();
 
 class RockGridGrid {
   ajaxURL;
+  awake = false;
   div;
   li;
   name;
@@ -84,8 +85,12 @@ class RockGridGrid {
         detail: { grid: this, value: sleepValue },
       })
     );
-    this.textarea.value = JSON.stringify(this.sleepValue);
-    this.li.classList.add("InputfieldStateChanged");
+    let oldValue = this.textarea.value;
+    let newValue = JSON.stringify(this.sleepValue);
+    if (oldValue !== newValue) {
+      this.textarea.value = newValue;
+      if (this.awake) this.li.classList.add("InputfieldStateChanged");
+    }
   }
 
   wakeup() {
@@ -97,6 +102,7 @@ class RockGridGrid {
     } catch (error) {
       console.error(error);
     }
+    this.awake = true;
   }
 }
 
