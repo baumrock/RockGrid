@@ -36,11 +36,7 @@ class RockGridGrid {
     this.div = this.li.querySelector("div.RockGrid");
     this.wrapper = this.li.querySelector("div.RockGridWrapper");
     RockGrid.add(this);
-    document.addEventListener("DOMContentLoaded", () => {
-      document.dispatchEvent(
-        new CustomEvent("RockGrid:init", { detail: this })
-      );
-    });
+    document.dispatchEvent(new CustomEvent("RockGrid:init", { detail: this }));
   }
 
   getSleepValue() {
