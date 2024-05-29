@@ -4,6 +4,12 @@
 document.addEventListener("click", (event) => {
   let button = event.target.closest(".rockgridbutton");
   if (!button) return;
+
+  // if the button has an href attribute then we let the click through
+  if (button.hasAttribute("href")) {
+    return;
+  }
+
   event.preventDefault();
   let grid = RockGrid.getGrid(button);
   if (!grid) return;
@@ -33,6 +39,17 @@ document.addEventListener("click", (event) => {
     });
   });
 })();
+
+// ### modal click interception
+document.addEventListener("click", (e) => {
+  let a = e.target.closest("a[rg-modal]");
+  if (!a) return;
+  let modalUrl = a.getAttribute("href");
+  if (modalUrl) {
+    e.preventDefault();
+    RockGridModal(a);
+  }
+});
 
 // ### (un)select ALL
 (() => {

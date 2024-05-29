@@ -101,10 +101,10 @@ class RockGridGrid {
 }
 
 // edit page in modal
-function RockGridEdit(el) {
-  let id = el.getAttribute("data-id");
-  let $iframe = pwModalWindow(RockGrid.edit + id);
+function RockGridModal(el) {
+  let $iframe = pwModalWindow(el.getAttribute("href"));
   $iframe.on("dialogclose", () => {
-    RockGrid.getGrid(el).reload();
+    if (el.getAttribute("rg-modal-reload") !== null)
+      RockGrid.getGrid(el).reload();
   });
 }

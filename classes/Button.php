@@ -6,8 +6,10 @@ use ProcessWire\WireData;
 
 class Button extends WireData
 {
+  public $attrs = [];
   public $class = 'uk-button-secondary';
   public $hidden = false;
+  public $href;
   public $label;
   public $name;
   public $tooltip;
@@ -33,12 +35,29 @@ class Button extends WireData
       $title = " title='{$this->tooltip}' uk-tooltip";
     }
     $hidden = $this->hidden ? 'hidden' : '';
-    return "<button
+
+    $href = '';
+    if ($this->href) {
+      $href = "href='{$this->href}'";
+    }
+
+    $attrs = '';
+    foreach ($this->attrs as $k => $v) {
+      if (is_numeric($k)) {
+        $attrs .= " $v ";
+      } else {
+        $attrs .= " $k='$v' ";
+      }
+    }
+
+    return "<a
+      $href
       data-name='{$this->name}'
       class='rockgridbutton $hidden uk-button uk-button-small {$this->class}'
+      $attrs
       $title
       >
       $label
-      </button>";
+      </a>";
   }
 }
