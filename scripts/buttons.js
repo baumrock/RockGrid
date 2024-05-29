@@ -124,7 +124,11 @@ document.addEventListener("click", (event) => {
     // remove all filters
     if (e.detail.name !== "removeFilters") return;
     let table = e.detail.grid.table;
-    table.clearFilter(true);
+
+    // note: this will only remove header filters of the table
+    // this is to make it keep programmatically added filters
+    // necessary for RockCommerce Variations Grid
+    table.clearHeaderFilter(true);
   });
   document.addEventListener("RockGrid:tableBuilt", (e) => {
     // button visibility
