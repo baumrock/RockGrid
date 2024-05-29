@@ -38,6 +38,12 @@ class RockGrid extends WireData implements Module
 
     // hooks
     wire()->addHook('/rockgrid-ajax/{grid}/', $this, 'ajaxEndpoint');
+
+    // devtools
+    if (function_exists('\ProcessWire\rockmigrations')) {
+      $rm = rockmigrations();
+      $rm->saveCSS(__DIR__ . '/RockGrid.less', minify: true, keepCSS: false);
+    }
   }
 
   protected function ajaxEndpoint(HookEvent $event)

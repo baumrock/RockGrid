@@ -1,0 +1,37 @@
+// row selection style (zebra)
+.tabulator-row.tabulator-selected {
+  &.tabulator-row-even {
+    background-color: #424242;
+    color: white;
+  }
+  &.tabulator-row-odd {
+    background-color: #616161;
+    color: white;
+  }
+}
+
+// buttons
+.RockGridWrapper {
+  .buttonsWrapper {
+    margin-bottom: 5px;
+  }
+  .buttons {
+    display: inline-flex;
+    column-gap: 5px;
+  }
+  .rockgridbutton {
+    border-radius: 5px;
+  }
+  .rockgridbutton.hidden {
+    display: none;
+  }
+}
+
+// styles specific to AdminStyleRock
+body.AdminStyleRock {
+  .rockgridbutton {
+    &.uk-button-secondary {
+      background-color: var(--rock-input-bg);
+    }
+  }
+}
