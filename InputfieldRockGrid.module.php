@@ -47,10 +47,22 @@ class InputfieldRockGrid extends InputfieldTextarea
       return "Please set a name for your inputfield!";
     }
 
+    $grid = rockgrid()->getGrid($this);
+    if (!$grid) return "Grid {$this->name} not found.";
+
     $textarea = parent::___render();
-    $textarea = str_replace('<textarea ', '<textarea hidden ', $textarea);
+    if (!rockgrid()->debug) {
+      $textarea = str_replace(
+        '<textarea ',
+        '<textarea hidden ',
+        $textarea
+      );
+    } else {
+      if (function_exists('bd')) bd($grid);
+    }
 
     $grid = rockgrid()->getGrid($this);
+    if (!$grid) return "Grid {$this->name} not found.";
     $grid->buildUI();
     $gridMarkup = $this->wire->files->render(
       __DIR__ . '/layouts/default.php',
@@ -76,11 +88,12 @@ class InputfieldRockGrid extends InputfieldTextarea
   public function renderReady(Inputfield $parent = null, $renderValueMode = false)
   {
     $grid = rockgrid()->getGrid($this);
-    wire()->modules->get('JqueryUI')->use('modal');
+    if (!$grid) return;
 
     // load all dependencies
     // this can safely be called multiple times
     // it will only load the assets once
+    wire()->modules->get('JqueryUI')->use('modal');
     $this->wire->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
     );

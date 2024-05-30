@@ -15,9 +15,11 @@ function rockgrid(): RockGrid
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class RockGrid extends WireData implements Module
+class RockGrid extends WireData implements Module, ConfigurableModule
 {
   const gridsArrayCache = 'rockgrid-grids';
+
+  public $debug = false;
 
   /**
    * @var WireData
@@ -182,5 +184,22 @@ class RockGrid extends WireData implements Module
     );
     if ($cachebuster) $url = $this->wire->config->versionUrl($url);
     return $url;
+  }
+
+  /**
+   * Config inputfields
+   * @param InputfieldWrapper $inputfields
+   */
+  public function getModuleConfigInputfields($inputfields)
+  {
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'debug',
+      'label' => 'Debug Mode',
+      'checked' => $this->debug ? 'checked' : '',
+    ]);
+
+    return $inputfields;
   }
 }

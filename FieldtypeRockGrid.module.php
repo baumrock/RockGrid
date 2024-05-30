@@ -7,7 +7,7 @@ namespace ProcessWire;
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class FieldtypeRockGrid extends FieldtypeText
+class FieldtypeRockGrid extends FieldtypeTextarea
 {
 
   public static function getModuleInfo()
