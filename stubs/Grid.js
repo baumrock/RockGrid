@@ -19,7 +19,7 @@ document.addEventListener("RockGrid:init", (e) => {
     },
 
     // enable row selection (it's even saveable!)
-    // selectableRows: true;
+    selectableRows: true,
   });
 
   // fire tableBuilt event on RockGrid - don't remove this!

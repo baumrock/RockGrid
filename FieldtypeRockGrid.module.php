@@ -7,7 +7,7 @@ namespace ProcessWire;
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class FieldtypeRockGrid extends FieldtypeTextarea
+class FieldtypeRockGrid extends Fieldtype
 {
 
   public static function getModuleInfo()
@@ -19,6 +19,11 @@ class FieldtypeRockGrid extends FieldtypeTextarea
       'icon' => 'table',
       'requires' => ['RockGrid'],
     ];
+  }
+
+  public function sanitizeValue(Page $page, Field $field, $value)
+  {
+    return $value;
   }
 
   /** FIELDTYPE METHODS */
@@ -36,14 +41,38 @@ class FieldtypeRockGrid extends FieldtypeTextarea
     $inputfields->remove('textformatters');
     $inputfields->remove('_text_fieldset');
 
+    // prepare variables and markup
+    $url = wire()->pages->get(2)->url . 'setup/grids/';
+    $grids = '';
+    foreach (rockgrid()->gridsArray as $k => $v) {
+      $grids .= "\n$k";
+    }
+
+    // add field
     $inputfields->add([
       'type' => 'text',
       'name' => 'grid',
       'label' => 'Name of the grid to display',
       'value' => $field->get('grid'),
+      'notes' => "Manage grids here: [$url]($url)
+        Available grids: $grids",
     ]);
 
     return $inputfields;
+  }
+
+  /**
+   * Get database schema used by the Field
+   *
+   * @param Field $field
+   * @return array
+   *
+   */
+  public function getDatabaseSchema(Field $field)
+  {
+    $schema = parent::getDatabaseSchema($field);
+    $schema['data'] = 'mediumtext NOT NULL';
+    return $schema;
   }
 
   /**
@@ -52,7 +81,6 @@ class FieldtypeRockGrid extends FieldtypeTextarea
    * @param Page $page
    * @param Field $field
    * @return Inputfield
-   *
    */
   public function getInputfield(Page $page, Field $field)
   {

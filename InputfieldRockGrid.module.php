@@ -9,7 +9,7 @@ namespace ProcessWire;
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-class InputfieldRockGrid extends InputfieldTextarea
+class InputfieldRockGrid extends Inputfield
 {
 
   public $ajaxParams;
@@ -26,6 +26,26 @@ class InputfieldRockGrid extends InputfieldTextarea
       ],
       'installs' => [],
     ];
+  }
+
+  /**
+   * Configure Inputfield
+   *
+   * @return InputfieldWrapper
+   *
+   */
+  public function ___getConfigInputfields()
+  {
+
+    $inputfields = parent::___getConfigInputfields();
+    $removes = array('addClass');
+
+    foreach ($removes as $name) {
+      $f = $inputfields->getChildByName($name);
+      if ($f) $inputfields->remove($f);
+    }
+
+    return $inputfields;
   }
 
   /**
@@ -50,7 +70,7 @@ class InputfieldRockGrid extends InputfieldTextarea
     $grid = rockgrid()->getGrid($this);
     if (!$grid) return "Grid {$this->name} not found.";
 
-    $textarea = parent::___render();
+    $textarea = $this->renderTextarea();
     if (!rockgrid()->debug) {
       $textarea = str_replace(
         '<textarea ',
@@ -78,6 +98,23 @@ class InputfieldRockGrid extends InputfieldTextarea
     // textarea first so that it exists in JS init() call
     // then the grid
     return $textarea . $gridMarkup;
+  }
+
+  /**
+   * Taken from InputfieldTextarea.module
+   * @return string
+   * @throws WireException
+   */
+  private function renderTextarea(): string
+  {
+    $attrs = $this->getAttributes();
+    $value = (string)$attrs['value'];
+    unset($attrs['value'], $attrs['size'], $attrs['type']);
+
+    return
+      "<textarea " . $this->getAttributesString($attrs) . ">" .
+      htmlspecialchars($value, ENT_QUOTES, "UTF-8") .
+      "</textarea>";
   }
 
   public function ___renderValue()

@@ -46,12 +46,16 @@ class ProcessRockGrid extends Process
       if ($this->wire->input->post->creategrid) {
         $grids = rockgrid()->gridsArray;
         $gridname = $this->wire->input->post->gridname;
+        $parts = explode("\\", $gridname, 2);
+        if (count($parts) !== 2) {
+          $gridname = "RockGrid\\" . ucfirst($gridname);
+          $parts = explode("\\", $gridname, 2);
+        }
+        if (count($parts) !== 2) {
+          $error = "Invalid Gridname";
+        }
         if (array_key_exists($gridname, $grids)) {
           $error = "The grid $gridname does already exist - please choose another name!";
-        }
-        $parts = explode("\\", $gridname);
-        if (count($parts) !== 2) {
-          $error = "Please use syntax Namespace\\Gridname for your grid!";
         }
 
         if (!$error) {
@@ -103,8 +107,9 @@ class ProcessRockGrid extends Process
         'type' => 'text',
         'label' => 'Name',
         'name' => 'gridname',
-        'notes' => 'Enter a name with syntax Namespace\\Gridname, eg RockGrid\\Example - see docs for details.',
-        'placeholder' => 'RockGrid\\Foo',
+        'notes' => 'If you enter a name only (eg Bar) this will create the grid in the templates folder (eg /site/templates/RockGrid/Bar.php).
+          If you enter a name with Namespace (eg Foo\\Bar) the grid will be created in a modules folder (eg /site/modules/Foo/RockGrid/Bar.php).',
+        'placeholder' => 'YourGridName',
       ]);
       if ($error) $fs->children()->last()->error($error);
       $fs->add([
@@ -144,6 +149,7 @@ class ProcessRockGrid extends Process
       'type' => 'markup',
       'label' => 'Grids',
       'value' => $this->renderGrids(),
+      'notes' => 'To remove a grid simply delete its files on the file system.',
     ]);
 
     return $form->render();
@@ -155,6 +161,7 @@ class ProcessRockGrid extends Process
   public function executeDebug()
   {
     $name = rockgrid()->rawName($this->wire->input->get->grid);
+    rockgrid()->debug = true;
 
     $this->headline("Debug $name");
     $this->browserTitle("Debug $name");
@@ -186,21 +193,28 @@ class ProcessRockGrid extends Process
       }
       $dump = ob_get_clean();
     }
+    $step = (int)$this->wire->input->step;
+    $collapsed = $step === 0 ? 0 : 1;
     $form->add([
       'type' => 'markup',
       'label' => 'Step 1: Define data of the grid in PHP getData()',
       'value' => $dump,
-      'notes' => $grid->phpFile,
+      'notes' => $grid->phpFile
+        . "\n<a href=./?grid={$grid->name}&step=1>Keep step 1 open.</a>",
+      'entityEncodeText' => false,
+      'collapsed' => $step === 1 ? 0 : $collapsed,
     ]);
     $form->add([
       'type' => 'RockGrid',
       'name' => 'rockgrid-debug',
       'label' => 'Step 2: Define grid setup in JS',
       'grid' => $name,
-      'notes' => $grid->jsFile,
+      'notes' => $grid->jsFile
+        . "\n<a href=./?grid={$grid->name}&step=2>Keep step 2 open.</a>",
+      'entityEncodeText' => false,
+      'collapsed' => $step === 2 ? 0 : $collapsed,
     ]);
 
-    if (function_exists('bd')) bd($grid);
     return $form->render();
   }
 
@@ -215,7 +229,10 @@ class ProcessRockGrid extends Process
     }
     $out .= '</table>';
 
-    $out .= '<a class=ui-button href=./?refresh=1>Refresh</a>';
+    $out .= '<a class=ui-button href=./?refresh=1>
+      <i class="fa fa-refresh"></i>
+      Refresh
+      </a>';
 
     return $out;
   }

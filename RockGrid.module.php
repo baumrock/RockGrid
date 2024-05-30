@@ -131,6 +131,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         foreach ($files as $file) {
           $arr[$this->getKeyFromFile($file)] = $file;
         }
+        ksort($arr);
         return $arr;
       }
     );
