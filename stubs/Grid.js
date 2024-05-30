@@ -5,7 +5,7 @@ document.addEventListener("RockGrid:init", (e) => {
   if (grid.name !== "{gridHash}") return;
 
   // build the tabulator table
-  var table = new Tabulator(grid.div, {
+  let table = grid.tabulator({
     layout: "fitDataStretch",
     ajaxURL: grid.ajaxURL,
     autoColumns: true,
@@ -21,7 +21,4 @@ document.addEventListener("RockGrid:init", (e) => {
     // enable row selection (it's even saveable!)
     selectableRows: true,
   });
-
-  // fire tableBuilt event on RockGrid - don't remove this!
-  table.on("tableBuilt", () => grid.tableBuilt(table));
 });
