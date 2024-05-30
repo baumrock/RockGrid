@@ -78,7 +78,9 @@ class InputfieldRockGrid extends Inputfield
         $textarea
       );
     } else {
-      if (function_exists('bd')) bd($grid);
+      if (function_exists('bd')) {
+        bd($grid);
+      }
     }
 
     $grid = rockgrid()->getGrid($this);

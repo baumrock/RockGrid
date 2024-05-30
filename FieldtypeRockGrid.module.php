@@ -2,6 +2,8 @@
 
 namespace ProcessWire;
 
+use RockGrid\RockGridField;
+
 /**
  * @author Bernhard Baumrock, 16.06.2022
  * @license COMMERCIAL DO NOT DISTRIBUTE
@@ -57,6 +59,11 @@ class FieldtypeRockGrid extends Fieldtype
     ]);
 
     return $inputfields;
+  }
+
+  public function ___formatValue(Page $page, Field $field, $value)
+  {
+    return new RockGridField($page, $field, $value);
   }
 
   /**
