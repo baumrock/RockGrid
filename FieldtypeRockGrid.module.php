@@ -38,8 +38,6 @@ class FieldtypeRockGrid extends Fieldtype
   public function ___getConfigInputfields(Field $field)
   {
     $inputfields = parent::___getConfigInputfields($field);
-    $inputfields->remove('textformatters');
-    $inputfields->remove('_text_fieldset');
 
     // prepare variables and markup
     $url = wire()->pages->get(2)->url . 'setup/grids/';
