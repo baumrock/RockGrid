@@ -76,7 +76,7 @@ class FieldtypeRockGrid extends Fieldtype
   public function getDatabaseSchema(Field $field)
   {
     $schema = parent::getDatabaseSchema($field);
-    $schema['data'] = 'mediumtext NOT NULL';
+    $schema['data'] = 'JSON';
     return $schema;
   }
 

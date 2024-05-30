@@ -1,6 +1,7 @@
 class RockGridMaster {
   edit = ProcessWire.config.urls.admin + "page/edit/?id=";
   grids = {};
+  events = {};
 
   add(grid) {
     this.grids[grid.li.id] = grid;
@@ -15,7 +16,37 @@ class RockGridMaster {
   getTable(el) {
     return this.getGrid(el).table;
   }
+
+  /**
+   * Registers an event listener for the specified event name.
+   *
+   * @param {string} eventname - The name of the event to listen for. Multiple events can be specified, separated by commas.
+   * @param {function} callback - The function to call when the event is triggered.
+   * @returns void
+   *
+   * Usage:
+   *
+   * // Register a single event
+   * RockGrid.on('eventName', (event) => {
+   *   console.log('Event triggered:', event);
+   * });
+   *
+   * // Register multiple events
+   * RockGrid.on('event1,event2', (event) => {
+   *   console.log('One of the events triggered:', event);
+   * });
+   */
+  on(eventname, callback) {
+    if (eventname.includes(",")) {
+      eventname.split(",").forEach((event) => this.on(event.trim(), callback));
+      return;
+    }
+    let events = this.events[eventname] || [];
+    events.push(callback);
+    this.events[eventname] = events;
+  }
 }
+
 var RockGrid = new RockGridMaster();
 
 class RockGridGrid {
@@ -33,19 +64,13 @@ class RockGridGrid {
     this.name = name;
     this.ajaxURL = "/rockgrid-ajax/" + name + "/";
     this.textarea = document.querySelector(textarea);
+    this.sleepValue = JSON.parse(this.textarea.value || "{}");
     this.li = this.textarea.closest("li.Inputfield");
     this.div = this.li.querySelector("div.RockGrid");
     this.wrapper = this.li.querySelector("div.RockGridWrapper");
+
     RockGrid.add(this);
     document.dispatchEvent(new CustomEvent("RockGrid:init", { detail: this }));
-  }
-
-  getSleepValue() {
-    let selectedRows = this.table.getSelectedRows();
-    let selectedIds = selectedRows.map((row) => row.getData().id);
-    return {
-      selected: selectedIds,
-    };
   }
 
   reload() {
@@ -62,47 +87,68 @@ class RockGridGrid {
     });
   }
 
-  tableBuilt(table) {
+  sleep(prop, value) {
+    let oldValue = this.sleepValue;
+    let oldString = JSON.stringify(oldValue);
+    let newValue = JSON.parse(oldString);
+    newValue[prop] = value;
+    let newString = JSON.stringify(newValue);
+
+    this.textarea.value = newString;
+    if (newString !== oldString) {
+      this.li.classList.add("InputfieldStateChanged");
+    }
+
+    this.sleepValue = newValue;
+  }
+
+  // dispatch tableBuilt event so that grids can attach their own listeners
+  // tableBuilt() {
+  //   document.dispatchEvent(
+  //     new CustomEvent("RockGrid:tableBuilt", { detail: this })
+  //   );
+  // }
+
+  tabulator(config) {
+    let grid = this;
+    let table = new Tabulator(this.div, config);
     this.table = table;
 
-    // add events necessary for all tables
-    table.on("rowSelectionChanged", this.updateTextarea.bind(this));
+    // handle row selection
+    table.on("rowSelectionChanged", () => {
+      let selectedRows = table.getSelectedRows();
+      let selectedIds = selectedRows.map((row) => row.getData().id);
+      this.sleep("selected", selectedIds);
+    });
+    table.on("dataProcessed", () => {
+      console.log("data processed");
+      table.selectRow(this.sleepValue.selected || []);
+    });
 
-    // dispatch tableBuilt event so that grids can attach their own listeners
-    document.dispatchEvent(
-      new CustomEvent("RockGrid:tableBuilt", { detail: this })
-    );
-
-    // wakeup the grid (load filters and selected rows)
-    this.wakeup();
-  }
-
-  updateTextarea() {
-    let sleepValue = this.getSleepValue();
-    this.sleepValue = sleepValue;
-    document.dispatchEvent(
-      new CustomEvent("RockGrid:sleepValue", {
-        detail: { grid: this, value: sleepValue },
-      })
-    );
-    let oldValue = this.textarea.value;
-    let newValue = JSON.stringify(this.sleepValue);
-    if (oldValue !== newValue) {
-      this.textarea.value = newValue;
-      if (this.awake) this.li.classList.add("InputfieldStateChanged");
-    }
-  }
-
-  wakeup() {
-    try {
-      let data = JSON.parse(this.textarea.value || "{}");
-      if (typeof data.selected == "object") {
-        this.table.selectRow(data.selected);
+    // load all callbacks that have been attached via RockGrid.on('table:xxx')
+    // attach every callback to the current table
+    Object.keys(RockGrid.events).forEach((eventname) => {
+      if (eventname.startsWith("table:")) {
+        let tabulatorevent = eventname.slice(6);
+        let callbacks = RockGrid.events[eventname];
+        callbacks.forEach((callback) => {
+          console.log("add callback to grid", tabulatorevent);
+          table.on(tabulatorevent, () => {
+            callback(table, grid);
+          });
+        });
       }
-    } catch (error) {
-      console.error(error);
-    }
-    this.awake = true;
+    });
+
+    return table;
+  }
+
+  trigger(eventname, detail) {
+    let callbacks = RockGrid.events[eventname];
+    if (!callbacks) return;
+    callbacks.forEach((callback) => {
+      callback(detail);
+    });
   }
 }
 
