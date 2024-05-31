@@ -207,6 +207,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       'name' => 'debug',
       'label' => 'Debug Mode',
       'checked' => $this->debug ? 'checked' : '',
+      'notes' => 'If enabled you will get additional info in the backend useful for debugging.',
     ]);
 
     $inputfields->add([
