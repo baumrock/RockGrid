@@ -33,10 +33,13 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
   public function init(): void
   {
+    $config = wire()->config;
     $this->wire('rockgrid', $this);
     $this->grids = new WireData();
     $this->wire->classLoader->addNamespace('RockGrid', __DIR__ . '/classes');
     $this->loadGridsArray();
+
+    if ($config->rockgridDebug) $this->debug = true;
 
     // hooks
     wire()->addHook('/rockgrid-ajax/{grid}/', $this, 'ajaxEndpoint');
