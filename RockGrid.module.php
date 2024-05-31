@@ -186,7 +186,12 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       $this->wire->config->urls->root,
       $path
     );
-    if ($cachebuster) $url = $this->wire->config->versionUrl($url);
+    if ($cachebuster) {
+      $url = $this->wire->config->versionUrl(
+        $url,
+        !$this->coreversion,
+      );
+    }
     return $url;
   }
 
@@ -202,6 +207,14 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       'name' => 'debug',
       'label' => 'Debug Mode',
       'checked' => $this->debug ? 'checked' : '',
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'coreversion',
+      'label' => 'Use core version for cache busting instead of filemtime',
+      'notes' => 'Use this if filemtime is slow on your system.',
+      'checked' => $this->coreversion ? 'checked' : '',
     ]);
 
     return $inputfields;
