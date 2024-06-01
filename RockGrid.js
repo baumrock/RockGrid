@@ -73,6 +73,20 @@ class RockGridGrid {
     document.dispatchEvent(new CustomEvent("RockGrid:init", { detail: this }));
   }
 
+  addAfter(definitions, fieldname, config) {
+    let found = false;
+    let arr = [];
+    definitions.forEach((item) => {
+      arr.push(item);
+      if (item.field === fieldname) {
+        arr.push(config);
+        found = true;
+      }
+    });
+    if (!found) definitions.push(config);
+    return arr;
+  }
+
   reload() {
     let table = this.table;
     return new Promise((resolve, reject) => {

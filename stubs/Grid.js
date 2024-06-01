@@ -9,13 +9,13 @@ document.addEventListener("RockGrid:init", (e) => {
     layout: "fitDataStretch",
     ajaxURL: grid.ajaxURL,
     autoColumns: true,
-    autoColumnsDefinitions: function (definitions) {
-      definitions.forEach((col) => {
+    autoColumnsDefinitions: function (defs) {
+      defs.forEach((col) => {
         if (col.field == "foo") {
           col.visible = false;
         }
       });
-      return definitions;
+      return defs;
     },
 
     // enable row selection (it's even saveable!)

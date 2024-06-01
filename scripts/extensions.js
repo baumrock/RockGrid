@@ -25,11 +25,20 @@ Tabulator.extendModule("format", "formatters", {
 
 // ##### editors for tabulator + processwire #####
 Tabulator.extendModule("edit", "editors", {
+  /**
+   * calc input
+   * parses math expressions to numbers, eg 5+5 --> 10
+   */
   calc: function (cell, onRendered, success, cancel, editorParams) {
     //create and style input
     var cellValue = cell.getValue() || "";
     input = document.createElement("input");
     input.value = cellValue;
+    if (cellValue !== "") {
+      let val = Math.round(cellValue * 100) / 100;
+      input.value = val.toFixed(2);
+    }
+
     input.style.padding = "4px";
     input.style.width = "100%";
     input.style.boxSizing = "border-box";
@@ -37,20 +46,42 @@ Tabulator.extendModule("edit", "editors", {
 
     onRendered(function () {
       input.focus();
-      input.select();
+      if (editorParams.selectContents !== false) input.select();
       input.style.height = "100%";
     });
 
     function calc() {
       str = input.value.toString();
-      let baseprice = document.querySelector(
-        "#Inputfield_rc_product_baseprice"
-      ).value;
-      str = str.replace(/p/g, baseprice);
+
+      // replace variables
+      // usage:
+      // vars: { p: '#price' }
+      // this will replace p by the value of the given dom element
+      for (let [key, selector] of Object.entries(editorParams.vars)) {
+        if (typeof selector === "string") {
+          let element = document.querySelector(selector);
+          if (element) {
+            str = str.replace(new RegExp(key, "g"), element.value);
+          }
+        }
+      }
+
+      // remove whitespaces
+      str = str.replace(/\s+/g, "");
+      if (str === "") success();
+
+      // replace comma by dot
       str = str.replace(/,/g, ".");
-      val = math.evaluate(str);
-      val = Math.round(val * 100) / 100;
-      success(val);
+
+      // try to calc result
+      try {
+        val = math.evaluate(str);
+        val = Math.round(val * 100) / 100;
+        success(val);
+      } catch (error) {
+        console.error(error);
+        success();
+      }
     }
 
     function onChange(e) {
