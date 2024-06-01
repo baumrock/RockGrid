@@ -121,7 +121,6 @@ class RockGridGrid {
       this.sleep("selected", selectedIds);
     });
     table.on("dataProcessed", () => {
-      console.log("data processed");
       table.selectRow(this.sleepValue.selected || []);
     });
 
@@ -132,7 +131,7 @@ class RockGridGrid {
         let tabulatorevent = eventname.slice(6);
         let callbacks = RockGrid.events[eventname];
         callbacks.forEach((callback) => {
-          console.log("add callback to grid", tabulatorevent);
+          // console.log("add callback to grid", tabulatorevent);
           table.on(tabulatorevent, () => {
             callback(table, grid);
           });

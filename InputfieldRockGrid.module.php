@@ -134,6 +134,9 @@ class InputfieldRockGrid extends Inputfield
     // it will only load the assets once
     wire()->modules->get('JqueryUI')->use('modal');
     $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
+    );
+    $this->wire->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
     );
     $this->wire->config->scripts->add(
@@ -143,8 +146,9 @@ class InputfieldRockGrid extends Inputfield
       rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
     );
     $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/formatters.js', true)
+      rockgrid()->url(__DIR__ . '/scripts/extensions.js', true)
     );
+
     $this->wire->config->styles->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
     );
