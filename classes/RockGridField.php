@@ -6,12 +6,14 @@ use ProcessWire\Field;
 use ProcessWire\Page;
 use ProcessWire\PageArray;
 use ProcessWire\WireData;
+use RockCommerce\ProductPage;
+use RockCommerce\Variation;
 
 class RockGridField extends WireData
 {
-  public $page;
   public $field;
   public $json;
+  public $page;
 
   function __construct(Page $page, Field $field, $value = null)
   {
@@ -28,8 +30,17 @@ class RockGridField extends WireData
 
   public function getSelectedPages(): PageArray
   {
+    // make sure we only return valid pages
+    // this will exclude trashed pages and also it will
+    // make it impossible to request non-repeater pages
+    $hasParent = $this->wire->pages->get(2)->url;
+    $forField = $this->wire->fields->get(Variation::field_options)->id;
+    $hasParent .= "repeaters/for-field-$forField";
+
     return $this->wire->pages->find([
       'id' => (array)$this->json->selected,
+      'has_parent' => $hasParent,
+      'include' => 'all',
     ]);
   }
 
