@@ -6,7 +6,7 @@ use ProcessWire\Field;
 use ProcessWire\Page;
 use ProcessWire\PageArray;
 use ProcessWire\WireData;
-use RockCommerce\ProductPage;
+use ProcessWire\WireException;
 use RockCommerce\Variation;
 
 class RockGridField extends WireData
@@ -28,6 +28,13 @@ class RockGridField extends WireData
     );
   }
 
+  /**
+   * Return selected pages
+   * NOTE: Selected pages will be returned in no special order.
+   * If you rely on a special order implement that afterwards or contact me.
+   * @return PageArray
+   * @throws WireException
+   */
   public function getSelectedPages(): PageArray
   {
     // make sure we only return valid pages
@@ -37,6 +44,7 @@ class RockGridField extends WireData
     $forField = $this->wire->fields->get(Variation::field_options)->id;
     $hasParent .= "repeaters/for-field-$forField";
 
+    // return pages in no order
     return $this->wire->pages->find([
       'id' => (array)$this->json->selected,
       'has_parent' => $hasParent,
