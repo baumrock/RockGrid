@@ -57,7 +57,8 @@ Tabulator.extendModule("edit", "editors", {
       // usage:
       // vars: { p: '#price' }
       // this will replace p by the value of the given dom element
-      for (let [key, selector] of Object.entries(editorParams.vars)) {
+      let vars = editorParams.vars || {};
+      for (let [key, selector] of Object.entries(vars)) {
         if (typeof selector === "string") {
           let element = document.querySelector(selector);
           if (element) {
