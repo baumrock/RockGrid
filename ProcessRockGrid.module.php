@@ -198,9 +198,10 @@ class ProcessRockGrid extends Process
     $form->add([
       'type' => 'markup',
       'label' => 'Step 1: Define data of the grid in PHP getData()',
+      'description' => 'Result of your grid\'s getData() method:',
       'value' => $dump,
       'notes' => $grid->phpFile
-        . "\n<a href=./?grid={$grid->name}&step=1>Keep step 1 open.</a>",
+        . "\n<a href=./?grid={$grid->name}&step=1>Keep step 1 open (for development with livereload).</a>",
       'entityEncodeText' => false,
       'collapsed' => $step === 1 ? 0 : $collapsed,
     ]);
@@ -210,7 +211,7 @@ class ProcessRockGrid extends Process
       'label' => 'Step 2: Define grid setup in JS',
       'grid' => $name,
       'notes' => $grid->jsFile
-        . "\n<a href=./?grid={$grid->name}&step=2>Keep step 2 open.</a>",
+        . "\n<a href=./?grid={$grid->name}&step=2>Keep step 2 open (for development with livereload).</a>",
       'entityEncodeText' => false,
       'collapsed' => $step === 2 ? 0 : $collapsed,
     ]);
