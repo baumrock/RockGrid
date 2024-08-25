@@ -226,9 +226,34 @@ class ProcessRockGrid extends Process
     foreach (rockgrid()->gridsArray as $name => $path) {
       $hash = rockgrid()->safeName($name);
       $url = rockgrid()->url($path);
-      $out .= "<tr><td><a href=./debug/?grid=$hash>$name</a></td><td>$url</td></tr>";
+      $copy = '
+        <a
+          title="Copy to Clipboard"
+          uk-tooltip
+          onclick="copyToClipboard()"
+        >
+          <svg style="margin-left:5px" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M8 10a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></g></svg>
+        </a>';
+      $out .= "<tr><td><a href=./debug/?grid=$hash>$name</a>$copy</td><td>$url</td></tr>";
     }
-    $out .= '</table>';
+    $out .= '</table>
+    <script>
+    function copyToClipboard() {
+      const el = document.createElement("textarea");
+      el.value = event.target.closest("td").innerText.trim();
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      UIkit.notification({
+        message: "Copied to clipboard",
+        status: "success",
+        pos: "top-center",
+        timeout: 3000
+      });
+    }
+    </script>
+    ';
 
     $out .= '<a class=ui-button href=./?refresh=1>
       <i class="fa fa-refresh"></i>
