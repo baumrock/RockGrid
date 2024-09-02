@@ -45,6 +45,35 @@ class RockGridMaster {
     events.push(callback);
     this.events[eventname] = events;
   }
+
+  sse(url, data) {
+    // Send data to the server
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        console.log("Data sent to server:", responseData);
+
+        // Receive server-sent events
+        let eventSource = new EventSource(url, { withCredentials: true }); // Added withCredentials
+        eventSource.onmessage = function (event) {
+          // if event.data is 'rockgrid-sse-done', close the event source
+          if (event.data === "rockgrid-sse-done") {
+            eventSource.close();
+          }
+          console.log(event.data);
+        };
+      })
+      .catch((error) => {
+        console.error("Error sending data to server:", error);
+      });
+  }
 }
 
 var RockGrid = new RockGridMaster();

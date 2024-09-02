@@ -181,6 +181,17 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return str_replace('\\', '-', $gridname);
   }
 
+  /**
+   * Send SSE message to client
+   * @return void
+   */
+  public function sse($msg)
+  {
+    echo "data: $msg\n\n";
+    echo str_pad('', 8186) . "\n";
+    flush();
+  }
+
   public function succ($data)
   {
     header('Content-Type: application/json; charset=utf-8');
