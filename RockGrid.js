@@ -62,7 +62,7 @@ class RockGridGrid {
 
   constructor(textarea, name) {
     this.name = name;
-    this.ajaxURL = "/rockgrid-ajax/" + name + "/";
+    this.ajaxURL = "/rockgrid/ajax/" + name + "/";
     this.textarea = document.querySelector(textarea);
     this.sleepValue = JSON.parse(this.textarea.value || "{}");
     this.li = this.textarea.closest("li.Inputfield");

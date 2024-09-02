@@ -42,7 +42,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     if ($config->rockgridDebug) $this->debug = true;
 
     // ajax endpoints
-    wire()->addHook('/rockgrid-ajax/{grid}/', $this, 'ajaxEndpoint');
+    wire()->addHook('/rockgrid/ajax/{grid}/', $this, 'ajaxEndpoint');
 
     // devtools
     if (function_exists('\ProcessWire\rockmigrations')) {
