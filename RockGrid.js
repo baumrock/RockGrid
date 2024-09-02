@@ -137,6 +137,11 @@ class RockGridGrid {
     table.on("dataProcessed", () => {
       table.selectRow(this.sleepValue.selected || []);
     });
+    table.on("dataLoaded", function (data) {
+      if (typeof data == "object" && data.error) {
+        alert(data.error);
+      }
+    });
 
     // load all callbacks that have been attached via RockGrid.on('table:xxx')
     // attach every callback to the current table

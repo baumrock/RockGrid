@@ -41,7 +41,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
     if ($config->rockgridDebug) $this->debug = true;
 
-    // hooks
+    // ajax endpoints
     wire()->addHook('/rockgrid-ajax/{grid}/', $this, 'ajaxEndpoint');
 
     // devtools
@@ -60,9 +60,15 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     }
     $gridname = $this->rawName($event->grid);
     $grid = $this->getGrid($gridname);
-    if (!$grid) return;
+    if (!$grid) return $this->err('Grid not found');
+    if (!$grid->isViewable()) return $this->err('No access');
+    return $this->succ($grid->getData());
+  }
+
+  public function err($message)
+  {
     header('Content-Type: application/json; charset=utf-8');
-    return json_encode($grid->getData());
+    return json_encode(['error' => $message]);
   }
 
   public function getGrid($data): Grid|null
@@ -173,6 +179,12 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   public function safeName($gridname): string
   {
     return str_replace('\\', '-', $gridname);
+  }
+
+  public function succ($data)
+  {
+    header('Content-Type: application/json; charset=utf-8');
+    return json_encode($data);
   }
 
   /**
