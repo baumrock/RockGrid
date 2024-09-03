@@ -58,20 +58,37 @@ class RockGridMaster {
     })
       .then((response) => response.json())
       .then((responseData) => {
-        console.log("Data sent to server:", responseData);
-
-        // Receive server-sent events
+        // create stream to receive server-sent events
         let eventSource = new EventSource(url, { withCredentials: true }); // Added withCredentials
-        eventSource.onmessage = function (event) {
-          // if event.data is 'rockgrid-sse-done', close the event source
-          if (event.data === "rockgrid-sse-done") {
-            eventSource.close();
-            if (onDone) onDone();
-            return;
+        let interval = false;
+
+        let messages = [];
+        const processMessages = () => {
+          while (messages.length) {
+            try {
+              onMessage(messages.shift());
+            } catch (error) {
+              console.error("Error processing message:", error);
+            }
           }
-          console.log("event.data", event.data);
-          onMessage(event.data);
         };
+
+        eventSource.onmessage = function (event) {
+          const msg = event.data;
+          if (msg === "rockgrid-sse-done") {
+            eventSource.close();
+            clearInterval(interval);
+            processMessages();
+            if (onDone) onDone();
+          } else {
+            messages.push(msg);
+          }
+        };
+
+        // message processor via setInterval
+        interval = setInterval(processMessages, 250);
+
+        // errors
         eventSource.onerror = function (event) {
           console.error("EventSource failed:", event);
         };

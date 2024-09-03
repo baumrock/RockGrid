@@ -32,6 +32,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    */
   public $gridsArray = [];
 
+  private $itemCallbackResult = false;
+
   public function init(): void
   {
     $config = wire()->config;
@@ -63,6 +65,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         $method = $_SERVER['REQUEST_METHOD'];
         if ($method === 'POST') {
           $raw = $this->sseEndpointPost();
+          wire()->session->set('rockgrid-item-callback-result', false);
 
           // debug output
           if ($this->debug && function_exists('bd')) {
@@ -70,7 +73,9 @@ class RockGrid extends WireData implements Module, ConfigurableModule
             bd($input, 'sse endpoint post');
             bd($items = $getItems($input), 'getItems()');
             if (is_array($items)) {
-              bd($itemCallback($items[0], $input), 'itemCallback()');
+              $result = $itemCallback($items[0], $input);
+              wire()->session->set('rockgrid-item-callback-result', $result);
+              bd($result, 'itemCallback()');
             } else {
               bd($items, 'WARNING: getItems() did not return an array');
             }
@@ -246,18 +251,30 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     callable $getItems,
     callable $itemCallback,
   ) {
+    $maxExecutionTime = 10;
     header("Cache-Control: no-cache");
     header("Content-Type: text/event-stream");
+    ini_set('max_execution_time', $maxExecutionTime);
     $input = $this->sseInput();
     $items = $getItems($input);
     if (!is_array($items)) return;
     // if debug mode is on we have already processed the first item
     // so we remove it now to not double-process it
+    $all = count($items);
+    $current = 0;
     if ($this->debug && function_exists('bd')) {
       array_shift($items);
+      $result = wire()->session->get('rockgrid-item-callback-result');
+      if (!is_array($result)) $result = [];
+      $result['current'] = ++$current;
+      $result['progress'] = round($current / $all, 2);
+      $this->sse($result);
     }
     foreach ($items as $item) {
+      ini_set('max_execution_time', $maxExecutionTime);
       $result = $itemCallback($item, $input);
+      $result['current'] = ++$current;
+      $result['progress'] = round($current / $all, 2);
       $this->sse($result);
     }
     $this->sse('rockgrid-sse-done');
