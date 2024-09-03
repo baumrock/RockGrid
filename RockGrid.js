@@ -46,7 +46,7 @@ class RockGridMaster {
     this.events[eventname] = events;
   }
 
-  sse(url, data) {
+  sse(url, data, onMessage, onDone) {
     // Send data to the server
     fetch(url, {
       method: "POST",
@@ -66,8 +66,14 @@ class RockGridMaster {
           // if event.data is 'rockgrid-sse-done', close the event source
           if (event.data === "rockgrid-sse-done") {
             eventSource.close();
+            if (onDone) onDone();
+            return;
           }
-          console.log(event.data);
+          console.log("event.data", event.data);
+          onMessage(event.data);
+        };
+        eventSource.onerror = function (event) {
+          console.error("EventSource failed:", event);
         };
       })
       .catch((error) => {

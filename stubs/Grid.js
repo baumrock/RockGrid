@@ -1,11 +1,11 @@
 document.addEventListener("RockGrid:init", (e) => {
-  let grid = e.detail;
+  const grid = e.detail;
 
   // do everything below only for this specific grid
   if (grid.name !== "{gridHash}") return;
 
   // build the tabulator table
-  let table = grid.tabulator({
+  const table = grid.tabulator({
     layout: "fitDataStretch",
     ajaxURL: grid.ajaxURL,
     autoColumns: true,
