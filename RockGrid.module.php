@@ -4,6 +4,7 @@ namespace ProcessWire;
 
 use RockGrid\ButtonsArray;
 use RockGrid\Grid;
+use stdClass;
 
 function rockgrid(): RockGrid
 {
@@ -49,6 +50,38 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       $rm = rockmigrations();
       $rm->saveCSS(__DIR__ . '/RockGrid.less', minify: true, keepCSS: false);
     }
+  }
+
+  public function addSseEndpoint(
+    string $url,
+    callable $getItems,
+    callable $itemCallback,
+  ): void {
+    wire()->addHookAfter(
+      $url,
+      function () use ($getItems, $itemCallback) {
+        $method = $_SERVER['REQUEST_METHOD'];
+        if ($method === 'POST') {
+          $raw = $this->sseEndpointPost();
+
+          // debug output
+          if ($this->debug && function_exists('bd')) {
+            $input = $this->sseInput();
+            bd($input, 'sse endpoint post');
+            bd($items = $getItems($input), 'getItems()');
+            if (is_array($items)) {
+              bd($itemCallback($items[0], $input), 'itemCallback()');
+            } else {
+              bd($items, 'WARNING: getItems() did not return an array');
+            }
+          }
+
+          return $raw;
+        } else {
+          $this->sseEndpointStream($getItems, $itemCallback);
+        }
+      }
+    );
   }
 
   protected function ajaxEndpoint(HookEvent $event)
@@ -183,13 +216,56 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
   /**
    * Send SSE message to client
-   * @return void
    */
-  public function sse($msg)
+  public function sse(mixed $msg): void
   {
+    if (!is_string($msg)) $msg = json_encode($msg);
     echo "data: $msg\n\n";
     echo str_pad('', 8186) . "\n";
     flush();
+  }
+
+  /**
+   * This is what happens when before the sse stream is established.
+   * We send a post request to the backend that contains all the data that
+   * the sse stream will then process.
+   */
+  private function sseEndpointPost()
+  {
+    $rawInput = file_get_contents('php://input');
+    wire()->session->set('rockgrid-sse-input', $rawInput);
+    header('Content-Type: application/json; charset=utf-8');
+    return $rawInput;
+  }
+
+  /**
+   * This is what happens when the sse stream is established.
+   * We send a stream of events to the client.
+   */
+  private function sseEndpointStream(
+    callable $getItems,
+    callable $itemCallback,
+  ) {
+    header("Cache-Control: no-cache");
+    header("Content-Type: text/event-stream");
+    $input = $this->sseInput();
+    $items = $getItems($input);
+    if (!is_array($items)) return;
+    // if debug mode is on we have already processed the first item
+    // so we remove it now to not double-process it
+    if ($this->debug && function_exists('bd')) {
+      array_shift($items);
+    }
+    foreach ($items as $item) {
+      $result = $itemCallback($item, $input);
+      $this->sse($result);
+    }
+    $this->sse('rockgrid-sse-done');
+  }
+
+  private function sseInput(): stdClass
+  {
+    return json_decode(wire()->session->get('rockgrid-sse-input'));
   }
 
   public function succ($data)
