@@ -112,8 +112,9 @@ class RockGridGrid {
   textarea;
   wrapper;
 
-  constructor(textarea, name) {
+  constructor(textarea, name, jsVars) {
     this.name = name;
+    this.jsVars = JSON.parse(jsVars);
     this.ajaxURL = "/rockgrid/ajax/" + name + "/";
     this.textarea = document.querySelector(textarea);
     this.sleepValue = JSON.parse(this.textarea.value || "{}");
