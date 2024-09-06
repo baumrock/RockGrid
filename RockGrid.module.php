@@ -273,6 +273,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     foreach ($items as $item) {
       ini_set('max_execution_time', $maxExecutionTime);
       $result = $itemCallback($item, $input);
+      if (!is_array($result)) $result = [];
       $result['current'] = ++$current;
       $result['progress'] = round($current / $all, 2);
       $this->sse($result);

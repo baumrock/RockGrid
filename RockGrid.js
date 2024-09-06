@@ -46,27 +46,33 @@ class RockGridMaster {
     this.events[eventname] = events;
   }
 
-  sse(url, data, onMessage, onDone) {
+  sse(config) {
     // Send data to the server
-    fetch(url, {
+    fetch(config.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(config.data),
     })
       .then((response) => response.json())
       .then((responseData) => {
         // create stream to receive server-sent events
-        let eventSource = new EventSource(url, { withCredentials: true }); // Added withCredentials
+        let eventSource = new EventSource(config.url, {
+          withCredentials: true,
+        });
+
+        // send stream to onConnect callback
+        if (config.onConnect) config.onConnect(eventSource);
+
         let interval = false;
 
         let messages = [];
         const processMessages = () => {
           while (messages.length) {
             try {
-              onMessage(messages.shift());
+              config.onMessage(messages.shift());
             } catch (error) {
               console.error("Error processing message:", error);
             }
@@ -79,13 +85,14 @@ class RockGridMaster {
             eventSource.close();
             clearInterval(interval);
             processMessages();
-            if (onDone) onDone();
+            if (config.onDone) config.onDone();
           } else {
             messages.push(msg);
           }
         };
 
         // message processor via setInterval
+        // this is to make sure the browser updates the UI properly
         interval = setInterval(processMessages, 250);
 
         // errors
