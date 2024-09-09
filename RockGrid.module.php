@@ -54,11 +54,28 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     }
   }
 
+  /**
+   * Add an SSE endpoint
+   *
+   * getItems() must return an array of items.
+   * itemCallback() is called for each item
+   *
+   */
   public function addSseEndpoint(
     string $url,
     callable $getItems,
-    callable $itemCallback,
+    callable|null $itemCallback = null,
   ): void {
+
+    // if no itemCallback is provided, use a default one
+    // that returns the item as an array with an id equal to the item itself
+    // that means that getItems() can return a $pages->findRaw() result directly
+    // and the itemCallback will return the id of the page for every run
+    // and RockGrid will add "current" and "progress" to the result
+    if (!$itemCallback) $itemCallback = function ($item) {
+      return ['id' => $item];
+    };
+
     wire()->addHookAfter(
       $url,
       function () use ($getItems, $itemCallback) {
@@ -73,9 +90,13 @@ class RockGrid extends WireData implements Module, ConfigurableModule
             bd($input, 'sse endpoint post');
             bd($items = $getItems($input), 'getItems()');
             if (is_array($items)) {
-              $result = $itemCallback($items[0], $input);
-              wire()->session->set('rockgrid-item-callback-result', $result);
-              bd($result, 'itemCallback()');
+              if (count($items)) {
+                $result = $itemCallback($items[0], $input);
+                wire()->session->set('rockgrid-item-callback-result', $result);
+                bd($result, 'itemCallback()');
+              } else {
+                bd($items, 'getItems() returned an empty array');
+              }
             } else {
               bd($items, 'WARNING: getItems() did not return an array');
             }
@@ -261,6 +282,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     // if debug mode is on we have already processed the first item
     // so we remove it now to not double-process it
     $all = count($items);
+    if ($all < 1) return $this->sse('rockgrid-sse-done');
     $current = 0;
     if ($this->debug && function_exists('bd')) {
       array_shift($items);
