@@ -1,5 +1,7 @@
 # RockGrid
 
+<div class='uk-alert uk-alert-warning'>This module has been released at an early stage because it is a dependency for RockCalendar Recurring Events. The module itself is stable, but the documentation is not yet complete.</div>
+
 ## Use Cases
 
 - Advanced Lister Alternative
