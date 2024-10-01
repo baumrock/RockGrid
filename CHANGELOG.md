@@ -1,3 +1,14 @@
+## [1.0.0](https://github.com/baumrock/RockGrid/compare/v0.4.0...v1.0.0) (2024-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* bump version to 1.0.0
+
+### Features
+
+* bump version to 1.0.0 ([a40abc6](https://github.com/baumrock/RockGrid/commit/a40abc6f57e3739570fbbacdf753e6fb3fa252ac))
+
 ## [0.4.0](https://github.com/baumrock/RockGrid/compare/v0.2.0...v0.4.0) (2024-10-01)
 
 
