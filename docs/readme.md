@@ -1,4 +1,4 @@
-# RockGrid Docs
+# RockGrid
 
 ## Use Cases
 
