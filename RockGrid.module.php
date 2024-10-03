@@ -46,6 +46,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
     // ajax endpoints
     wire()->addHook('/rockgrid/ajax/{grid}/', $this, 'ajaxEndpoint');
+    wire()->addHookAfter('Modules::refresh', $this, 'resetCache');
 
     // devtools
     if (function_exists('\ProcessWire\rockmigrations')) {
@@ -183,9 +184,6 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
   private function loadGridsArray(): void
   {
-    // reset cache on modules refresh
-    $this->wire->addHookAfter('Modules::refresh', $this, 'refresh');
-
     // get grids array from cache or recreate it
     $gridsArray = $this->wire->cache->get(
       self::gridsArrayCache,
@@ -203,6 +201,15 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         return $arr;
       }
     );
+
+    // check if path has changed (eg because of deployment)
+    foreach ($gridsArray as $cls => $path) {
+      if (!is_file($path)) {
+        $this->resetCache();
+        $this->loadGridsArray();
+        return;
+      }
+    }
 
     // add classloader for all namespaces
     foreach ($gridsArray as $file) {
@@ -225,7 +232,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return str_replace('-', '\\', $safename);
   }
 
-  public function refresh(): void
+  public function resetCache(): void
   {
     $this->wire->cache->delete(self::gridsArrayCache);
   }
