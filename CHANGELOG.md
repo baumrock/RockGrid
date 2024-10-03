@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/baumrock/RockGrid/compare/v1.0.0...v1.0.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* reset cache if paths changed ([a87434d](https://github.com/baumrock/RockGrid/commit/a87434ddc2d5e4f45d6b708415ba94c1a432485f))
+
 ## [1.0.0](https://github.com/baumrock/RockGrid/compare/v0.4.0...v1.0.0) (2024-10-01)
 
 
