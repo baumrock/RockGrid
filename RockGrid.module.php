@@ -327,6 +327,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    */
   public function url(string $path, $cachebuster = false): string
   {
+    $path = Paths::normalizeSeparators($path);
     $url = str_replace(
       $this->wire->config->paths->root,
       $this->wire->config->urls->root,
