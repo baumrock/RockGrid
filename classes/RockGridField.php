@@ -41,7 +41,7 @@ class RockGridField extends WireData
     // this will exclude trashed pages and also it will
     // make it impossible to request non-repeater pages
     $hasParent = $this->wire->pages->get(2)->url;
-    $forField = $this->wire->fields->get(Variation::field_options)->id;
+    $forField = $this->field->id;
     $hasParent .= "repeaters/for-field-$forField";
 
     // return pages in no order
