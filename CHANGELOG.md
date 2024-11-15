@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/baumrock/RockGrid/compare/v1.0.2...v1.0.3) (2024-11-15)
+
+
+### Bug Fixes
+
+* remove reference to rockcommerce and add generic code ([0103011](https://github.com/baumrock/RockGrid/commit/0103011fb6aafb2ab8cd4c1d12994f2dde601fda))
+
 ## [1.0.2](https://github.com/baumrock/RockGrid/compare/v1.0.1...v1.0.2) (2024-10-16)
 
 
@@ -71,11 +78,4 @@
 * selected pages returned an empty array for guests ([d8d12e9](https://github.com/baumrock/RockGrid/commit/d8d12e9bc83d576b8f9fe55292dcfcd24cc5bb71))
 * wakeup must be last ([b6e0d4e](https://github.com/baumrock/RockGrid/commit/b6e0d4e8119456070cfc87638ecb69d5a4c93cfa))
 * wrong button visibility for remove filter ([1a04766](https://github.com/baumrock/RockGrid/commit/1a04766d4ea6df5a1763e78d66e809246a62a59b))
-
-## [0.2.0](https://github.com/baumrock/RockGrid/compare/v0.1.0...v0.2.0) (2024-02-04)
-
-
-### Features
-
-* add prependMarkup / appendMarkup for buttons ([18a4bd1](https://github.com/baumrock/RockGrid/commit/18a4bd19de2486c2548602a6add6d2f8ea35febd))
 
