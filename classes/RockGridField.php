@@ -7,7 +7,6 @@ use ProcessWire\Page;
 use ProcessWire\PageArray;
 use ProcessWire\WireData;
 use ProcessWire\WireException;
-use RockCommerce\Variation;
 
 class RockGridField extends WireData
 {
