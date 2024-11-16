@@ -35,21 +35,13 @@ class RockGridField extends WireData
    * @return PageArray
    * @throws WireException
    */
-  public function getSelectedPages(): PageArray
-  {
-    // make sure we only return valid pages
-    // this will exclude trashed pages and also it will
-    // make it impossible to request non-repeater pages
-    $hasParent = $this->wire->pages->get(2)->url;
-    $forField = $this->field->id;
-    $hasParent .= "repeaters/for-field-$forField";
-
-    // return pages in no order
-    return $this->wire->pages->find([
-      'id' => (array)$this->json->selected,
-      'has_parent' => $hasParent,
-      'include' => 'all',
-    ]);
+  public function getSelectedPages(
+    // NOTE: limit down returned pages to avoid leaking data to the public!
+    array $selector,
+  ): PageArray {
+    $default = ['id' => (array)$this->json->selected];
+    $selector = array_merge($default, $selector);
+    return $this->wire->pages->find($selector);
   }
 
   public function __debugInfo()
