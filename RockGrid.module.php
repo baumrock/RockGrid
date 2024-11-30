@@ -47,6 +47,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     // ajax endpoints
     wire()->addHook('/rockgrid/ajax/{grid}/', $this, 'ajaxEndpoint');
     wire()->addHookAfter('Modules::refresh', $this, 'resetCache');
+    wire()->addHookBefore('InputfieldForm::render', $this, 'hookRenderForm');
 
     // devtools
     if (function_exists('\ProcessWire\rockmigrations')) {
@@ -180,6 +181,39 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   public function getNamespaceFromFile($file): string
   {
     return explode('\\', $this->getKeyFromFile($file))[0];
+  }
+
+  /**
+   * Load all dependencies
+   * This can safely be called multiple times.
+   * // TODO: Load it only when necessary. At the moment it's loaded on every form
+   * to make sure that grids also work in repeaters that are loaded via ajax.
+   */
+  protected function hookRenderForm(HookEvent $event): void
+  {
+    wire()->modules->get('JqueryUI')->use('modal');
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
+    );
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
+    );
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/RockGrid.js', true)
+    );
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
+    );
+    $this->wire->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/extensions.js', true)
+    );
+
+    $this->wire->config->styles->add(
+      rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
+    );
+    $this->wire->config->styles->add(
+      rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
+    );
   }
 
   private function loadGridsArray(): void

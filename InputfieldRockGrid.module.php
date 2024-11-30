@@ -97,8 +97,14 @@ class InputfieldRockGrid extends Inputfield
     // get jsVars
     $jsVars = json_encode($grid->getJsVars());
 
+    $grid = rockgrid()->getGrid($this);
+    $files = [];
+    if ($grid->jsFile) $files['js'] = rockgrid()->url($grid->jsFile, true);
+    if ($grid->cssFile) $files['css'] = rockgrid()->url($grid->cssFile, true);
+    $files = json_encode($files);
+
     $hash = rockgrid()->safeName($this->grid);
-    $gridMarkup .= "<script>new RockGridGrid('#{$this->id}', '$hash', '$jsVars')</script>";
+    $gridMarkup .= "<script>new RockGridGrid('#{$this->id}', '$hash', '$jsVars', '$files')</script>";
 
     // textarea first so that it exists in JS init() call
     // then the grid
@@ -125,50 +131,5 @@ class InputfieldRockGrid extends Inputfield
   public function ___renderValue()
   {
     return $this->___render();
-  }
-
-  public function renderReady(Inputfield $parent = null, $renderValueMode = false)
-  {
-    $grid = rockgrid()->getGrid($this);
-    if (!$grid) return;
-
-    // load all dependencies
-    // this can safely be called multiple times
-    // it will only load the assets once
-    wire()->modules->get('JqueryUI')->use('modal');
-    $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
-    );
-    $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
-    );
-    $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/RockGrid.js', true)
-    );
-    $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
-    );
-    $this->wire->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/extensions.js', true)
-    );
-
-    $this->wire->config->styles->add(
-      rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
-    );
-    $this->wire->config->styles->add(
-      rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
-    );
-
-    // load grid's js and css files
-    $this->wire->config->scripts->add(
-      rockgrid()->url($grid->jsFile, true)
-    );
-    if ($grid->cssFile) {
-      $this->wire->config->styles->add(
-        rockgrid()->url($grid->cssFile, true)
-      );
-    }
-
-    return parent::renderReady($parent, $renderValueMode);
   }
 }
