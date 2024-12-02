@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/baumrock/RockGrid/compare/v1.0.4...v1.0.5) (2024-12-02)
+
+
+### Bug Fixes
+
+* load assets via JS to support ajax loaded repeater fields ([8e4e96f](https://github.com/baumrock/RockGrid/commit/8e4e96ff85493921f45048e4f8137d83561fecd6))
+
 ## [1.0.4](https://github.com/baumrock/RockGrid/compare/v1.0.3...v1.0.4) (2024-11-16)
 
 
@@ -25,15 +32,4 @@
 ### Bug Fixes
 
 * reset cache if paths changed ([a87434d](https://github.com/baumrock/RockGrid/commit/a87434ddc2d5e4f45d6b708415ba94c1a432485f))
-
-## [1.0.0](https://github.com/baumrock/RockGrid/compare/v0.4.0...v1.0.0) (2024-10-01)
-
-
-### ⚠ BREAKING CHANGES
-
-* bump version to 1.0.0
-
-### Features
-
-* bump version to 1.0.0 ([a40abc6](https://github.com/baumrock/RockGrid/commit/a40abc6f57e3739570fbbacdf753e6fb3fa252ac))
 
