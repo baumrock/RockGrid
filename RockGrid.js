@@ -119,7 +119,7 @@ class RockGridGrid {
   textarea;
   wrapper;
 
-  constructor(textarea, name, jsVars) {
+  constructor(textarea, name, jsVars, assets) {
     this.name = name;
     this.jsVars = JSON.parse(jsVars);
     this.ajaxURL = "/rockgrid/ajax/" + name + "/";
@@ -129,8 +129,26 @@ class RockGridGrid {
     this.div = this.li.querySelector("div.RockGrid");
     this.wrapper = this.li.querySelector("div.RockGridWrapper");
 
-    RockGrid.add(this);
-    document.dispatchEvent(new CustomEvent("RockGrid:init", { detail: this }));
+    // load assets via javascript
+    // this is to make sure grids also work in repeaters that
+    // are loaded via ajax when a tab is opened
+    assets = JSON.parse(assets);
+    if (assets.js) {
+      // add script tag to the dom and wait until it's loaded
+      let script = document.createElement("script");
+      script.src = assets.js;
+      document.head.appendChild(script);
+      script.onload = () => {
+        RockGrid.add(this);
+        document.dispatchEvent(
+          new CustomEvent("RockGrid:init", { detail: this })
+        );
+      };
+    }
+    if (assets.css) {
+      document.head.appendChild(document.createElement("link")).href =
+        assets.css;
+    }
   }
 
   addAfter(definitions, fieldname, config) {
