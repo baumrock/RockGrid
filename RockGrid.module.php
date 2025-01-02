@@ -49,6 +49,11 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     wire()->addHookAfter('Modules::refresh', $this, 'resetCache');
     wire()->addHookBefore('InputfieldForm::render', $this, 'hookRenderForm');
 
+    // hooks to add grid view
+    wire()->addHookBefore('ProcessPageEdit::buildForm', $this, 'buildFormGrid');
+    wire()->addHookAfter('ProcessPageEdit::getSubmitActions', $this, 'buildFormGridRemoveSubmitActions');
+    wire()->addHookAfter('ProcessPageListRender::getPageActions', $this, 'buildFormGridPageListActions');
+
     // devtools
     if (function_exists('\ProcessWire\rockmigrations')) {
       $rm = rockmigrations();
@@ -124,6 +129,55 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     if (!$grid) return $this->err('Grid not found');
     if (!$grid->isViewable()) return $this->err('No access');
     return $this->succ($grid->getData());
+  }
+
+  /**
+   * Build the form that shows a RockGrid instead of the page edit form
+   */
+  protected function buildFormGrid(HookEvent $event): void
+  {
+    if (!$this->isGridView($event)) return;
+    $event->replace = true;
+
+    // remove headline
+    $event->process->headline(' ');
+
+    $form = new InputfieldForm();
+    $form->add([
+      'name' => 'PageEditChildrenGrid',
+      'type' => 'rockgrid',
+      'grid' => 'RockGrid\Efforts',
+    ]);
+
+    $event->return = $form;
+  }
+
+  /**
+   * Show a list/grid icon in the page tree before the page edit tab
+   */
+  protected function buildFormGridPageListActions(HookEvent $event): void
+  {
+    $p = $event->arguments(0);
+    $gridName = $p->template->rockGridName;
+    if (!$gridName) return;
+    $grid = $this->getGrid($gridName);
+    if (!$grid) return;
+    $actions = $event->return;
+    $event->return = array_merge([[
+      'cn' => 'rockGridView',
+      'name' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>',
+      'url' => $p->editUrl() . '&rockgrid=1',
+    ]], $actions);
+  }
+
+  /**
+   * Remove submit actions to avoid display glitches:
+   * https://i.imgur.com/nF0ls4k.png
+   */
+  protected function buildFormGridRemoveSubmitActions(HookEvent $event): void
+  {
+    if (!$this->isGridView($event)) return;
+    $event->return = [];
   }
 
   public function err($message)
@@ -214,6 +268,21 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     $this->wire->config->styles->add(
       rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
     );
+  }
+
+  /**
+   * Helper method to check wether to show the grid view or not
+   */
+  private function isGridView(HookEvent $event): bool
+  {
+    $p = $event->process->getPage();
+    $gridName = $p->template->rockGridName;
+    if (!$gridName) return false;
+
+    $grid = $this->getGrid($gridName);
+    if (!$grid) return false;
+    if (!wire()->input->get('rockgrid', 'int')) return false;
+    return true;
   }
 
   private function loadGridsArray(): void
