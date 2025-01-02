@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/baumrock/RockGrid/compare/v1.0.5...v1.0.6) (2025-01-02)
+
+
+### Bug Fixes
+
+* rename orphan refresh() call to resetCache() ([1edc299](https://github.com/baumrock/RockGrid/commit/1edc29904f879abece9db1b176be2c4a54899be6))
+
 ## [1.0.5](https://github.com/baumrock/RockGrid/compare/v1.0.4...v1.0.5) (2024-12-02)
 
 
@@ -25,11 +32,4 @@
 ### Bug Fixes
 
 * issue with asset urls on windows ([ff7589d](https://github.com/baumrock/RockGrid/commit/ff7589dc61ce94e78b241b8a378fa54f7a045979))
-
-## [1.0.1](https://github.com/baumrock/RockGrid/compare/v1.0.0...v1.0.1) (2024-10-03)
-
-
-### Bug Fixes
-
-* reset cache if paths changed ([a87434d](https://github.com/baumrock/RockGrid/commit/a87434ddc2d5e4f45d6b708415ba94c1a432485f))
 
