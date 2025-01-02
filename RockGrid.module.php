@@ -142,11 +142,15 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     // remove headline
     $event->process->headline(' ');
 
+    // get page
+    $p = $event->process->getPage();
+
     $form = new InputfieldForm();
     $form->add([
       'name' => 'PageEditChildrenGrid',
       'type' => 'rockgrid',
-      'grid' => 'RockGrid\Efforts',
+      'grid' => $p->template->rockGridName,
+      'skipLabel' => Inputfield::skipLabelHeader,
     ]);
 
     $event->return = $form;

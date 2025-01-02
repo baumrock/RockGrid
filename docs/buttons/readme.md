@@ -71,7 +71,11 @@ Another common use case is to delete selected rows.
 
 ## Available Buttons
 
-Reload grid data:
+RockGrid ships with some buttons for common needs out of the box!
+
+### Refresh
+
+The refresh (reload) button reloads grid data via AJAX when clicked:
 
 ```php
 $this->buttonsRight->add([
@@ -79,6 +83,10 @@ $this->buttonsRight->add([
   'icon' => 'refresh',
 ]);
 ```
+
+### Trash selected
+
+### Others
 
 Select/Unselect all rows:
 
