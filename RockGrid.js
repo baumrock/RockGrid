@@ -188,7 +188,7 @@ class RockGridGrid {
 
     this.textarea.value = newString;
     if (newString !== oldString) {
-      this.li.classList.add("InputfieldStateChanged");
+      if (!this.noStateChanged) this.li.classList.add("InputfieldStateChanged");
     }
 
     this.sleepValue = newValue;
