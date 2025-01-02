@@ -34,11 +34,27 @@ RockGrid.on("button:refresh", (button) => {
   let icon = button.querySelector("i.fa");
   if (icon) icon.classList.add("fa-spin");
 
+  const startTime = Date.now();
+  const minSpinTime = 1000; // minimum spin time in ms (1s = 1 full turn)
+
   // silently replace new data
   RockGrid.getGrid(button)
     .reload()
     .then(() => {
-      if (icon) icon.classList.remove("fa-spin");
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minSpinTime - elapsedTime);
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove("fa-spin");
+      }, remainingTime);
+    })
+    .catch(() => {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minSpinTime - elapsedTime);
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove("fa-spin");
+      }, remainingTime);
     });
 });
 
