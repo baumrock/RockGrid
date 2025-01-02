@@ -96,7 +96,7 @@ class ProcessRockGrid extends Process
             )
           );
 
-          rockgrid()->refresh();
+          rockgrid()->resetCache();
           $this->wire->session->redirect(
             './debug/?grid=' . rockgrid()->safeName($gridname)
           );
