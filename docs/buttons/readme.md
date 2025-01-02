@@ -1,10 +1,9 @@
 # Buttons
 
-RockGrid makes it easy to add custom buttons to your UI. By default we have three areas for buttons:
+RockGrid makes it easy to add custom buttons to your UI. By default we have two areas for buttons:
 
 1. buttonsLeft
 2. buttonsRight
-3. buttonsRight
 
 <img src=buttons.png class=blur>
 
@@ -16,21 +15,59 @@ All buttons are defined in the grid's `buildUI` method and added to a `ButtonsAr
 public function buildUI(): void
 {
   $this->buttonsRight->add([
-    'name' => 'trash',
-    'icon' => 'trash',
-    'tooltip' => 'Trash selected rows',
-    'class' => '',
+    'name' => 'refresh',
+    'icon' => 'refresh',
   ]);
 }
 ```
 
 ## JavaScript
 
-Whenever a button is clicked it fires the `RockGrid:buttonClick` event. You can listen to this event and fire custom actions:
+Whenever a button is clicked it fires the `button:XXX` event. You can listen to this event and fire custom actions:
 
 ```js
-
+RockGrid.on("button:refresh", (button) => {
+  RockGrid.getGrid(button).reload();
+});
 ```
+
+This is a simplified version. For the real implementation inspect the file `scripts/buttons.js` in the `site/modules/RockGrid/` folder.
+
+> Pro-Tip: This file has plenty of other button examples to learn from!
+
+## Example Buttons
+
+### Create new entry
+
+To creat e new entry we simply use ProcessWire's internal tools. All we do is add a button and set the `href` attribute to the url that ProcessWire uses to create a page. In this example we grab the parent ID from the url and we add the `pw-modal` class to the button, which will tell ProcessWire to open the link in a modal:
+
+```php
+public function buildUI(): void
+{
+  // example: get parent from url parameter
+  $parent = wire()->input->get('id', 'int');
+  $url = wire()->config->urls->admin;
+  $this->buttonsLeft->add([
+    'icon' => 'plus',
+    'tooltip' => 'Add a new item',
+    'class' => 'uk-button-primary pw-modal',
+    'href' => $url . 'page/add/?parent_id=' . $parent,
+  ]);
+}
+```
+
+If you want to reload the grid after the panel has been closed, you can do this in your Grid's JS file:
+
+```js
+// reload grid after a pw modal has been closed
+$(document).on("pw-modal-closed", () => {
+  grid.reload();
+});
+```
+
+### Deleting entries
+
+Another common use case is to delete selected rows.
 
 ## Available Buttons
 
