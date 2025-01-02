@@ -4,6 +4,9 @@ document.addEventListener("RockGrid:init", (e) => {
   // do everything below only for this specific grid
   if (grid.name !== "{gridHash}") return;
 
+  // grid settings
+  // grid.noStateChanged = true;
+
   // build the tabulator table
   const table = grid.tabulator({
     layout: "fitDataStretch",
