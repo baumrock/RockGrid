@@ -314,12 +314,23 @@ class RockGridGrid {
 }
 
 // edit page in modal
+// this modal will
+// - have save buttons in the bottom right corner (out of the iframe)
+// - automatically close on save
+// - automatically reload the grid after close
 function RockGridModal(el) {
-  let $iframe = pwModalWindow(el.getAttribute("href"));
-  $iframe.on("dialogclose", () => {
-    if (el.getAttribute("rg-modal-reload") !== null)
-      RockGrid.getGrid(el).reload();
+  let link = document.createElement("a");
+  let $link = $(link);
+  $link.attr("href", el.getAttribute("href"));
+  $link.addClass("pw-modal");
+  $link.attr("data-autoclose", "");
+  $link.attr("data-buttons", "button.ui-button[type=submit]");
+  $link.on("click", pwModalOpenEvent);
+  $link.on("pw-modal-closed", (e) => {
+    RockGrid.getGrid(el).reload();
+    $link.remove();
   });
+  $link.click();
 }
 
 // ### modal click interception
