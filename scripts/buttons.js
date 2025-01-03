@@ -18,17 +18,6 @@ document.addEventListener("click", (event) => {
   grid.trigger("button:" + name, button);
 });
 
-// ### modal click interception
-document.addEventListener("click", (e) => {
-  let a = e.target.closest("a[rg-modal]");
-  if (!a) return;
-  let modalUrl = a.getAttribute("href");
-  if (modalUrl) {
-    e.preventDefault();
-    RockGridModal(a);
-  }
-});
-
 // ##### reload button
 RockGrid.on("button:refresh", (button) => {
   let icon = button.querySelector("i.fa");

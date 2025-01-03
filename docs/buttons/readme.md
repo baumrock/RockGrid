@@ -7,21 +7,44 @@ RockGrid makes it easy to add custom buttons to your UI. By default we have two 
 
 <img src=buttons.png class=blur>
 
-## ButtonsArray
+## Usage
 
-All buttons are defined in the grid's `buildUI` method and added to a `ButtonsArray`:
+All buttons are defined in the grid's `buildUI` method and added to a `ButtonsArray` (either `buttonsLeft` or `buttonsRight`). For example:
 
 ```php
 public function buildUI(): void
 {
   $this->buttonsRight->add([
-    'name' => 'refresh',
-    'icon' => 'refresh',
+    'name' => 'demo',
+    'icon' => 'check',
   ]);
 }
 ```
 
-## JavaScript
+So far this button does not do anything. There are two ways where we can define the button actions:
+
+- PHP
+- JS
+
+### PHP
+
+Simple buttons that only open a link can be defined solely in PHP:
+
+```php
+public function buildUI(): void
+{
+  $url = wire()->config->urls->admin;
+  $this->buttonsRight->add([
+    'name' => 'demo',
+    'icon' => 'check',
+    'label' => 'open foo',
+    'tooltip' => 'this will open the link /foo/bar',
+    'href' => $url.'foo/bar/',
+  ]);
+}
+```
+
+### JavaScript
 
 Whenever a button is clicked it fires the `button:XXX` event. You can listen to this event and fire custom actions:
 
@@ -50,20 +73,14 @@ public function buildUI(): void
   $this->buttonsLeft->add([
     'icon' => 'plus',
     'tooltip' => 'Add a new item',
-    'class' => 'uk-button-primary pw-modal',
+    'class' => 'uk-button-primary',
     'href' => $url . 'page/add/?parent_id=' . $parent,
+    'attrs' => ['rg-modal', 'rg-modal-reload'],
   ]);
 }
 ```
 
-If you want to reload the grid after the panel has been closed, you can do this in your Grid's JS file:
-
-```js
-// reload grid after a pw modal has been closed
-$(document).on("pw-modal-closed", () => {
-  grid.reload();
-});
-```
+Please note the `attrs` array! This array tells RockGrid to add the attributes `rg-modal` to open the link in a modal and `rg-modal-reload` to reload the grid when the modal is closed.
 
 ### Deleting entries
 

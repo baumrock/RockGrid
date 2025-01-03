@@ -1,6 +1,14 @@
 // ##### formatters for tabulator + processwire #####
 Tabulator.extendModule("format", "formatters", {
-  // open modal window to edit this page
+  /**
+   * open modal window to edit this page
+   * usage:
+   * col.formatter = "modal";
+   * col.formatterParams = {
+   *   icon: true,
+   *   tooltip: "Edit this item",
+   * };
+   */
   modal: function (cell, params) {
     let val = cell.getValue();
     let id = cell.getRow().getData()[params.field || "id"];
