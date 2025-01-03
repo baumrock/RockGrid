@@ -18,7 +18,7 @@ document.addEventListener("click", (event) => {
   grid.trigger("button:" + name, button);
 });
 
-// ##### reload button
+// ##### refresh/reload button
 RockGrid.on("button:refresh", (button) => {
   let icon = button.querySelector("i.fa");
   if (icon) icon.classList.add("fa-spin");
@@ -45,6 +45,27 @@ RockGrid.on("button:refresh", (button) => {
         if (icon) icon.classList.remove("fa-spin");
       }, remainingTime);
     });
+});
+
+// ### remove filters
+RockGrid.on("button:removeFilters", (button) => {
+  let table = RockGrid.getTable(button);
+
+  // note: this will only remove header filters of the table
+  // this is to make it keep programmatically added filters
+  // necessary for RockCommerce Variations Grid
+  table.clearHeaderFilter(true);
+});
+RockGrid.on("table:dataFiltered", (table, grid) => {
+  setTimeout(() => {
+    let headerFilters = table.getHeaderFilters();
+    let button = grid.wrapper.querySelector(
+      '.rockgridbutton[data-name="removeFilters"]'
+    );
+    if (button) {
+      button.style.display = headerFilters.length ? "block" : "none";
+    }
+  }, 0);
 });
 
 // ### (un)select ALL
@@ -106,24 +127,3 @@ RockGrid.on(
     }, 0);
   }
 );
-
-// ### remove filters
-RockGrid.on("button:removeFilters", (button) => {
-  let table = RockGrid.getTable(button);
-
-  // note: this will only remove header filters of the table
-  // this is to make it keep programmatically added filters
-  // necessary for RockCommerce Variations Grid
-  table.clearHeaderFilter(true);
-});
-RockGrid.on("table:dataFiltered", (table, grid) => {
-  setTimeout(() => {
-    let headerFilters = table.getHeaderFilters();
-    let button = grid.wrapper.querySelector(
-      '.rockgridbutton[data-name="removeFilters"]'
-    );
-    if (button) {
-      button.style.display = headerFilters.length ? "block" : "none";
-    }
-  }, 0);
-});
