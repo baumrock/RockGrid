@@ -67,3 +67,22 @@ return "<div class='uk-flex' style='gap:10px'>"
   + RockGrid.link(...)
   + "</div>";
 ```
+
+## Coldefs
+
+This is a lot to do to get a simple row edit link, you think? Then I have something for you:
+
+```js
+if (col.field == "id") RockGrid.coldefs["edit"](col);
+```
+
+RockGrid comes with some predefined column definitions that you can use to set a bunch of column properties at once. You can even use the coldef and then overwrite certain properties later:
+
+```js
+if (col.field == "id") {
+  RockGrid.coldefs["edit"](col);
+  col.title = "row actions";
+  col.headerHozAlign = "center";
+  col.width = 100;
+}
+```
