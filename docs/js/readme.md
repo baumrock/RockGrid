@@ -29,3 +29,19 @@ To prevent this from happening you can disable it:
 ```js
 grid.noStateChanged = true;
 ```
+
+## Dynamic Columns
+
+```js
+autoColumnsDefinitions: function (defs) {
+  // add dynamic columns
+  defs = grid.addAfter(defs, "id", {
+    field: "day",
+    title: "Date",
+    formatter: ...
+  });
+
+  // loop all columns
+  defs.forEach((col) => { ... });
+}
+```

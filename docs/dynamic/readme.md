@@ -75,3 +75,6 @@ We can then consume this parameter in our `getData()` method with regular PW API
 
 <div class='uk-alert uk-alert-warning'>Please note that ajax params are unsanitized data! Be sure to sanitize them and be sure to check if the user has access to the returned data not to expose any sensitive data to the wrong eyes!</div>
 
+## Dynamic Columns
+
+Please head over to the docs about the [JS file](../js/).

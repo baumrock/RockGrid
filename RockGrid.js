@@ -216,6 +216,12 @@ class RockGridGrid {
     }
   }
 
+  /**
+   * Add column to definitions after a certain column
+   *
+   * Usage:
+   * defs = grid.addAfter(defs, 'id', {...});
+   */
   addAfter(definitions, fieldname, config) {
     let found = false;
     let arr = [];

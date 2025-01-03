@@ -4,6 +4,8 @@ Formatters define how the data of the cell is rendered. For example the cell val
 
 <img src=https://i.imgur.com/lo13FiZ.png class=blur alt='Cell Formatter'>
 
+> Please note that formatters only affect how the cell is RENDERED. That means that filters and sorting will still use the underlying value of the cell. If you want to manipulate the underlying value you need to use mutators.
+
 ## Row Actions
 
 A common use case is that you want to render row action buttons on the left of each row. To do this we reuse the ID column and set a formatter to render the icons instead of the actual ID:

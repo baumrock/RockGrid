@@ -33,6 +33,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   public $gridsArray = [];
 
   private $itemCallbackResult = false;
+  public $loadLuxon = false;
 
   private $translations = [];
 
@@ -247,6 +248,14 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
     $inputfields->add([
       'type' => 'checkbox',
+      'name' => 'loadLuxon',
+      'label' => 'Load LUXON Library (modern moment.js alternative)',
+      'checked' => $this->loadLuxon ? 'checked' : '',
+      'notes' => 'See https://moment.github.io/luxon/#/',
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
       'name' => 'debug',
       'label' => 'Debug Mode',
       'checked' => $this->debug ? 'checked' : '',
@@ -297,6 +306,11 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
     );
+    if ($this->loadLuxon) {
+      wire()->config->scripts->add(
+        rockgrid()->url(__DIR__ . '/lib/luxon.min.js', true)
+      );
+    }
     wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
     );
