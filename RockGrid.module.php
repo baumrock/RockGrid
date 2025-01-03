@@ -32,7 +32,6 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    */
   public $gridsArray = [];
 
-  private $itemCallbackResult = false;
   public $loadLuxon = false;
 
   private $translations = [];
