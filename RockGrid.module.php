@@ -452,7 +452,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
-   * This is what happens when before the sse stream is established.
+   * This is what happens before the sse stream is established.
    * We send a post request to the backend that contains all the data that
    * the sse stream will then process.
    */
