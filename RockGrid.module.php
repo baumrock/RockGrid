@@ -34,6 +34,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
   private $itemCallbackResult = false;
 
+  private $translations = [];
+
   public function init(): void
   {
     $config = wire()->config;
@@ -236,6 +238,32 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return $grid;
   }
 
+  /**
+   * Config inputfields
+   * @param InputfieldWrapper $inputfields
+   */
+  public function getModuleConfigInputfields($inputfields)
+  {
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'debug',
+      'label' => 'Debug Mode',
+      'checked' => $this->debug ? 'checked' : '',
+      'notes' => 'If enabled you will get additional info in the backend useful for debugging.',
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'coreversion',
+      'label' => 'Use core version for cache busting instead of filemtime',
+      'notes' => 'Use this if filemtime is slow on your system.',
+      'checked' => $this->coreversion ? 'checked' : '',
+    ]);
+
+    return $inputfields;
+  }
+
   public function getKeyFromFile($file): string
   {
     $file = Paths::normalizeSeparators($file);
@@ -291,12 +319,13 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     wire()->config->styles->add(
       rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
     );
-    wire()->config->js(
-      'RockGridTranslations',
-      [
-        'edit' => __('edit'),
-      ]
-    );
+
+    // translations
+    // note: user translations have priority (so users can override stuff)
+    $translations = array_merge([
+      'edit' => __('edit'),
+    ], $this->translations);
+    wire()->config->js('RockGridTranslations', $translations);
   }
 
   /**
@@ -493,28 +522,13 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
-   * Config inputfields
-   * @param InputfieldWrapper $inputfields
+   * Add a new translatable string
+   *
+   * This method is intended to be used by the user to add custom translations.
+   * Admin translations are set directly in this file in hookRenderForm.
    */
-  public function getModuleConfigInputfields($inputfields)
+  public function x(string $key, string $translation): void
   {
-
-    $inputfields->add([
-      'type' => 'checkbox',
-      'name' => 'debug',
-      'label' => 'Debug Mode',
-      'checked' => $this->debug ? 'checked' : '',
-      'notes' => 'If enabled you will get additional info in the backend useful for debugging.',
-    ]);
-
-    $inputfields->add([
-      'type' => 'checkbox',
-      'name' => 'coreversion',
-      'label' => 'Use core version for cache busting instead of filemtime',
-      'notes' => 'Use this if filemtime is slow on your system.',
-      'checked' => $this->coreversion ? 'checked' : '',
-    ]);
-
-    return $inputfields;
+    $this->translations[$key] = $translation;
   }
 }
