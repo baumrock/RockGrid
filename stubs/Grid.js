@@ -14,9 +14,12 @@ document.addEventListener("RockGrid:init", (e) => {
     autoColumns: true,
     autoColumnsDefinitions: function (defs) {
       defs.forEach((col) => {
-        if (col.field == "foo") {
-          col.visible = false;
-        }
+        // defaults
+        col.headerFilter = true;
+
+        // individual settings
+        // if (col.field == "foo") col.visible = false;
+        // if (col.field == "bar") col.title = "Bar Column";
       });
       return defs;
     },
