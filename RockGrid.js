@@ -166,6 +166,10 @@ class RockGridMaster {
       });
   }
 
+  /**
+   * Create a view url based on the page id
+   * Handy when we know the id but don't know the url of the page.
+   */
   viewUrl(id) {
     return ProcessWire.config.urls.admin + "page/?rockgrid-view=" + id;
   }
