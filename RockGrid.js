@@ -2,6 +2,8 @@ class RockGridMaster {
   edit = ProcessWire.config.urls.admin + "page/edit/?id=";
   grids = {};
   events = {};
+  coldefs = {};
+  x = ProcessWire.config.RockGridTranslations;
 
   add(grid) {
     this.grids[grid.li.id] = grid;

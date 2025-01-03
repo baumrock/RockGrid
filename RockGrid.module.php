@@ -119,7 +119,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
   protected function ajaxEndpoint(HookEvent $event)
   {
-    if (!$this->wire->config->debug) {
+    if (!wire()->config->debug) {
       // show deprecation warnings only in debug mode
       // these can break the json output and are not helpful in production
       error_reporting(E_ALL & ~E_DEPRECATED);
@@ -266,27 +266,36 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   protected function hookRenderForm(HookEvent $event): void
   {
     wire()->modules->get('JqueryUI')->use('modal');
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/RockGrid.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/coldefs.js', true)
+    );
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/scripts/extensions.js', true)
     );
 
-    $this->wire->config->styles->add(
+    wire()->config->styles->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
     );
-    $this->wire->config->styles->add(
+    wire()->config->styles->add(
       rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
+    );
+    wire()->config->js(
+      'RockGridTranslations',
+      [
+        'edit' => __('edit'),
+      ]
     );
   }
 
@@ -314,8 +323,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       function () {
         $arr = [];
         $files = array_merge(
-          glob($this->wire->config->paths->templates . "RockGrid/*.php"),
-          glob($this->wire->config->paths->siteModules . "*/RockGrid/*.php")
+          glob(wire()->config->paths->templates . "RockGrid/*.php"),
+          glob(wire()->config->paths->siteModules . "*/RockGrid/*.php")
         );
         foreach ($files as $file) {
           $arr[$this->getKeyFromFile($file)] = $file;
@@ -470,12 +479,12 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   {
     $path = Paths::normalizeSeparators($path);
     $url = str_replace(
-      $this->wire->config->paths->root,
-      $this->wire->config->urls->root,
+      wire()->config->paths->root,
+      wire()->config->urls->root,
       $path
     );
     if ($cachebuster) {
-      $url = $this->wire->config->versionUrl(
+      $url = wire()->config->versionUrl(
         $url,
         !$this->coreversion,
       );
