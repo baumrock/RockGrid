@@ -9,7 +9,8 @@ document.addEventListener("RockGrid:init", (e) => {
 
   // build the tabulator table
   const table = grid.tabulator({
-    layout: "fitDataStretch",
+    // https://tabulator.info/docs/6.3/layout#layout
+    layout: "fitColumns",
     ajaxURL: grid.ajaxURL,
     autoColumns: true,
     autoColumnsDefinitions: function (defs) {
@@ -24,7 +25,8 @@ document.addEventListener("RockGrid:init", (e) => {
       return defs;
     },
 
-    // enable row selection (it's even saveable!)
+    // enable row selection
     selectableRows: true,
+    // selectableRowsRangeMode: "click",
   });
 });
