@@ -25,6 +25,18 @@
   .rockgridbutton.hidden {
     display: none;
   }
+
+  // show hide buttons based on row selection state
+  .buttons > [show-when-selected] {
+    // hide buttons by default to afoid FOUC
+    display: none;
+  }
+  &.no-selected-rows .buttons > [show-when-selected] {
+    display: none;
+  }
+  &.has-selected-rows .buttons > [show-when-selected] {
+    display: initial;
+  }
 }
 
 // styles specific to AdminStyleRock

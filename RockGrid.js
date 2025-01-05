@@ -3,10 +3,38 @@ class RockGridMaster {
   grids = {};
   events = {};
   coldefs = {};
-  x = ProcessWire.config.RockGridTranslations;
+  modal = false;
 
   add(grid) {
     this.grids[grid.li.id] = grid;
+  }
+
+  confirm(data) {
+    // use modal dialog instead of confirm for custom ok/cancel callbacks
+    const modal = UIkit.modal.dialog(`
+      <div class="uk-modal-body">${data.message}</div>
+      <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button uk-button-default uk-modal-close" type="button" style="transform: translateY(-1px);">${data.cancelLabel}</button>
+        <button class="uk-button uk-button-primary ui-button ok uk-position-relative">
+          <div class="uk-position-center spinner" style="opacity: 0;"><div uk-spinner="ratio: 0.5"></div></div>
+          <div class="label">${data.okLabel}</div>
+        </button>
+      </div>
+    `);
+
+    // ok clicked
+    const okButton = modal.$el.querySelector(".ok");
+    okButton.addEventListener("click", () => {
+      okButton.querySelector(".label").style.opacity = 0;
+      okButton.querySelector(".spinner").style.opacity = 1;
+      if (data.confirm) data.confirm(modal);
+    });
+
+    // cancel clicked
+    const cancelButton = modal.$el.querySelector(".uk-modal-close");
+    cancelButton.addEventListener("click", () => {
+      if (data.reject) data.reject(modal);
+    });
   }
 
   editUrl(id) {
@@ -173,6 +201,12 @@ class RockGridMaster {
   viewUrl(id) {
     return ProcessWire.config.urls.admin + "page/?rockgrid-view=" + id;
   }
+
+  x(key) {
+    const translations = ProcessWire.config.RockGridTranslations;
+    // if key is found return it, otherwise return key
+    return translations[key] || key;
+  }
 }
 
 var RockGrid = new RockGridMaster();
@@ -280,12 +314,16 @@ class RockGridGrid {
     let grid = this;
     let table = new Tabulator(this.div, config);
     this.table = table;
+    this.updateButtonVisibility();
 
     // handle row selection
     table.on("rowSelectionChanged", () => {
       let selectedRows = table.getSelectedRows();
       let selectedIds = selectedRows.map((row) => row.getData().id);
+
+      // save selected rows to hidden textarea
       this.sleep("selected", selectedIds);
+      this.updateButtonVisibility();
     });
     table.on("dataProcessed", () => {
       table.selectRow(this.sleepValue.selected || []);
@@ -320,6 +358,19 @@ class RockGridGrid {
     callbacks.forEach((callback) => {
       callback(detail);
     });
+  }
+
+  updateButtonVisibility() {
+    const hasSelectedRows = this.table.getSelectedRows().length > 0;
+
+    // update li class
+    if (hasSelectedRows) {
+      this.wrapper.classList.add("has-selected-rows");
+      this.wrapper.classList.remove("no-selected-rows");
+    } else {
+      this.wrapper.classList.remove("has-selected-rows");
+      this.wrapper.classList.add("no-selected-rows");
+    }
   }
 }
 

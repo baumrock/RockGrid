@@ -11,7 +11,7 @@ RockGrid.coldefs["edit"] = function (col) {
     return RockGrid.link({
       icon: "edit",
       href: RockGrid.editUrl(cell.getValue()),
-      tooltip: RockGrid.x["edit"],
+      tooltip: RockGrid.x("edit"),
       modal: true,
       modalCloseReload: true,
     });

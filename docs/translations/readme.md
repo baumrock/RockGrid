@@ -17,5 +17,5 @@ rockgrid()->x('foo', __('bar'));
 As you can see you can easily access translations via the RockGrid.x object:
 
 ```js
-console.log(RockGrid.x['foo']);
+console.log(RockGrid.x('foo'));
 ```

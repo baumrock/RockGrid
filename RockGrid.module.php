@@ -336,7 +336,10 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     // translations
     // note: user translations have priority (so users can override stuff)
     $translations = array_merge([
+      'cancel' => __('Cancel'),
       'edit' => __('edit'),
+      'ok' => __('OK'),
+      'trashSelected' => __('Are you sure you want to delete the selected items?'),
     ], $this->translations);
     wire()->config->js('RockGridTranslations', $translations);
   }

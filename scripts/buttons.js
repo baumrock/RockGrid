@@ -68,6 +68,64 @@ RockGrid.on("table:dataFiltered", (table, grid) => {
   }, 0);
 });
 
+// ##### trash selected rows
+
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// TODO: move this to RockSSE module!
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+
+RockGrid.on("button:trashSelected", (button) => {
+  const selected = RockGrid.getTable(button).getSelectedRows().length;
+  const markup = `
+    <div class="uk-text-lead">${RockGrid.x("trashSelected")}</div>
+    <div class="uk-flex uk-flex-middle uk-margin-top" style="gap: 20px">
+      <div class="uk-text-small uk-text-nowrap" style="font-family: monospace">
+        <span class="num">0</span> /
+        <span class="total">${selected}</span>
+      </div>
+      <progress class="uk-progress uk-margin-remove" max=1></progress>
+    </div>
+  `;
+  RockGrid.confirm({
+    message: markup,
+    confirm: (modal) => {
+      const progress = modal.$el.querySelector("progress");
+      const interval = setInterval(() => {
+        progress.value += 0.1;
+        if (progress.value >= progress.max) {
+          progress.value = 1;
+          modal.hide();
+          clearInterval(interval);
+        }
+      }, 750);
+    },
+    okLabel: RockGrid.x("ok"),
+    cancelLabel: RockGrid.x("cancel"),
+  });
+});
+
 // ### (un)select ALL
 RockGrid.on("button:selectAll", (button) => {
   RockGrid.getTable(button).selectRow("all");

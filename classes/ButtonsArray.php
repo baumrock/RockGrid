@@ -9,7 +9,7 @@ class ButtonsArray extends WireArray
   public function add($button): self
   {
     if (is_array($button)) $button = new Button($button);
-    parent::prepend($button);
+    parent::add($button);
     return $this;
   }
 

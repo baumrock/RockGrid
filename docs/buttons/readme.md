@@ -58,6 +58,20 @@ This is a simplified version. For the real implementation inspect the file `scri
 
 > Pro-Tip: This file has plenty of other button examples to learn from!
 
+## Visibility
+
+### Row Selection
+
+You can define the visibility of your button based on row selection:
+
+```php
+$this->buttonsRight->add([
+  'name' => 'trashSelected',
+  'icon' => 'trash',
+  'attrs' => ['show-when-selected'],
+]);
+```
+
 ## Example Buttons
 
 ### Create new entry
