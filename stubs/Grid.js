@@ -11,7 +11,7 @@ document.addEventListener("RockGrid:init", (e) => {
   const table = grid.tabulator({
     // https://tabulator.info/docs/6.3/layout#layout
     layout: "fitColumns",
-    ajaxURL: grid.ajaxURL,
+    // ajaxURL: false,
     autoColumns: true,
     autoColumnsDefinitions: function (defs) {
       defs.forEach((col) => {

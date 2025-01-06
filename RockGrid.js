@@ -304,6 +304,32 @@ class RockGridGrid {
     });
   }
 
+  /**
+   * By default we pass the url params of the current page to every ajax
+   * request of the grid. This makes it possible to easily implement filters
+   * in the grid solely by updating the getData() method in the PHP file.
+   */
+  setupAjaxParams(config) {
+    // early exit if not an ajax grid
+    if (!config.ajaxURL) return;
+    // early exit if custom ajaxParams already set
+    if (config.ajaxParams) return;
+    // by default we add all available url params to the ajax request
+    config.ajaxParams = function () {
+      const params = new URLSearchParams(window.location.search);
+      return Object.fromEntries(params);
+    };
+  }
+
+  /**
+   * We use AJAX for the grid by default unless explicitly set to false
+   */
+  setupAjaxUrl(config) {
+    if (config.ajaxURL === false) return;
+    if (config.ajaxURL) return;
+    config.ajaxURL = this.ajaxURL;
+  }
+
   sleep(prop, value) {
     let oldValue = this.sleepValue;
     let oldString = JSON.stringify(oldValue);
@@ -327,6 +353,11 @@ class RockGridGrid {
   // }
 
   tabulator(config) {
+    // ---- defaults ----
+    this.setupAjaxUrl(config);
+    this.setupAjaxParams(config);
+
+    // setup the tabulator table
     let grid = this;
     let table = new Tabulator(this.div, config);
     this.table = table;

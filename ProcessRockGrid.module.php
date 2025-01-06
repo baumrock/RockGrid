@@ -143,8 +143,19 @@ class ProcessRockGrid extends Process
     $this->browserTitle('RockGrid Dashboard');
     /** @var InputfieldForm $form */
     $form = $this->wire->modules->get('InputfieldForm');
+
+    // playground button
+    $form->add([
+      'type' => 'markup',
+      'label' => 'Playground',
+      'value' => '<a href="./playground/" class="uk-button uk-button-primary">Open Playground</a>',
+      'icon' => 'code',
+    ]);
+
+    // add new grid
     $this->addCreateForm($form);
 
+    // grids list
     $form->add([
       'type' => 'markup',
       'label' => 'Grids',
@@ -214,6 +225,41 @@ class ProcessRockGrid extends Process
         . "\n<a href=./?grid={$grid->name}&step=2>Keep step 2 open (for development with livereload).</a>",
       'entityEncodeText' => false,
       'collapsed' => $step === 2 ? 0 : $collapsed,
+    ]);
+
+    return $form->render();
+  }
+
+  public function executePlayground()
+  {
+    $this->headline('RockGrid Playground');
+    $this->browserTitle('RockGrid Playground');
+    /** @var InputfieldForm $form */
+    $form = $this->wire->modules->get('InputfieldForm');
+
+    // files
+    $form->add([
+      'type' => 'markup',
+      'label' => 'JS File',
+      'value' => '<p>/site/templates/RockGridPlayground.js</p>
+        <button class="uk-button">Create</button>',
+      'icon' => 'file-code-o',
+      'columnWidth' => 50,
+    ]);
+    $form->add([
+      'type' => 'markup',
+      'label' => 'PHP File',
+      'value' => '/site/templates/RockGridPlayground.php',
+      'icon' => 'file-code-o',
+      'columnWidth' => 50,
+    ]);
+
+    // grid
+    $form->add([
+      'type' => 'RockGrid',
+      'name' => 'rockgrid-playground',
+      'label' => 'Grid',
+      'grid' => 'RockGrid\Playground',
     ]);
 
     return $form->render();
