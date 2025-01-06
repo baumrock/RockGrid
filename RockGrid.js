@@ -274,6 +274,22 @@ class RockGridGrid {
     return arr;
   }
 
+  /**
+   * Usage: grid.columnOrder(defs, ['foo', 'bar']);
+   * Unlisted columns will be moved to the end
+   */
+  columnOrder(defs, columnNames) {
+    if (!columnNames || !columnNames.length) return defs;
+    return defs.sort((a, b) => {
+      const indexA = columnNames.indexOf(a.field);
+      const indexB = columnNames.indexOf(b.field);
+      // Keep items not in columnNames at the end
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+  }
+
   reload() {
     let table = this.table;
     return new Promise((resolve, reject) => {
