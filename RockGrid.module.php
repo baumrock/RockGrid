@@ -317,6 +317,9 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       rockgrid()->url(__DIR__ . '/RockGrid.js', true)
     );
     wire()->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/magictags.js', true)
+    );
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/scripts/coldefs.js', true)
     );
     wire()->config->scripts->add(

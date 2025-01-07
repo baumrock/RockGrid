@@ -75,35 +75,20 @@ class RockGridMaster {
    */
   link(data) {
     data = data || {};
-    let href = data.href || "#";
-    let cls = " class='" + data.class + "' ";
-    let icon = this.icon(data.icon);
-    let label = data.label || "";
-    label = icon + (label ? " " + label : "");
-    let tooltip = data.tooltip
-      ? " title='" + data.tooltip + "' uk-tooltip"
-      : "";
-    const suffix = data.suffix || "";
-    // onclick makes sure we do not select the row if the link is clicked and
-    // row selection is enabled in the grid's settings
-    const modal = data.modal
-      ? "onclick='RockGridModal(this);event.stopPropagation();event.preventDefault();'"
-      : "";
+    const href = data.href || "#";
+    const cls = data.class ? `class='${data.class}'` : "";
+    const icon = this.icon(data.icon);
+    const tooltip = data.tooltip ? `title='${data.tooltip}' uk-tooltip` : "";
+    const modal = data.modal ? "rg-modal" : "";
     const modalCloseReload = data.modalCloseReload ? " rg-modal-reload " : "";
-    return (
-      "<a href='" +
-      href +
-      "' " +
-      cls +
-      tooltip +
-      " " +
-      modal +
-      modalCloseReload +
-      suffix +
-      ">" +
-      label +
-      "</a>"
-    );
+    return `<a
+        href='${href}'
+        ${cls}
+        ${tooltip}
+        ${modal}
+        ${modalCloseReload}
+        ${data.suffix}
+      >${icon}${data.label || ""}</a>`;
   }
 
   /**
@@ -440,14 +425,3 @@ function RockGridModal(el) {
   });
   $link.click();
 }
-
-// ### modal click interception
-document.addEventListener("click", (e) => {
-  let a = e.target.closest("a[rg-modal]");
-  if (!a) return;
-  let modalUrl = a.getAttribute("href");
-  if (modalUrl) {
-    e.preventDefault();
-    RockGridModal(a);
-  }
-});
