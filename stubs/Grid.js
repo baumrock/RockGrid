@@ -17,6 +17,7 @@ document.addEventListener("RockGrid:init", (e) => {
       defs.forEach((col) => {
         // defaults
         col.headerFilter = true;
+        col.headerFilterFunc = "rg.smart";
 
         // individual settings
         // if (col.field == "foo") col.visible = false;

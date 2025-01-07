@@ -120,3 +120,41 @@ Tabulator.extendModule("edit", "editors", {
     return input;
   },
 });
+
+// ##### filters for tabulator + processwire #####
+
+/**
+ * Filters
+ * Usage: col.headerFilterFunc = "rg.smart";
+ */
+Tabulator.extendModule("filter", "filters", {
+  // smart filter
+  "rg.smart": function (headerValue, rowValue, rowData, filterParams) {
+    let filters = this;
+    let search = headerValue;
+    let val = rowValue;
+
+    // searching . returns all non-empty cells
+    if (search === ".") {
+      if (val === null || val == "") return false;
+      return true;
+    }
+    // searching ! returns all empty cells
+    else if (search === "!") {
+      if (val === null || val == "") return true;
+      return false;
+    }
+    // number comparisons
+    else if (search.indexOf("<=") === 0)
+      return val <= parseFloat(search.substring(2));
+    else if (search.indexOf(">=") === 0)
+      return val >= parseFloat(search.substring(2));
+    else if (search.indexOf("<") === 0)
+      return val < parseFloat(search.substring(1));
+    else if (search.indexOf(">") === 0)
+      return val > parseFloat(search.substring(1));
+
+    // otherwise we use the regular like filter
+    return filters["like"](search, val, rowData, filterParams);
+  },
+});
