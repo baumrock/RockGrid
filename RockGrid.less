@@ -39,6 +39,27 @@
   }
 }
 
+// tags
+.InputfieldRockGrid {
+  // multiple tags via flexbox
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  // single tag
+  .tabulator-cell {
+    .tag {
+      background: #fafafa;
+      border-color: #bdbdbd;
+      border-width: 1px;
+      border-style: solid;
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+  }
+}
+
 // styles specific to AdminStyleRock
 body.AdminStyleRock {
   .rockgridbutton {
