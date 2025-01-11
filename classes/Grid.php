@@ -22,6 +22,21 @@ class Grid extends Wire
     return false;
   }
 
+  /**
+   * Send data to the grid's js file
+   *
+   * Example:
+   *
+   * PHP file:
+   * return [
+   *   'foo' => 'baz',
+   * ];
+   *
+   * JS file:
+   * grid.jsVars.foo
+   *
+   * @return array
+   */
   public function getJsVars(): array
   {
     return [];
@@ -34,6 +49,7 @@ class Grid extends Wire
       'phpFile' => $this->phpFile,
       'jsFile' => $this->jsFile,
       'cssFile' => $this->cssFile,
+      'jsVars' => $this->getJsVars(),
     ];
   }
 }

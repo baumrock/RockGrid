@@ -2,9 +2,43 @@ class RockGridMaster {
   edit = ProcessWire.config.urls.admin + "page/edit/?id=";
   grids = {};
   events = {};
+  coldefs = {};
+  modal = false;
 
   add(grid) {
     this.grids[grid.li.id] = grid;
+  }
+
+  confirm(data) {
+    // use modal dialog instead of confirm for custom ok/cancel callbacks
+    const modal = UIkit.modal.dialog(`
+      <div class="uk-modal-body">${data.message}</div>
+      <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button uk-button-default uk-modal-close" type="button" style="transform: translateY(-1px);">${data.cancelLabel}</button>
+        <button class="uk-button uk-button-primary ui-button ok uk-position-relative">
+          <div class="uk-position-center spinner" style="opacity: 0;"><div uk-spinner="ratio: 0.5"></div></div>
+          <div class="label">${data.okLabel}</div>
+        </button>
+      </div>
+    `);
+
+    // ok clicked
+    const okButton = modal.$el.querySelector(".ok");
+    okButton.addEventListener("click", () => {
+      okButton.querySelector(".label").style.opacity = 0;
+      okButton.querySelector(".spinner").style.opacity = 1;
+      if (data.confirm) data.confirm(modal);
+    });
+
+    // cancel clicked
+    const cancelButton = modal.$el.querySelector(".uk-modal-close");
+    cancelButton.addEventListener("click", () => {
+      if (data.reject) data.reject(modal);
+    });
+  }
+
+  editUrl(id) {
+    return ProcessWire.config.urls.admin + "page/edit/?id=" + id;
   }
 
   getGrid(el) {
@@ -15,6 +49,46 @@ class RockGridMaster {
 
   getTable(el) {
     return this.getGrid(el).table;
+  }
+
+  icon(name, tooltip) {
+    if (!name) return "";
+    if (tooltip) {
+      tooltip = tooltip.replace(/(<([^>]+)>)/gi, "").replace(/["|']/gi, "");
+      tooltip = ' title="' + tooltip + '" uk-tooltip';
+    }
+    return '<i class="fa fa-' + name + '"' + tooltip + "></i>";
+  }
+
+  /**
+   * Return link markup
+   * Usage:
+   * RockGrid.link({
+   *   icon: 'edit',
+   *   label: 'foo bar',
+   *   tooltip: 'Edit this page',
+   *   href: RockGrid.editUrl(id),
+   *   class: 'my-class',
+   *   panel: true, // default
+   *   reload: true,
+   * });
+   */
+  link(data) {
+    data = data || {};
+    const href = data.href || "#";
+    const cls = data.class ? `class='${data.class}'` : "";
+    const icon = this.icon(data.icon);
+    const tooltip = data.tooltip ? `title='${data.tooltip}' uk-tooltip` : "";
+    const modal = data.modal ? "rg-modal" : "";
+    const modalCloseReload = data.modalCloseReload ? " rg-modal-reload " : "";
+    return `<a
+        href='${href}'
+        ${cls}
+        ${tooltip}
+        ${modal}
+        ${modalCloseReload}
+        ${data.suffix}
+      >${icon}${data.label || ""}</a>`;
   }
 
   /**
@@ -104,6 +178,20 @@ class RockGridMaster {
         console.error("Error sending data to server:", error);
       });
   }
+
+  /**
+   * Create a view url based on the page id
+   * Handy when we know the id but don't know the url of the page.
+   */
+  viewUrl(id) {
+    return ProcessWire.config.urls.admin + "page/?rockgrid-view=" + id;
+  }
+
+  x(key) {
+    const translations = ProcessWire.config.RockGridTranslations;
+    // if key is found return it, otherwise return key
+    return translations[key] || key;
+  }
 }
 
 var RockGrid = new RockGridMaster();
@@ -151,6 +239,12 @@ class RockGridGrid {
     }
   }
 
+  /**
+   * Add column to definitions after a certain column
+   *
+   * Usage:
+   * defs = grid.addAfter(defs, 'id', {...});
+   */
   addAfter(definitions, fieldname, config) {
     let found = false;
     let arr = [];
@@ -163,6 +257,22 @@ class RockGridGrid {
     });
     if (!found) definitions.push(config);
     return arr;
+  }
+
+  /**
+   * Usage: grid.columnOrder(defs, ['foo', 'bar']);
+   * Unlisted columns will be moved to the end
+   */
+  columnOrder(defs, columnNames) {
+    if (!columnNames || !columnNames.length) return defs;
+    return defs.sort((a, b) => {
+      const indexA = columnNames.indexOf(a.field);
+      const indexB = columnNames.indexOf(b.field);
+      // Keep items not in columnNames at the end
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
   }
 
   reload() {
@@ -179,6 +289,32 @@ class RockGridGrid {
     });
   }
 
+  /**
+   * By default we pass the url params of the current page to every ajax
+   * request of the grid. This makes it possible to easily implement filters
+   * in the grid solely by updating the getData() method in the PHP file.
+   */
+  setupAjaxParams(config) {
+    // early exit if not an ajax grid
+    if (!config.ajaxURL) return;
+    // early exit if custom ajaxParams already set
+    if (config.ajaxParams) return;
+    // by default we add all available url params to the ajax request
+    config.ajaxParams = function () {
+      const params = new URLSearchParams(window.location.search);
+      return Object.fromEntries(params);
+    };
+  }
+
+  /**
+   * We use AJAX for the grid by default unless explicitly set to false
+   */
+  setupAjaxUrl(config) {
+    if (config.ajaxURL === false) return;
+    if (config.ajaxURL) return;
+    config.ajaxURL = this.ajaxURL;
+  }
+
   sleep(prop, value) {
     let oldValue = this.sleepValue;
     let oldString = JSON.stringify(oldValue);
@@ -188,7 +324,7 @@ class RockGridGrid {
 
     this.textarea.value = newString;
     if (newString !== oldString) {
-      this.li.classList.add("InputfieldStateChanged");
+      if (!this.noStateChanged) this.li.classList.add("InputfieldStateChanged");
     }
 
     this.sleepValue = newValue;
@@ -202,15 +338,24 @@ class RockGridGrid {
   // }
 
   tabulator(config) {
+    // ---- defaults ----
+    this.setupAjaxUrl(config);
+    this.setupAjaxParams(config);
+
+    // setup the tabulator table
     let grid = this;
     let table = new Tabulator(this.div, config);
     this.table = table;
+    this.updateButtonVisibility();
 
     // handle row selection
     table.on("rowSelectionChanged", () => {
       let selectedRows = table.getSelectedRows();
       let selectedIds = selectedRows.map((row) => row.getData().id);
+
+      // save selected rows to hidden textarea
       this.sleep("selected", selectedIds);
+      this.updateButtonVisibility();
     });
     table.on("dataProcessed", () => {
       table.selectRow(this.sleepValue.selected || []);
@@ -246,13 +391,37 @@ class RockGridGrid {
       callback(detail);
     });
   }
+
+  updateButtonVisibility() {
+    const hasSelectedRows = this.table.getSelectedRows().length > 0;
+
+    // update li class
+    if (hasSelectedRows) {
+      this.wrapper.classList.add("has-selected-rows");
+      this.wrapper.classList.remove("no-selected-rows");
+    } else {
+      this.wrapper.classList.remove("has-selected-rows");
+      this.wrapper.classList.add("no-selected-rows");
+    }
+  }
 }
 
 // edit page in modal
+// this modal will
+// - have save buttons in the bottom right corner (out of the iframe)
+// - automatically close on save
+// - automatically reload the grid after close
 function RockGridModal(el) {
-  let $iframe = pwModalWindow(el.getAttribute("href"));
-  $iframe.on("dialogclose", () => {
-    if (el.getAttribute("rg-modal-reload") !== null)
-      RockGrid.getGrid(el).reload();
+  let link = document.createElement("a");
+  let $link = $(link);
+  $link.attr("href", el.getAttribute("href"));
+  $link.addClass("pw-modal");
+  $link.attr("data-autoclose", "");
+  $link.attr("data-buttons", "button.ui-button[type=submit]");
+  $link.on("click", pwModalOpenEvent);
+  $link.on("pw-modal-closed", (e) => {
+    RockGrid.getGrid(el).reload();
+    $link.remove();
   });
+  $link.click();
 }

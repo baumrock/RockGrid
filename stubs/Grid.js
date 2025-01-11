@@ -4,21 +4,30 @@ document.addEventListener("RockGrid:init", (e) => {
   // do everything below only for this specific grid
   if (grid.name !== "{gridHash}") return;
 
+  // grid settings
+  // grid.noStateChanged = true;
+
   // build the tabulator table
   const table = grid.tabulator({
-    layout: "fitDataStretch",
-    ajaxURL: grid.ajaxURL,
+    // https://tabulator.info/docs/6.3/layout#layout
+    layout: "fitColumns",
+    // ajaxURL: false,
     autoColumns: true,
     autoColumnsDefinitions: function (defs) {
       defs.forEach((col) => {
-        if (col.field == "foo") {
-          col.visible = false;
-        }
+        // defaults
+        col.headerFilter = true;
+        col.headerFilterFunc = "rg.smart";
+
+        // individual settings
+        // if (col.field == "foo") col.visible = false;
+        // if (col.field == "bar") col.title = "Bar Column";
       });
       return defs;
     },
 
-    // enable row selection (it's even saveable!)
+    // enable row selection
     selectableRows: true,
+    // selectableRowsRangeMode: "click",
   });
 });

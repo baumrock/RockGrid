@@ -18,28 +18,112 @@ document.addEventListener("click", (event) => {
   grid.trigger("button:" + name, button);
 });
 
-// ### modal click interception
-document.addEventListener("click", (e) => {
-  let a = e.target.closest("a[rg-modal]");
-  if (!a) return;
-  let modalUrl = a.getAttribute("href");
-  if (modalUrl) {
-    e.preventDefault();
-    RockGridModal(a);
-  }
-});
-
-// ##### reload button
+// ##### refresh/reload button
 RockGrid.on("button:refresh", (button) => {
   let icon = button.querySelector("i.fa");
   if (icon) icon.classList.add("fa-spin");
+
+  const startTime = Date.now();
+  const minSpinTime = 1000; // minimum spin time in ms (1s = 1 full turn)
 
   // silently replace new data
   RockGrid.getGrid(button)
     .reload()
     .then(() => {
-      if (icon) icon.classList.remove("fa-spin");
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minSpinTime - elapsedTime);
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove("fa-spin");
+      }, remainingTime);
+    })
+    .catch(() => {
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minSpinTime - elapsedTime);
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove("fa-spin");
+      }, remainingTime);
     });
+});
+
+// ### remove filters
+RockGrid.on("button:removeFilters", (button) => {
+  let table = RockGrid.getTable(button);
+
+  // note: this will only remove header filters of the table
+  // this is to make it keep programmatically added filters
+  // necessary for RockCommerce Variations Grid
+  table.clearHeaderFilter(true);
+});
+RockGrid.on("table:dataFiltered", (table, grid) => {
+  setTimeout(() => {
+    let headerFilters = table.getHeaderFilters();
+    let button = grid.wrapper.querySelector(
+      '.rockgridbutton[data-name="removeFilters"]'
+    );
+    if (button) {
+      button.style.display = headerFilters.length ? "block" : "none";
+    }
+  }, 0);
+});
+
+// ##### trash selected rows
+
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// TODO: move this to RockSSE module!
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+// #
+
+RockGrid.on("button:trashSelected", (button) => {
+  const selected = RockGrid.getTable(button).getSelectedRows().length;
+  const markup = `
+    <div class="uk-text-lead">${RockGrid.x("trashSelected")}</div>
+    <div class="uk-flex uk-flex-middle uk-margin-top" style="gap: 20px">
+      <div class="uk-text-small uk-text-nowrap" style="font-family: monospace">
+        <span class="num">0</span> /
+        <span class="total">${selected}</span>
+      </div>
+      <progress class="uk-progress uk-margin-remove" max=1></progress>
+    </div>
+  `;
+  RockGrid.confirm({
+    message: markup,
+    confirm: (modal) => {
+      const progress = modal.$el.querySelector("progress");
+      const interval = setInterval(() => {
+        progress.value += 0.1;
+        if (progress.value >= progress.max) {
+          progress.value = 1;
+          modal.hide();
+          clearInterval(interval);
+        }
+      }, 750);
+    },
+    okLabel: RockGrid.x("ok"),
+    cancelLabel: RockGrid.x("cancel"),
+  });
 });
 
 // ### (un)select ALL
@@ -101,24 +185,3 @@ RockGrid.on(
     }, 0);
   }
 );
-
-// ### remove filters
-RockGrid.on("button:removeFilters", (button) => {
-  let table = RockGrid.getTable(button);
-
-  // note: this will only remove header filters of the table
-  // this is to make it keep programmatically added filters
-  // necessary for RockCommerce Variations Grid
-  table.clearHeaderFilter(true);
-});
-RockGrid.on("table:dataFiltered", (table, grid) => {
-  setTimeout(() => {
-    let headerFilters = table.getHeaderFilters();
-    let button = grid.wrapper.querySelector(
-      '.rockgridbutton[data-name="removeFilters"]'
-    );
-    if (button) {
-      button.style.display = headerFilters.length ? "block" : "none";
-    }
-  }, 0);
-});

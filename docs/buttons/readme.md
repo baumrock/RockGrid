@@ -1,40 +1,112 @@
 # Buttons
 
-RockGrid makes it easy to add custom buttons to your UI. By default we have three areas for buttons:
+RockGrid makes it easy to add custom buttons to your UI. By default we have two areas for buttons:
 
 1. buttonsLeft
 2. buttonsRight
-3. buttonsRight
 
 <img src=buttons.png class=blur>
 
-## ButtonsArray
+## Usage
 
-All buttons are defined in the grid's `buildUI` method and added to a `ButtonsArray`:
+All buttons are defined in the grid's `buildUI` method and added to a `ButtonsArray` (either `buttonsLeft` or `buttonsRight`). For example:
 
 ```php
 public function buildUI(): void
 {
   $this->buttonsRight->add([
-    'name' => 'trash',
-    'icon' => 'trash',
-    'tooltip' => 'Trash selected rows',
-    'class' => '',
+    'name' => 'demo',
+    'icon' => 'check',
   ]);
 }
 ```
 
-## JavaScript
+So far this button does not do anything. There are two ways where we can define the button actions:
 
-Whenever a button is clicked it fires the `RockGrid:buttonClick` event. You can listen to this event and fire custom actions:
+- PHP
+- JS
+
+### PHP
+
+Simple buttons that only open a link can be defined solely in PHP:
+
+```php
+public function buildUI(): void
+{
+  $url = wire()->config->urls->admin;
+  $this->buttonsRight->add([
+    'name' => 'demo',
+    'icon' => 'check',
+    'label' => 'open foo',
+    'tooltip' => 'this will open the link /foo/bar',
+    'href' => $url.'foo/bar/',
+  ]);
+}
+```
+
+### JavaScript
+
+Whenever a button is clicked it fires the `button:XXX` event. You can listen to this event and fire custom actions:
 
 ```js
-
+RockGrid.on("button:refresh", (button) => {
+  RockGrid.getGrid(button).reload();
+});
 ```
+
+This is a simplified version. For the real implementation inspect the file `scripts/buttons.js` in the `site/modules/RockGrid/` folder.
+
+> Pro-Tip: This file has plenty of other button examples to learn from!
+
+## Visibility
+
+### Row Selection
+
+You can define the visibility of your button based on row selection:
+
+```php
+$this->buttonsRight->add([
+  'name' => 'trashSelected',
+  'icon' => 'trash',
+  'attrs' => ['show-when-selected'],
+]);
+```
+
+## Example Buttons
+
+### Create new entry
+
+To creat e new entry we simply use ProcessWire's internal tools. All we do is add a button and set the `href` attribute to the url that ProcessWire uses to create a page. In this example we grab the parent ID from the url and we add the `pw-modal` class to the button, which will tell ProcessWire to open the link in a modal:
+
+```php
+public function buildUI(): void
+{
+  // example: get parent from url parameter
+  $parent = wire()->input->get('id', 'int');
+  $url = wire()->config->urls->admin;
+  $this->buttonsLeft->add([
+    'icon' => 'plus',
+    'tooltip' => 'Add a new item',
+    'class' => 'uk-button-primary',
+    'href' => $url . 'page/add/?parent_id=' . $parent,
+    'attrs' => ['rg-modal', 'rg-modal-reload'],
+  ]);
+}
+```
+
+Please note the `attrs` array! This array tells RockGrid to add the attributes `rg-modal` to open the link in a modal and `rg-modal-reload` to reload the grid when the modal is closed.
+
+### Deleting entries
+
+Another common use case is to delete selected rows.
 
 ## Available Buttons
 
-Reload grid data:
+RockGrid ships with some buttons for common needs out of the box!
+
+### Refresh
+
+The refresh (reload) button reloads grid data via AJAX when clicked:
 
 ```php
 $this->buttonsRight->add([
@@ -42,6 +114,10 @@ $this->buttonsRight->add([
   'icon' => 'refresh',
 ]);
 ```
+
+### Trash selected
+
+### Others
 
 Select/Unselect all rows:
 

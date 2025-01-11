@@ -32,7 +32,9 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    */
   public $gridsArray = [];
 
-  private $itemCallbackResult = false;
+  public $loadLuxon = false;
+
+  private $translations = [];
 
   public function init(): void
   {
@@ -48,6 +50,11 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     wire()->addHook('/rockgrid/ajax/{grid}/', $this, 'ajaxEndpoint');
     wire()->addHookAfter('Modules::refresh', $this, 'resetCache');
     wire()->addHookBefore('InputfieldForm::render', $this, 'hookRenderForm');
+
+    // hooks to add grid view
+    wire()->addHookBefore('ProcessPageEdit::buildForm', $this, 'childrenGridForm');
+    wire()->addHookAfter('ProcessPageEdit::getSubmitActions', $this, 'childrenGridSubmitActions');
+    wire()->addHookAfter('ProcessPageListRender::getPageActions', $this, 'childrenGridPageActions');
 
     // devtools
     if (function_exists('\ProcessWire\rockmigrations')) {
@@ -114,7 +121,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
   protected function ajaxEndpoint(HookEvent $event)
   {
-    if (!$this->wire->config->debug) {
+    if (!wire()->config->debug) {
       // show deprecation warnings only in debug mode
       // these can break the json output and are not helpful in production
       error_reporting(E_ALL & ~E_DEPRECATED);
@@ -126,10 +133,79 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return $this->succ($grid->getData());
   }
 
+  /**
+   * Show a list/grid icon in the page tree before the page edit tab
+   */
+  protected function childrenGridPageActions(HookEvent $event): void
+  {
+    $p = $event->arguments(0);
+    $settings = $this->getChildrenGridSettings($p);
+    if (!is_array($settings)) return;
+
+    $actions = $event->return;
+    $event->return = array_merge([[
+      'cn' => 'childrenGrid',
+      'name' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>',
+      'url' => $p->editUrl() . '&rockgrid=1',
+    ]], $actions);
+  }
+
+  /**
+   * Remove submit actions to avoid display glitches:
+   * https://i.imgur.com/nF0ls4k.png
+   */
+  protected function childrenGridSubmitActions(HookEvent $event): void
+  {
+    $p = $event->process->getPage();
+    $settings = $this->getChildrenGridSettings($p);
+    if (!is_array($settings)) return;
+    $event->return = [];
+  }
+
+  /**
+   * Build the form that shows a RockGrid instead of the page edit form
+   */
+  protected function childrenGridForm(HookEvent $event): void
+  {
+    $p = $event->process->getPage();
+    $settings = $this->getChildrenGridSettings($p);
+    if (!is_array($settings)) return;
+
+    // show grid only if ?rockgrid=1
+    if (!wire()->input->get('rockgrid')) return;
+
+    // set options
+    $opt = new WireData();
+    $opt->setArray([
+      'grid' => false,
+      'skipLabel' => Inputfield::skipLabelHeader,
+    ]);
+    $opt->setArray($settings);
+
+    $form = new InputfieldForm();
+    $form->add([
+      'name' => 'PageEditChildrenGrid',
+      'type' => 'rockgrid',
+      'grid' => $opt->grid,
+      'skipLabel' => $opt->skipLabel,
+    ]);
+
+    $event->replace = true;
+    $event->return = $form;
+  }
+
   public function err($message)
   {
     header('Content-Type: application/json; charset=utf-8');
     return json_encode(['error' => $message]);
+  }
+
+  public function ___getChildrenGridSettings(Page $p): array|false
+  {
+    if (method_exists($p, 'childrenGridSettings')) {
+      return $p->childrenGridSettings();
+    }
+    return false;
   }
 
   public function getGrid($data): Grid|null
@@ -162,6 +238,40 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return $grid;
   }
 
+  /**
+   * Config inputfields
+   * @param InputfieldWrapper $inputfields
+   */
+  public function getModuleConfigInputfields($inputfields)
+  {
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'loadLuxon',
+      'label' => 'Load LUXON Library (modern moment.js alternative)',
+      'checked' => $this->loadLuxon ? 'checked' : '',
+      'notes' => 'See https://moment.github.io/luxon/#/',
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'debug',
+      'label' => 'Debug Mode',
+      'checked' => $this->debug ? 'checked' : '',
+      'notes' => 'If enabled you will get additional info in the backend useful for debugging.',
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'coreversion',
+      'label' => 'Use core version for cache busting instead of filemtime',
+      'notes' => 'Use this if filemtime is slow on your system.',
+      'checked' => $this->coreversion ? 'checked' : '',
+    ]);
+
+    return $inputfields;
+  }
+
   public function getKeyFromFile($file): string
   {
     $file = Paths::normalizeSeparators($file);
@@ -192,28 +302,64 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   protected function hookRenderForm(HookEvent $event): void
   {
     wire()->modules->get('JqueryUI')->use('modal');
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
     );
-    $this->wire->config->scripts->add(
+    if ($this->loadLuxon) {
+      wire()->config->scripts->add(
+        rockgrid()->url(__DIR__ . '/lib/luxon.min.js', true)
+      );
+    }
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/RockGrid.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/magictags.js', true)
+    );
+    wire()->config->scripts->add(
+      rockgrid()->url(__DIR__ . '/scripts/coldefs.js', true)
+    );
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
     );
-    $this->wire->config->scripts->add(
+    wire()->config->scripts->add(
       rockgrid()->url(__DIR__ . '/scripts/extensions.js', true)
     );
 
-    $this->wire->config->styles->add(
+    wire()->config->styles->add(
       rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
     );
-    $this->wire->config->styles->add(
+    wire()->config->styles->add(
       rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
     );
+
+    // translations
+    // note: user translations have priority (so users can override stuff)
+    $translations = array_merge([
+      'cancel' => __('Cancel'),
+      'edit' => __('edit'),
+      'ok' => __('OK'),
+      'trashSelected' => __('Are you sure you want to delete the selected items?'),
+    ], $this->translations);
+    wire()->config->js('RockGridTranslations', $translations);
+  }
+
+  /**
+   * Helper method to check wether to show the grid view or not
+   */
+  private function isGridView(HookEvent $event): bool
+  {
+    $p = $event->process->getPage();
+    $gridName = $p->template->rockGridName;
+    if (!$gridName) return false;
+
+    $grid = $this->getGrid($gridName);
+    if (!$grid) return false;
+    if (!wire()->input->get('rockgrid', 'int')) return false;
+    return true;
   }
 
   private function loadGridsArray(): void
@@ -225,8 +371,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       function () {
         $arr = [];
         $files = array_merge(
-          glob($this->wire->config->paths->templates . "RockGrid/*.php"),
-          glob($this->wire->config->paths->siteModules . "*/RockGrid/*.php")
+          glob(wire()->config->paths->templates . "RockGrid/*.php"),
+          glob(wire()->config->paths->siteModules . "*/RockGrid/*.php")
         );
         foreach ($files as $file) {
           $arr[$this->getKeyFromFile($file)] = $file;
@@ -266,6 +412,24 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return str_replace('-', '\\', $safename);
   }
 
+  public function ready(): void
+  {
+
+    // only regular requests
+    if (wire()->config->ajax) return;
+    if (wire()->config->external) return;
+
+    // ---------- only backend requests below ----------
+    if (wire()->page->template != 'admin') return;
+
+    // page view redirects
+    // handy if the id is known but the url is not
+    if ($id = wire()->input->get('rockgrid-view', 'int')) {
+      $p = wire()->pages->get($id);
+      if ($p->viewable()) wire()->session->redirect($p->url);
+    }
+  }
+
   public function resetCache(): void
   {
     $this->wire->cache->delete(self::gridsArrayCache);
@@ -293,7 +457,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
-   * This is what happens when before the sse stream is established.
+   * This is what happens before the sse stream is established.
    * We send a post request to the backend that contains all the data that
    * the sse stream will then process.
    */
@@ -363,12 +527,12 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   {
     $path = Paths::normalizeSeparators($path);
     $url = str_replace(
-      $this->wire->config->paths->root,
-      $this->wire->config->urls->root,
+      wire()->config->paths->root,
+      wire()->config->urls->root,
       $path
     );
     if ($cachebuster) {
-      $url = $this->wire->config->versionUrl(
+      $url = wire()->config->versionUrl(
         $url,
         !$this->coreversion,
       );
@@ -377,28 +541,13 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
-   * Config inputfields
-   * @param InputfieldWrapper $inputfields
+   * Add a new translatable string
+   *
+   * This method is intended to be used by the user to add custom translations.
+   * Admin translations are set directly in this file in hookRenderForm.
    */
-  public function getModuleConfigInputfields($inputfields)
+  public function x(string $key, string $translation): void
   {
-
-    $inputfields->add([
-      'type' => 'checkbox',
-      'name' => 'debug',
-      'label' => 'Debug Mode',
-      'checked' => $this->debug ? 'checked' : '',
-      'notes' => 'If enabled you will get additional info in the backend useful for debugging.',
-    ]);
-
-    $inputfields->add([
-      'type' => 'checkbox',
-      'name' => 'coreversion',
-      'label' => 'Use core version for cache busting instead of filemtime',
-      'notes' => 'Use this if filemtime is slow on your system.',
-      'checked' => $this->coreversion ? 'checked' : '',
-    ]);
-
-    return $inputfields;
+    $this->translations[$key] = $translation;
   }
 }

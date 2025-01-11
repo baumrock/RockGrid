@@ -1,0 +1,18 @@
+{
+    "file": "site\/modules\/RockGrid\/RockGrid.module.php",
+    "textdomain": "site--modules--rockgrid--rockgrid-module-php",
+    "translations": {
+        "de95b43bceeb4b998aed4aed5cef1ae7": {
+            "text": "bearbeiten"
+        },
+        "ea4788705e6873b424c65e91c2846b19": {
+            "text": "Abbrechen"
+        },
+        "e0aa021e21dddbd6d8cecec71e9cf564": {
+            "text": "OK"
+        },
+        "259d45178c145bb0da079704b45e3a48": {
+            "text": "Sind Sie sicher, dass Sie die ausgew\u00e4hlten Elemente l\u00f6schen m\u00f6chten?"
+        }
+    }
+}
