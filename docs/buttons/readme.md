@@ -74,6 +74,83 @@ $this->buttonsRight->add([
 
 ## Example Buttons
 
+### Week Buttons
+
+Imagine we want to filter a list of time entries by week. For that we added the "monday" column to the table which shows the date of the entry's monday (this is because around new year we cannot use week numbers as we will have 24-52 and 25-01, for example).
+
+The buttons will look like this:
+
+<img src=https://i.imgur.com/2dMlE2h.png class=blur>
+
+This is how we define them in the GUI (PHP):
+
+```php
+// week buttons
+$this->buttonsLeft->add([
+  'name' => 'prevweek',
+  'icon' => 'angle-left',
+  'tooltip' => 'Previous Week',
+  'class' => 'uk-button uk-button-default uk-margin-small-left',
+]);
+$this->buttonsLeft->add([
+  'name' => 'week',
+  'label' => 'W',
+  'tooltip' => 'Current Week',
+  'class' => 'uk-button uk-button-default',
+]);
+$this->buttonsLeft->add([
+  'name' => 'nextweek',
+  'icon' => 'angle-right',
+  'tooltip' => 'Next Week',
+  'class' => 'uk-button uk-button-default',
+]);
+```
+
+And this is how we implement the logic on the JS side:
+
+```js
+document.addEventListener("RockGrid:init", (e) => {
+  // ...
+  const table = '...';
+  // ...
+
+  // buttons
+  RockGrid.on("button:prevweek", (button) => {
+    // get current header filter of monday column
+    const filter = table.getHeaderFilterValue("monday");
+    const monday = filter
+      ? luxon.DateTime.fromFormat(filter, "yy-MM-dd")
+      : luxon.DateTime.local().startOf("week");
+    // set header filter to previous week
+    table.clearHeaderFilter();
+    table.setHeaderFilterValue(
+      "monday",
+      monday.minus({ days: 7 }).toFormat("yy-MM-dd")
+    );
+  });
+  RockGrid.on("button:week", (button) => {
+    // set headerfilter of monday column to
+    // current dates monday in format yy-mm-dd
+    const monday = luxon.DateTime.local().startOf("week");
+    table.clearHeaderFilter();
+    table.setHeaderFilterValue("monday", monday.toFormat("yy-MM-dd"));
+  });
+  RockGrid.on("button:nextweek", (button) => {
+    // get current header filter of monday column
+    const filter = table.getHeaderFilterValue("monday");
+    const monday = filter
+      ? luxon.DateTime.fromFormat(filter, "yy-MM-dd")
+      : luxon.DateTime.local().startOf("week");
+    // set header filter to next week
+    table.clearHeaderFilter();
+    table.setHeaderFilterValue(
+      "monday",
+      monday.plus({ days: 7 }).toFormat("yy-MM-dd")
+    );
+  });
+});
+```
+
 ### Create new entry
 
 To creat e new entry we simply use ProcessWire's internal tools. All we do is add a button and set the `href` attribute to the url that ProcessWire uses to create a page. In this example we grab the parent ID from the url and we add the `pw-modal` class to the button, which will tell ProcessWire to open the link in a modal:
