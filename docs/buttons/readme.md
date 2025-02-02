@@ -122,6 +122,7 @@ document.addEventListener("RockGrid:init", (e) => {
       ? luxon.DateTime.fromFormat(filter, "yy-MM-dd")
       : luxon.DateTime.local().startOf("week");
     // set header filter to previous week
+    table.clearHeaderFilter();
     table.setHeaderFilterValue(
       "monday",
       monday.minus({ days: 7 }).toFormat("yy-MM-dd")
@@ -131,6 +132,7 @@ document.addEventListener("RockGrid:init", (e) => {
     // set headerfilter of monday column to
     // current dates monday in format yy-mm-dd
     const monday = luxon.DateTime.local().startOf("week");
+    table.clearHeaderFilter();
     table.setHeaderFilterValue("monday", monday.toFormat("yy-MM-dd"));
   });
   RockGrid.on("button:nextweek", (button) => {
@@ -140,6 +142,7 @@ document.addEventListener("RockGrid:init", (e) => {
       ? luxon.DateTime.fromFormat(filter, "yy-MM-dd")
       : luxon.DateTime.local().startOf("week");
     // set header filter to next week
+    table.clearHeaderFilter();
     table.setHeaderFilterValue(
       "monday",
       monday.plus({ days: 7 }).toFormat("yy-MM-dd")
