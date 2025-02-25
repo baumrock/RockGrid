@@ -72,6 +72,18 @@ $this->buttonsRight->add([
 ]);
 ```
 
+### Filter active
+
+You can define the visibility of your button based on whether a filter is active or not:
+
+```php
+$this->buttonsRight->add([
+  'name' => 'markClaimed',
+  'icon' => 'check',
+  'attrs' => ['show-when-filtered'],
+]);
+```
+
 ## Example Buttons
 
 ### Week Buttons
