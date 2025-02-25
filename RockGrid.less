@@ -330,15 +330,16 @@
     display: none;
   }
 
-  // show hide buttons based on row selection state
-  .buttons > [show-when-selected] {
-    // hide buttons by default to afoid FOUC
-    display: none;
-  }
-  &.no-selected-rows .buttons > [show-when-selected] {
+  // show/hide buttons based on state
+  // hide buttons by default to afoid FOUC
+  .buttons > [show-when-selected],
+  .buttons > [show-when-filtered] {
     display: none;
   }
   &.has-selected-rows .buttons > [show-when-selected] {
+    display: initial;
+  }
+  &.has-filtered-rows .buttons > [show-when-filtered] {
     display: initial;
   }
 }
