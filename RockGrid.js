@@ -346,16 +346,29 @@ class RockGridGrid {
     let grid = this;
     let table = new Tabulator(this.div, config);
     this.table = table;
-    this.updateButtonVisibility();
 
     // handle row selection
     table.on("rowSelectionChanged", () => {
       let selectedRows = table.getSelectedRows();
       let selectedIds = selectedRows.map((row) => row.getData().id);
 
+      // add class for button visibility
+      if (selectedRows.length > 0) {
+        this.wrapper.classList.add("has-selected-rows");
+      } else {
+        this.wrapper.classList.remove("has-selected-rows");
+      }
+
       // save selected rows to hidden textarea
       this.sleep("selected", selectedIds);
-      this.updateButtonVisibility();
+    });
+    // add class for button visibility
+    table.on("dataFiltered", (filters, rows) => {
+      if (filters.length > 0) {
+        this.wrapper.classList.add("has-filtered-rows");
+      } else {
+        this.wrapper.classList.remove("has-filtered-rows");
+      }
     });
     table.on("dataProcessed", () => {
       table.selectRow(this.sleepValue.selected || []);
@@ -390,19 +403,6 @@ class RockGridGrid {
     callbacks.forEach((callback) => {
       callback(detail);
     });
-  }
-
-  updateButtonVisibility() {
-    const hasSelectedRows = this.table.getSelectedRows().length > 0;
-
-    // update li class
-    if (hasSelectedRows) {
-      this.wrapper.classList.add("has-selected-rows");
-      this.wrapper.classList.remove("no-selected-rows");
-    } else {
-      this.wrapper.classList.remove("has-selected-rows");
-      this.wrapper.classList.add("no-selected-rows");
-    }
   }
 }
 

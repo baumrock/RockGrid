@@ -82,6 +82,12 @@
 @grey-900: #212121;
 
 // color utility classes
+.text-black {
+  color: black;
+}
+.text-white {
+  color: white;
+}
 .rg-bg-transparent {
   background-color: @transparent;
 }
@@ -330,15 +336,16 @@
     display: none;
   }
 
-  // show hide buttons based on row selection state
-  .buttons > [show-when-selected] {
-    // hide buttons by default to afoid FOUC
-    display: none;
-  }
-  &.no-selected-rows .buttons > [show-when-selected] {
+  // show/hide buttons based on state
+  // hide buttons by default to afoid FOUC
+  .buttons > [show-when-selected],
+  .buttons > [show-when-filtered] {
     display: none;
   }
   &.has-selected-rows .buttons > [show-when-selected] {
+    display: initial;
+  }
+  &.has-filtered-rows .buttons > [show-when-filtered] {
     display: initial;
   }
 }
@@ -356,6 +363,8 @@
     .tag {
       background: @grey-50;
       border-color: @grey-400;
+      // makes tags readable when row is selected
+      color: @grey-900;
       border-width: 1px;
       border-style: solid;
       padding: 2px 5px;
@@ -368,7 +377,7 @@
 body.AdminStyleRock {
   .rockgridbutton {
     &.uk-button-secondary {
-      background-color: @grey-50;
+      background-color: @grey-700;
     }
   }
 }

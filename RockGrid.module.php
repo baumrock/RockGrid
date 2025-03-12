@@ -400,6 +400,15 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     }
 
     $this->gridsArray = $gridsArray;
+
+    // for every grid trigger the static ::autoload method
+    foreach ($gridsArray as $cls => $file) {
+      // if class constant autoload exists
+      if (!defined($cls . '::autoload')) continue;
+      // load grid and trigger init()
+      $grid = $this->getGrid($cls);
+      if (method_exists($grid, 'init')) $grid->init();
+    }
   }
 
   /**
