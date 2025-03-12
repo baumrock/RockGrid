@@ -1,3 +1,17 @@
+## [1.2.0](https://github.com/baumrock/RockGrid/compare/v1.1.0...v1.2.0) (2025-03-12)
+
+
+### Features
+
+* add autoload grids and docs for batch updates ([57d0451](https://github.com/baumrock/RockGrid/commit/57d045148a3eba8aeef6c887e488599c9e3168c3))
+* add button visibility class "has-selected-rows" for "show-when-filtered" button ([3132218](https://github.com/baumrock/RockGrid/commit/3132218600814d5502558f110c62f1fdc755b100))
+
+
+### Bug Fixes
+
+* tags not readable when selected ([3e64cb9](https://github.com/baumrock/RockGrid/commit/3e64cb926c26fa45083f6e7ff5ea738792c159a2))
+* wrong secondary button color ([85d9766](https://github.com/baumrock/RockGrid/commit/85d9766cfc5e01f1181810da8d2cc8c2be4722ba))
+
 ## [1.1.0](https://github.com/baumrock/RockGrid/compare/v1.0.6...v1.1.0) (2025-01-11)
 
 
@@ -34,11 +48,4 @@
 ### Bug Fixes
 
 * add required selector parameter for getselectedpages ([e4b1b9e](https://github.com/baumrock/RockGrid/commit/e4b1b9eee43e018d9318e9c8422733ae2f9fcedc))
-
-## [1.0.3](https://github.com/baumrock/RockGrid/compare/v1.0.2...v1.0.3) (2024-11-15)
-
-
-### Bug Fixes
-
-* remove reference to rockcommerce and add generic code ([0103011](https://github.com/baumrock/RockGrid/commit/0103011fb6aafb2ab8cd4c1d12994f2dde601fda))
 
