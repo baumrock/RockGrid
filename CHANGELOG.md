@@ -1,3 +1,10 @@
+## [1.4.0](https://github.com/baumrock/RockGrid/compare/v1.3.0...v1.4.0) (2025-07-02)
+
+
+### Features
+
+* make colors transparent to allow striped rows and selection to shine through ([555cb80](https://github.com/baumrock/RockGrid/commit/555cb802fe65657dbf173f60fd5bda4a4992aa3d))
+
 ## [1.3.0](https://github.com/baumrock/RockGrid/compare/v1.2.0...v1.3.0) (2025-07-02)
 
 
@@ -48,11 +55,4 @@
 ### Bug Fixes
 
 * rename orphan refresh() call to resetCache() ([1edc299](https://github.com/baumrock/RockGrid/commit/1edc29904f879abece9db1b176be2c4a54899be6))
-
-## [1.0.5](https://github.com/baumrock/RockGrid/compare/v1.0.4...v1.0.5) (2024-12-02)
-
-
-### Bug Fixes
-
-* load assets via JS to support ajax loaded repeater fields ([8e4e96f](https://github.com/baumrock/RockGrid/commit/8e4e96ff85493921f45048e4f8137d83561fecd6))
 
