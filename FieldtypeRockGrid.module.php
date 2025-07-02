@@ -77,6 +77,12 @@ class FieldtypeRockGrid extends Fieldtype
   {
     $schema = parent::getDatabaseSchema($field);
     $schema['data'] = 'JSON';
+
+    // Remove the default index that ProcessWire adds for the data column
+    // since MySQL doesn't allow direct indexing on JSON columns
+    // fixes this issue: https://processwire.com/talk/topic/31057--
+    unset($schema['keys']['data']);
+
     return $schema;
   }
 
