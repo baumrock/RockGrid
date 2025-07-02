@@ -97,29 +97,29 @@ RockGrid.on("table:dataFiltered", (table, grid) => {
 // #
 
 RockGrid.on("button:trashSelected", (button) => {
-  const selected = RockGrid.getTable(button).getSelectedRows().length;
-  const markup = `
-    <div class="uk-text-lead">${RockGrid.x("trashSelected")}</div>
-    <div class="uk-flex uk-flex-middle uk-margin-top" style="gap: 20px">
-      <div class="uk-text-small uk-text-nowrap" style="font-family: monospace">
-        <span class="num">0</span> /
-        <span class="total">${selected}</span>
-      </div>
-      <progress class="uk-progress uk-margin-remove" max=1></progress>
-    </div>
-  `;
+  const table = RockGrid.getTable(button);
+  const selected = table.getSelectedRows();
+  if (!selected.length) return;
+  const markup = `<div class="uk-text-lead">
+    ${RockGrid.x("trashSelected")}
+    </div>`;
+  //   <div class="uk-flex uk-flex-middle uk-margin-top" style="gap: 20px">
+  //     <div class="uk-text-small uk-text-nowrap" style="font-family: monospace">
+  //       <span class="num">0</span> /
+  //       <span class="total">${selected}</span>
+  //     </div>
+  //     <progress class="uk-progress uk-margin-remove" max=1></progress>
+  //   </div>
+  // `;
   RockGrid.confirm({
     message: markup,
     confirm: (modal) => {
-      const progress = modal.$el.querySelector("progress");
-      const interval = setInterval(() => {
-        progress.value += 0.1;
-        if (progress.value >= progress.max) {
-          progress.value = 1;
-          modal.hide();
-          clearInterval(interval);
-        }
-      }, 750);
+      const ids = selected.map((row) => row.getData().id);
+      RockGrid.ajax("trashselected", {
+        body: { selected: ids },
+        hideModal: modal,
+        reloadGrid: RockGrid.getGrid(button),
+      });
     },
     okLabel: RockGrid.x("ok"),
     cancelLabel: RockGrid.x("cancel"),
