@@ -69,7 +69,7 @@ class RockGridMaster {
    *   tooltip: 'Edit this page',
    *   href: RockGrid.editUrl(id),
    *   class: 'my-class',
-   *   panel: true, // default
+   *   modal: true,
    *   reload: true,
    * });
    */
