@@ -9,6 +9,56 @@ class RockGridMaster {
     this.grids[grid.li.id] = grid;
   }
 
+  ajax(url, options) {
+    // prepare url
+    url = ProcessWire.config.urls.root + "rockgrid/ajax/" + url;
+    if (!url.endsWith("/")) url += "/";
+
+    const defaultOptions = {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    };
+
+    options = { ...defaultOptions, ...options };
+
+    // if body is an object, convert it to FormData
+    // this is necessary to send the data as multipart/form-data
+    // which is necessary for ProcessWire to use data for $input->post()
+    if (options.body) {
+      // If it's a plain object, create FormData and append properties
+      if (typeof options.body === "object") {
+        const formData = new FormData();
+        Object.keys(options.body).forEach((key) => {
+          formData.append(key, options.body[key]);
+        });
+        options.body = formData;
+      }
+    }
+
+    return fetch(url, options)
+      .then((res) => {
+        if (res.status > 399) {
+          return res.text().then((text) => {
+            throw new Error(text, res.status);
+          });
+        }
+
+        // close modal?
+        if (options.hideModal) options.hideModal.hide();
+
+        // reload grid?
+        if (options.reloadGrid) options.reloadGrid.reload();
+
+        return res;
+      })
+      .catch((err) => {
+        console.error(err);
+        alert(err.message || err);
+      });
+  }
+
   confirm(data) {
     // use modal dialog instead of confirm for custom ok/cancel callbacks
     const modal = UIkit.modal.dialog(`

@@ -47,7 +47,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     if ($config->rockgridDebug) $this->debug = true;
 
     // ajax endpoints
-    wire()->addHook('/rockgrid/ajax/{grid}/', $this, 'ajaxEndpoint');
+    wire()->addHook('/rockgrid/ajax/{segment}/', $this, 'ajaxEndpoint');
     wire()->addHookAfter('Modules::refresh', $this, 'resetCache');
     wire()->addHookBefore('InputfieldForm::render', $this, 'hookRenderForm');
 
@@ -126,7 +126,14 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       // these can break the json output and are not helpful in production
       error_reporting(E_ALL & ~E_DEPRECATED);
     }
-    $gridname = $this->rawName($event->grid);
+    $segment = $event->segment;
+
+    // first check if a file in the ajax folder exists
+    $file = __DIR__ . "/ajax/$segment.php";
+    if (is_file($file)) return wire()->files->render($file);
+
+    // then check if it's a grid
+    $gridname = $this->rawName($segment);
     $grid = $this->getGrid($gridname);
     if (!$grid) return $this->err('Grid not found');
     if (!$grid->isViewable()) return $this->err('No access');
