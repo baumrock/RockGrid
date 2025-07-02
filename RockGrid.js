@@ -429,6 +429,12 @@ class RockGridGrid {
       }
     });
 
+    // log selected ids to console
+    table.on("rowSelectionChanged", () => {
+      const selectedRows = table.getSelectedRows();
+      console.log(selectedRows.map((row) => row.getData().id));
+    });
+
     // load all callbacks that have been attached via RockGrid.on('table:xxx')
     // attach every callback to the current table
     Object.keys(RockGrid.events).forEach((eventname) => {
