@@ -4,11 +4,13 @@ namespace {namespace};
 
 use RockGrid\Grid;
 
+use function ProcessWire\wire;
+
 class {name} extends Grid
 {
   public function getData()
   {
-    return $this->wire->pages->findRaw([
+    return wire()->pages->findRaw([
       'id>' => 0,
       'limit' => 10,
     ], [
@@ -28,8 +30,8 @@ class {name} extends Grid
    */
   public function isViewable()
   {
-    if ($this->wire->user->isSuperuser()) return true;
-    // if($this->wire->user->hasRole('foo')) return true;
+    if (wire()->user->isSuperuser()) return true;
+    // if(wire()->user->hasRole('foo')) return true;
     return false;
   }
 }
