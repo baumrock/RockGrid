@@ -8,7 +8,10 @@ class {name} extends Grid
 {
   public function getData()
   {
-    return $this->wire->pages->findRaw("id>0, limit=10", [
+    return $this->wire->pages->findRaw([
+      'id>' => 0,
+      'limit' => 10,
+    ], [
       'id',
       'title',
       'modified',
