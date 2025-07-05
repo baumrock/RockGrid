@@ -472,6 +472,23 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   }
 
   /**
+   * Sort an array by a field
+   *
+   * Usage:
+   * RockGrid::sort($data, 'yourcolumn', 'asc');
+   *
+   * @param array $data
+   * @param string $field
+   * @param string $direction
+   */
+  public static function sort(array &$data, string $field, string $direction = 'asc'): void
+  {
+    usort($data, function ($a, $b) use ($field, $direction) {
+      return $direction === 'asc' ? $a[$field] <=> $b[$field] : $b[$field] <=> $a[$field];
+    });
+  }
+
+  /**
    * Send SSE message to client
    */
   public function sse(mixed $msg): void
