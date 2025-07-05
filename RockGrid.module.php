@@ -481,10 +481,15 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    * @param string $field
    * @param string $direction
    */
-  public static function sort(array &$data, string $field, string $direction = 'asc'): void
-  {
+  public static function sort(
+    array &$data,
+    string $field,
+    string $direction = 'asc'
+  ): void {
     usort($data, function ($a, $b) use ($field, $direction) {
-      return $direction === 'asc' ? $a[$field] <=> $b[$field] : $b[$field] <=> $a[$field];
+      return $direction === 'asc'
+        ? $a[$field] <=> $b[$field]
+        : $b[$field] <=> $a[$field];
     });
   }
 
