@@ -207,6 +207,16 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return json_encode(['error' => $message]);
   }
 
+  /**
+   * Flatten an array that we get from a findRaw call so that we can use it
+   * for a RockGrid column.
+   */
+  public static function flatten($data, $prop = 'title'): string
+  {
+    if (!is_array($data)) return '';
+    return $data[0][$prop] ?? '';
+  }
+
   public function ___getChildrenGridSettings(Page $p): array|false
   {
     if (method_exists($p, 'childrenGridSettings')) {
