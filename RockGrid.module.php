@@ -217,6 +217,16 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return $data[0][$prop] ?? '';
   }
 
+  public static function formatDate(
+    array &$row,
+    string $field,
+    string $format = 'Y-m-d'
+  ): void {
+    $date = $row[$field];
+    if (!$date) return;
+    $row[$field] = date($format, strtotime($date));
+  }
+
   public function ___getChildrenGridSettings(Page $p): array|false
   {
     if (method_exists($p, 'childrenGridSettings')) {
