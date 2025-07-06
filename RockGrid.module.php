@@ -3,6 +3,7 @@
 namespace ProcessWire;
 
 use RockGrid\ButtonsArray;
+use RockGrid\Formatters;
 use RockGrid\Grid;
 use stdClass;
 
@@ -16,8 +17,10 @@ function rockgrid(): RockGrid
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
+require_once __DIR__ . '/classes/Formatters.php';
 class RockGrid extends WireData implements Module, ConfigurableModule
 {
+  use Formatters;
   const gridsArrayCache = 'rockgrid-grids';
 
   public $debug = false;
@@ -205,26 +208,6 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   {
     header('Content-Type: application/json; charset=utf-8');
     return json_encode(['error' => $message]);
-  }
-
-  /**
-   * Flatten an array that we get from a findRaw call so that we can use it
-   * for a RockGrid column.
-   */
-  public static function flatten($data, $prop = 'title'): string
-  {
-    if (!is_array($data)) return '';
-    return $data[0][$prop] ?? '';
-  }
-
-  public static function formatDate(
-    array &$row,
-    string $field,
-    string $format = 'Y-m-d'
-  ): void {
-    $date = $row[$field];
-    if (!$date) return;
-    $row[$field] = date($format, strtotime($date));
   }
 
   public function ___getChildrenGridSettings(Page $p): array|false
