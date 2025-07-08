@@ -1,3 +1,22 @@
+/**
+ * RockGrid formatters for tabulator
+ *
+ * Simple usage:
+ * col.formatter = RockGrid.formatters.tags;
+ *
+ * Advanced usage (apply multiple formatters):
+ * col.formatter = (cell) => {
+ *   const value = cell.getValue();
+ *   let out = RockGrid.formatters.tags(cell);
+ *   RockGrid.formatters.background(
+ *     value < 0
+ *       ? "rg-bg-red-100"
+ *       : "rg-bg-green-100"
+ *   );
+ *   return out;
+ * };
+ */
+
 RockGrid.formatters = {
   /**
    * Clickable tags that also set the header filter
