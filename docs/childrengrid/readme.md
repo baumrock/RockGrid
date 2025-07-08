@@ -6,43 +6,18 @@ You can use RockGrid to display a list of all children of a page and show a page
 
 ## Setup
 
-The first step is to create a grid from RockGrid's UI and copy the name:
-
-<img src=https://i.imgur.com/BpZhrUC.png class=blur alt='Copy Grid Name'>
-
-### Custom Page Classes
-
-When using custom page classes all you need to do to show the grid to edit children is to add the following method to your page class:
+All you have to do to add a Grid-Action to your pagelist is to add the method `addToPageList` to your grid's php file:
 
 ```php
-<?php
-
-namespace ProcessWire;
-
-class TodosPage extends DefaultPage
-{
-  public function childrenGridSettings(): array
+  public function addToPageList(Page $page)
   {
-    return [
-      'grid' => 'RockGrid\Todos',
-    ];
+    // example based on template
+    if ($page->template == 'whatever') return true;
+
+    // example using custom page classes
+    if ($page instanceof InvoiceGroup) return true;
+
+    // on all other pages we don't add the action
+    return false;
   }
-}
-```
-
-### Via Hook
-
-If you are not using custom page classes I highly recommend you start using them, because they are extremely easy to setup and extremely powerful.
-
-If you still don't want to use them, here is how you can use a hook to tell RockGrid to show the grid for page children editing:
-
-```php
-// in site/ready.php
-$wire->addHookAfter('RockGrid::getChildrenGridSettings', function ($event) {
-  $p = $event->arguments(0);
-  if($p->template != 'todos') return;
-  $event->return = [
-    'grid' => 'RockGrid\Todos',
-  ];
-});
 ```

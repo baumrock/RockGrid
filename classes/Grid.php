@@ -2,6 +2,7 @@
 
 namespace RockGrid;
 
+use ProcessWire\Page;
 use ProcessWire\Wire;
 
 class Grid extends Wire
@@ -12,6 +13,11 @@ class Grid extends Wire
   public $jsFile;
   public $name;
   public $phpFile;
+
+  public function addToPageList(Page $page)
+  {
+    return false;
+  }
 
   public function buildUI(): void {}
 

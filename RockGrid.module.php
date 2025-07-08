@@ -17,10 +17,8 @@ function rockgrid(): RockGrid
  * @license COMMERCIAL DO NOT DISTRIBUTE
  * @link https://www.baumrock.com
  */
-require_once __DIR__ . '/classes/Formatters.php';
 class RockGrid extends WireData implements Module, ConfigurableModule
 {
-  use Formatters;
   const gridsArrayCache = 'rockgrid-grids';
 
   public $debug = false;
@@ -55,15 +53,44 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     wire()->addHookBefore('InputfieldForm::render', $this, 'hookRenderForm');
 
     // hooks to add grid view
-    wire()->addHookBefore('ProcessPageEdit::buildForm', $this, 'childrenGridForm');
-    wire()->addHookAfter('ProcessPageEdit::getSubmitActions', $this, 'childrenGridSubmitActions');
-    wire()->addHookAfter('ProcessPageListRender::getPageActions', $this, 'childrenGridPageActions');
+    wire()->addHookBefore('ProcessPageEdit::buildForm', $this, 'renderChildrenGrid');
+    wire()->addHookAfter('ProcessPageListRender::getPageActions', $this, 'addGridToPageList');
 
-    // devtools
-    if (function_exists('\ProcessWire\rockmigrations')) {
-      $rm = rockmigrations();
-      $rm->saveCSS(__DIR__ . '/RockGrid.less', minify: true, keepCSS: false);
+    $this->devtools();
+  }
+
+  /** --------------------------- regular methods --------------------------- */
+
+  /**
+   * Add an action to the page list actions
+   * to show a RockGrid with all child pages of the current page
+   */
+  protected function addGridToPageList(HookEvent $event): void
+  {
+    $p = $event->arguments('page');
+    $grids = $this->loadGrids();
+
+    $action = false;
+    foreach ($grids as $grid) {
+      $action = $grid->addToPageList($p);
+      if ($action) break;
     }
+    if (!$action) return;
+
+    // merge received action with default action
+    if (!is_array($action)) $action = [];
+    $action = [
+      'cn' => 'childrenGrid',
+      'name' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>',
+      'url' => $p->editUrl() . '&rockgrid=' . $grid->name,
+      ...$action,
+    ];
+
+    // prepend original actions with the new one
+    $event->return = [
+      $action,
+      ...$event->return,
+    ];
   }
 
   /**
@@ -143,65 +170,27 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return $this->succ($grid->getData());
   }
 
-  /**
-   * Show a list/grid icon in the page tree before the page edit tab
-   */
-  protected function childrenGridPageActions(HookEvent $event): void
+  private function devtools(): void
   {
-    $p = $event->arguments(0);
-    $settings = $this->getChildrenGridSettings($p);
-    if (!is_array($settings)) return;
-
-    $actions = $event->return;
-    $event->return = array_merge([[
-      'cn' => 'childrenGrid',
-      'name' => '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>',
-      'url' => $p->editUrl() . '&rockgrid=1',
-    ]], $actions);
+    if (!wire()->config->rockdevtools) return;
+    try {
+      rockdevtools()
+        ->assets()
+        ->js()
+        ->add(__DIR__ . '/src/**.js')
+        ->save(__DIR__ . '/dst/RockGrid.min.js');
+    } catch (\Throwable $th) {
+      bd($th->getMessage());
+    }
   }
 
-  /**
-   * Remove submit actions to avoid display glitches:
-   * https://i.imgur.com/nF0ls4k.png
-   */
-  protected function childrenGridSubmitActions(HookEvent $event): void
+  public function loadGrids(): array
   {
-    $p = $event->process->getPage();
-    $settings = $this->getChildrenGridSettings($p);
-    if (!is_array($settings)) return;
-    $event->return = [];
-  }
-
-  /**
-   * Build the form that shows a RockGrid instead of the page edit form
-   */
-  protected function childrenGridForm(HookEvent $event): void
-  {
-    $p = $event->process->getPage();
-    $settings = $this->getChildrenGridSettings($p);
-    if (!is_array($settings)) return;
-
-    // show grid only if ?rockgrid=1
-    if (!wire()->input->get('rockgrid')) return;
-
-    // set options
-    $opt = new WireData();
-    $opt->setArray([
-      'grid' => false,
-      'skipLabel' => Inputfield::skipLabelHeader,
-    ]);
-    $opt->setArray($settings);
-
-    $form = new InputfieldForm();
-    $form->add([
-      'name' => 'PageEditChildrenGrid',
-      'type' => 'rockgrid',
-      'grid' => $opt->grid,
-      'skipLabel' => $opt->skipLabel,
-    ]);
-
-    $event->replace = true;
-    $event->return = $form;
+    $grids = [];
+    foreach ($this->gridsArray as $cls => $file) {
+      $grids[] = $this->getGrid($cls);
+    }
+    return $grids;
   }
 
   public function err($message)
@@ -210,19 +199,17 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return json_encode(['error' => $message]);
   }
 
-  public function ___getChildrenGridSettings(Page $p): array|false
-  {
-    if (method_exists($p, 'childrenGridSettings')) {
-      return $p->childrenGridSettings();
-    }
-    return false;
-  }
-
   public function getGrid($data): Grid|null
   {
+    if (!$data) return null;
+
     // first get the gridname
-    if ($data instanceof InputfieldRockGrid) $gridname = $data->grid;
+    if ($data instanceof InputfieldRockGrid) $gridname = (string)$data->grid;
     else $gridname = (string)$data;
+
+    // if $data is a string with dash convert it to a classname
+    // this is to grab the grid from an url like &rockgrid=RockInvoice-Invoices
+    if (str_contains($gridname, '-')) $gridname = $this->rawName($gridname);
 
     // if already loaded return it
     /** @var Grid $grid */
@@ -312,64 +299,33 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   protected function hookRenderForm(HookEvent $event): void
   {
     wire()->modules->get('JqueryUI')->use('modal');
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/lib/math.min.js', true)
-    );
-    if ($this->loadLuxon) {
-      wire()->config->scripts->add(
-        rockgrid()->url(__DIR__ . '/lib/luxon.min.js', true)
-      );
+    $assets = [
+      __DIR__ . '/lib/math.min.js',
+      __DIR__ . '/lib/luxon.min.js',
+      __DIR__ . '/lib/tabulator.min.js',
+      __DIR__ . '/dst/RockGrid.min.js',
+      __DIR__ . '/scripts/magictags.js',
+      __DIR__ . '/scripts/coldefs.js',
+      __DIR__ . '/scripts/buttons.js',
+      __DIR__ . '/scripts/extensions.js',
+      __DIR__ . '/lib/tabulator.min.css',
+      __DIR__ . '/RockGrid.min.css',
+    ];
+    foreach ($assets as $asset) {
+      $url = $this->url($asset, true);
+      if (str_ends_with($asset, '.js')) wire()->config->scripts->add($url);
+      else wire()->config->styles->add($url);
     }
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/lib/tabulator.min.js', true)
-    );
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/RockGrid.js', true)
-    );
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/magictags.js', true)
-    );
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/coldefs.js', true)
-    );
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/buttons.js', true)
-    );
-    wire()->config->scripts->add(
-      rockgrid()->url(__DIR__ . '/scripts/extensions.js', true)
-    );
-
-    wire()->config->styles->add(
-      rockgrid()->url(__DIR__ . '/lib/tabulator.min.css', true)
-    );
-    wire()->config->styles->add(
-      rockgrid()->url(__DIR__ . '/RockGrid.min.css', true)
-    );
 
     // translations
     // note: user translations have priority (so users can override stuff)
-    $translations = array_merge([
+    wire()->config->js('RockGridTranslations', [
       'cancel' => __('Cancel'),
       'edit' => __('edit'),
       'ok' => __('OK'),
       'trashSelected' => __('Are you sure you want to delete the selected items?'),
-    ], $this->translations);
-    wire()->config->js('RockGridTranslations', $translations);
-  }
-
-  /**
-   * Helper method to check wether to show the grid view or not
-   */
-  private function isGridView(HookEvent $event): bool
-  {
-    $p = $event->process->getPage();
-    $gridName = $p->template->rockGridName;
-    if (!$gridName) return false;
-
-    $grid = $this->getGrid($gridName);
-    if (!$grid) return false;
-    if (!wire()->input->get('rockgrid', 'int')) return false;
-    return true;
+      ...$this->translations
+    ]);
   }
 
   private function loadGridsArray(): void
@@ -447,6 +403,45 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       $p = wire()->pages->get($id);
       if ($p->viewable()) wire()->session->redirect($p->url);
     }
+  }
+
+  /**
+   * Build the form that shows a RockGrid instead of the page edit form
+   */
+  protected function renderChildrenGrid(HookEvent $event): void
+  {
+    // which grid to show?
+    $gridname = wire()->input->get('rockgrid', 'string');
+    $grid = $this->getGrid($gridname);
+    if (!$grid) return;
+
+    // as we don't show the page edit form we remove the lock status
+    // so that the page editor does not show a warning
+    if (!wire()->config->ajax) {
+      $page = $event->process->getPage();
+      $page->removeStatus(Page::statusLocked);
+    }
+
+    $form = new InputfieldForm();
+    $form->add([
+      'name' => 'PageEditChildrenGrid',
+      'type' => 'rockgrid',
+      'grid' => $grid->name,
+      'skipLabel' => Inputfield::skipLabelHeader,
+    ]);
+
+    // remove submit actions to avoid display glitches
+    // https://i.imgur.com/nF0ls4k.png
+    $event->process->addHookBefore(
+      'getSubmitActions',
+      function (HookEvent $event) {
+        $event->return = [];
+        $event->replace = true;
+      }
+    );
+
+    $event->replace = true;
+    $event->return = $form;
   }
 
   public function resetCache(): void
