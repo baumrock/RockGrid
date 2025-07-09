@@ -190,6 +190,18 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         ->js()
         ->add(__DIR__ . '/src/**.js')
         ->save(__DIR__ . '/dst/RockGrid.min.js');
+
+      rockdevtools()
+        ->assets()
+        ->less()
+        ->add(__DIR__ . '/src/less/**.less')
+        ->save(__DIR__ . '/src/RockGrid.css');
+
+      rockdevtools()
+        ->assets()
+        ->css()
+        ->add(__DIR__ . '/src/RockGrid.css')
+        ->save(__DIR__ . '/dst/RockGrid.min.css');
     } catch (\Throwable $th) {
       bd($th->getMessage());
     }
@@ -344,7 +356,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       __DIR__ . '/scripts/buttons.js',
       __DIR__ . '/scripts/extensions.js',
       __DIR__ . '/lib/tabulator.min.css',
-      __DIR__ . '/RockGrid.min.css',
+      __DIR__ . '/dst/RockGrid.min.css',
     ];
     foreach ($assets as $asset) {
       $url = $this->url($asset, true);
