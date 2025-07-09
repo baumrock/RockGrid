@@ -66,7 +66,7 @@ RockGrid.formatters = {
     }).format(value);
 
     // hide currency symbol?
-    if (params.hideSymbol) number = number.replace(/[^0-9.,]/g, "");
+    if (params.hideSymbol) number = number.replace(/[^-0-9.,]/g, "");
 
     // return formatted number
     return number;
