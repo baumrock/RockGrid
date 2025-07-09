@@ -1,10 +1,11 @@
 (() => {
+  const config = ProcessWire.config.RockGrid;
   class RockGrid {
-    edit = ProcessWire.config.urls.admin + "page/edit/?id=";
-    grids = {};
-    events = {};
     coldefs = {};
-    modal = false;
+    config = config.config;
+    edit = ProcessWire.config.urls.admin + "page/edit/?id=";
+    events = {};
+    grids = {};
 
     add(grid) {
       this.grids[grid.li.id] = grid;
@@ -102,6 +103,14 @@
       return this.getGrid(el).table;
     }
 
+    /**
+     * Helper for formatters to either get the value from a cell or a plain value
+     */
+    getValue(data, defaultValue = null) {
+      const val = typeof data === "object" ? data.getValue() : data;
+      return val || defaultValue;
+    }
+
     icon(name, tooltip) {
       if (!name) return "";
       if (tooltip) {
@@ -142,6 +151,29 @@
           ${modalCloseReload}
           ${data.suffix}
         >${icon}${data.label || ""}</a>`;
+    }
+
+    /**
+     * Edit page in modal
+     *
+     * This modal will
+     * - have save buttons in the bottom right corner (out of the iframe)
+     * - automatically close on save
+     * - automatically reload the grid after close
+     */
+    modal(el) {
+      let link = document.createElement("a");
+      let $link = $(link);
+      $link.attr("href", el.getAttribute("href"));
+      $link.addClass("pw-modal");
+      $link.attr("data-autoclose", "");
+      $link.attr("data-buttons", "button.ui-button[type=submit]");
+      $link.on("click", pwModalOpenEvent);
+      $link.on("pw-modal-closed", (e) => {
+        this.getGrid(el).reload();
+        $link.remove();
+      });
+      $link.click();
     }
 
     /**
@@ -243,30 +275,8 @@
     }
 
     x(key) {
-      const translations = ProcessWire.config.RockGridTranslations;
-      // if key is found return it, otherwise return key
-      return translations[key] || key;
+      return config.translations[key] || key;
     }
   }
   window.RockGrid = new RockGrid();
 })();
-
-// edit page in modal
-// this modal will
-// - have save buttons in the bottom right corner (out of the iframe)
-// - automatically close on save
-// - automatically reload the grid after close
-function RockGridModal(el) {
-  let link = document.createElement("a");
-  let $link = $(link);
-  $link.attr("href", el.getAttribute("href"));
-  $link.addClass("pw-modal");
-  $link.attr("data-autoclose", "");
-  $link.attr("data-buttons", "button.ui-button[type=submit]");
-  $link.on("click", pwModalOpenEvent);
-  $link.on("pw-modal-closed", (e) => {
-    RockGrid.getGrid(el).reload();
-    $link.remove();
-  });
-  $link.click();
-}

@@ -1,4 +1,8 @@
-// ##### formatters for tabulator + processwire #####
+/**
+ * formatters for tabulator + processwire
+ * TODO: refactor this like Formatters.js
+ */
+
 Tabulator.extendModule("format", "formatters", {
   /**
    * open modal window to edit this page
@@ -24,7 +28,7 @@ Tabulator.extendModule("format", "formatters", {
         reload +
         ' title="' +
         (params.tooltip || "edit") +
-        '" uk-tooltip class="rg-modal" onclick="RockGridModal(this);event.stopPropagation();event.preventDefault();"><i class="fa fa-edit"></i></a> ' +
+        '" uk-tooltip class="rg-modal" onclick="RockGrid.modal(this);event.stopPropagation();event.preventDefault();"><i class="fa fa-edit"></i></a> ' +
         val;
     }
     return val;
@@ -135,24 +139,16 @@ Tabulator.extendModule("filter", "filters", {
     let val = rowValue;
 
     // searching . returns all non-empty cells
-    if (search === ".") {
-      if (val === null || val == "") return false;
-      return true;
-    }
+    if (search === ".") return !(val === null || val == "");
     // searching ! returns all empty cells
-    else if (search === "!") {
-      if (val === null || val == "") return true;
-      return false;
-    }
+    if (search === "!") return val === null || val == "";
     // number comparisons
-    else if (search.indexOf("<=") === 0)
+    if (search.indexOf("<=") === 0)
       return val <= parseFloat(search.substring(2));
-    else if (search.indexOf(">=") === 0)
+    if (search.indexOf(">=") === 0)
       return val >= parseFloat(search.substring(2));
-    else if (search.indexOf("<") === 0)
-      return val < parseFloat(search.substring(1));
-    else if (search.indexOf(">") === 0)
-      return val > parseFloat(search.substring(1));
+    if (search.indexOf("<") === 0) return val < parseFloat(search.substring(1));
+    if (search.indexOf(">") === 0) return val > parseFloat(search.substring(1));
 
     // otherwise we use the regular like filter
     return filters["like"](search, val, rowData, filterParams);

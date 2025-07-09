@@ -40,7 +40,7 @@ document.addEventListener(
     if (modalUrl) {
       e.preventDefault();
       e.stopPropagation();
-      RockGridModal(a);
+      RockGrid.modal(a);
     }
   },
   true

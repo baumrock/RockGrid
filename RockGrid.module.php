@@ -21,6 +21,8 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 {
   const gridsArrayCache = 'rockgrid-grids';
 
+  public $currency;
+
   public $debug = false;
 
   /**
@@ -33,7 +35,11 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    */
   public $gridsArray = [];
 
+  public $hideSymbol = false;
+
   public $loadLuxon = false;
+
+  public $locale;
 
   private $translations = [];
 
@@ -170,6 +176,11 @@ class RockGrid extends WireData implements Module, ConfigurableModule
     return $this->succ($grid->getData());
   }
 
+  public function currency(): string
+  {
+    return $this->currency ?: 'EUR';
+  }
+
   private function devtools(): void
   {
     if (!wire()->config->rockdevtools) return;
@@ -266,6 +277,30 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       'checked' => $this->coreversion ? 'checked' : '',
     ]);
 
+    $inputfields->add([
+      'type' => 'text',
+      'name' => 'locale',
+      'label' => 'Locale (for money formatter)',
+      'value' => $this->locale(),
+      'columnWidth' => 33,
+    ]);
+
+    $inputfields->add([
+      'type' => 'text',
+      'name' => 'currency',
+      'label' => 'Currency (for money formatter)',
+      'value' => $this->currency(),
+      'columnWidth' => 33,
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
+      'name' => 'hideSymbol',
+      'label' => 'Hide currency symbol in money formatter',
+      'checked' => $this->hideSymbol ? 'checked' : '',
+      'columnWidth' => 33,
+    ]);
+
     return $inputfields;
   }
 
@@ -317,14 +352,20 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       else wire()->config->styles->add($url);
     }
 
-    // translations
-    // note: user translations have priority (so users can override stuff)
-    wire()->config->js('RockGridTranslations', [
-      'cancel' => __('Cancel'),
-      'edit' => __('edit'),
-      'ok' => __('OK'),
-      'trashSelected' => __('Are you sure you want to delete the selected items?'),
-      ...$this->translations
+    // send rockgrid config to frontend
+    wire()->config->js('RockGrid', [
+      'config' => [
+        'locale' => $this->locale(),
+        'currency' => $this->currency(),
+        'hideSymbol' => $this->hideSymbol ? 1 : 0,
+      ],
+      'translations' => [
+        'cancel' => __('Cancel'),
+        'edit' => __('edit'),
+        'ok' => __('OK'),
+        'trashSelected' => __('Are you sure you want to delete the selected items?'),
+        ...$this->translations
+      ]
     ]);
   }
 
@@ -375,6 +416,11 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       $grid = $this->getGrid($cls);
       if (method_exists($grid, 'init')) $grid->init();
     }
+  }
+
+  public function locale(): string
+  {
+    return $this->locale ?: 'de-AT';
   }
 
   /**
