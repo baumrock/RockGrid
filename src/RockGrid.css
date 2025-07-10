@@ -250,7 +250,7 @@
   flex-wrap: wrap;
   gap: 5px;
 }
-.InputfieldRockGrid .tabulator-cell .tag {
+.InputfieldRockGrid .tag {
   background: #fafafa;
   border-color: #bdbdbd;
   color: #212121;
@@ -258,6 +258,11 @@
   border-style: solid;
   padding: 2px 5px;
   border-radius: 5px;
+  cursor: pointer;
+}
+.InputfieldRockGrid .tag.active {
+  background: #424242;
+  color: #ffffff;
 }
 body.AdminStyleRock .rockgridbutton.uk-button-secondary {
   background-color: #616161;

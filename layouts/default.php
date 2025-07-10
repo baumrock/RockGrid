@@ -1,4 +1,5 @@
 <div class='RockGridWrapper'>
+  <?= $grid->topMarkup ?>
   <div class='buttonsWrapper uk-flex uk-flex-between'>
     <div class='buttons buttonsLeft'><?= $grid->buttonsLeft ?></div>
     <span class='buttons buttonsRight'>
@@ -6,4 +7,5 @@
     </span>
   </div>
   <div class='RockGrid'></div>
+  <?= $grid->bottomMarkup ?>
 </div>

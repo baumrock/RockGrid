@@ -208,6 +208,16 @@
         }
       });
 
+      // send RockGrid:tableReady event
+      document.dispatchEvent(
+        new CustomEvent("RockGrid:tableReady", {
+          detail: {
+            grid: this,
+            table,
+          },
+        })
+      );
+
       return table;
     }
 

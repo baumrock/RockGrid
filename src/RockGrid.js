@@ -207,6 +207,24 @@
       this.events[eventname] = events;
     }
 
+    /**
+     * Parse settings from an element's attribute
+     *
+     * Examples:
+     * rg-tagsfilter="field:foo;multiple:true;explode:comma;"
+     * rg-filter="fields:foo,bar;search:fuzzy;"
+     */
+    parseSettings(str) {
+      const settings = {};
+      const attrs = str.split(";");
+      attrs.forEach((attr) => {
+        const [key, value] = attr.split(":");
+        if (!key || !value) return;
+        settings[key.trim()] = value.trim();
+      });
+      return settings;
+    }
+
     sse(config) {
       // Send data to the server
       fetch(config.url, {

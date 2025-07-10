@@ -13,6 +13,8 @@ class Grid extends Wire
   public $jsFile;
   public $name;
   public $phpFile;
+  public $topMarkup;
+  public $bottomMarkup;
 
   public function addToPageList(Page $page)
   {

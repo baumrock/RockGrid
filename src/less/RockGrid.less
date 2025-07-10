@@ -364,16 +364,20 @@
     gap: 5px;
   }
   // single tag
-  .tabulator-cell {
-    .tag {
-      background: @grey-50;
-      border-color: @grey-400;
-      // makes tags readable when row is selected
-      color: @grey-900;
-      border-width: 1px;
-      border-style: solid;
-      padding: 2px 5px;
-      border-radius: 5px;
+  .tag {
+    background: @grey-50;
+    border-color: @grey-400;
+    // makes tags readable when row is selected
+    color: @grey-900;
+    border-width: 1px;
+    border-style: solid;
+    padding: 2px 5px;
+    border-radius: 5px;
+    // indicate clickable (for tagsfilter)
+    cursor: pointer;
+    &.active {
+      background: @grey-800;
+      color: @white;
     }
   }
 }
