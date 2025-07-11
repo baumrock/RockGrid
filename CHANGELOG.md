@@ -1,3 +1,20 @@
+## [1.5.0](https://github.com/baumrock/RockGrid/compare/v1.4.0...v1.5.0) (2025-07-11)
+
+
+### Features
+
+* add currency config settings and money formatter ([180892e](https://github.com/baumrock/RockGrid/commit/180892e3dc324d277bcdc2ccf0d48909e17335d5))
+* add date formatter and refactor to trait ([413a42d](https://github.com/baumrock/RockGrid/commit/413a42dbcb01c51169b4b99c852dbe5ce6494815))
+* add flatten helper + docs ([0fce1f0](https://github.com/baumrock/RockGrid/commit/0fce1f0c6aac87a61b22e1636cd1aa61d12d5a7c))
+* add formatDate helper ([14c1738](https://github.com/baumrock/RockGrid/commit/14c17382dc815c0d84d84c95a207ee53eef66772))
+* add sort() helper for rockgrid data ([37e8960](https://github.com/baumrock/RockGrid/commit/37e8960648804b64c9fc5a2804bd26a062f9c61f))
+* add TagsFilter ([d0e78f5](https://github.com/baumrock/RockGrid/commit/d0e78f5a519b02f04187aea978b4db89db6cc6a1))
+
+
+### Bug Fixes
+
+* money formatter removing negative indicator ([a5ab415](https://github.com/baumrock/RockGrid/commit/a5ab41533a0fa2fa7fd087e3c7b54c0fef4167b6))
+
 ## [1.4.0](https://github.com/baumrock/RockGrid/compare/v1.3.0...v1.4.0) (2025-07-02)
 
 
@@ -48,11 +65,4 @@
 * add RockLanguage DE ([491a2ea](https://github.com/baumrock/RockGrid/commit/491a2ea5c91eda6af55d30087af3feb33b9aefb2))
 * add smart filter ([2bb9be7](https://github.com/baumrock/RockGrid/commit/2bb9be74f0c22590c891973503f5e73afe2c105d))
 * setup ajaxUrl and ajaxParams by default ([607e236](https://github.com/baumrock/RockGrid/commit/607e2363f3e3a70cccb4d5700bc890f28f74ffc0))
-
-## [1.0.6](https://github.com/baumrock/RockGrid/compare/v1.0.5...v1.0.6) (2025-01-02)
-
-
-### Bug Fixes
-
-* rename orphan refresh() call to resetCache() ([1edc299](https://github.com/baumrock/RockGrid/commit/1edc29904f879abece9db1b176be2c4a54899be6))
 
