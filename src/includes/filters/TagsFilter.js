@@ -2,7 +2,7 @@
  * Grab tags from a column and list them as clickable tags to filter the grid
  *
  * Usage:
- * <div rg-tagsfilter="{field:foo; multiple:true; explode:comma;}"></div>
+ * <div rg-tagsfilter="field:foo;"></div>
  */
 (() => {
   class TagsFilter {
@@ -73,7 +73,6 @@
   }
 
   document.addEventListener("RockGrid:tableReady", (e) => {
-    const table = e.detail.table;
     const grid = e.detail.grid;
     const filterElements = grid.wrapper.querySelectorAll("[rg-tagsfilter]");
     filterElements.forEach((el) => new TagsFilter(el, grid));

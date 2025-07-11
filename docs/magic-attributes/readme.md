@@ -27,6 +27,48 @@ RockGrid automatically scans the grid data and generates clickable tags for each
 - **Deselect tags**: Click a selected tag again to remove it from the filter
 - **Clear all filters**: When no tags are selected, the grid displays all data without any filtering
 
+## Flipper (rg-flipper)
+
+<img src=https://i.imgur.com/hrd2hCj.gif class=blur>
+
+The `rg-flipper` magic attribute creates an interactive date navigation component that allows users to quickly filter dates and navigate between different time periods (years, months, or days). It automatically renders three buttons: previous, current, and next, enabling intuitive date-based filtering.
+
+### Usage
+
+```html
+<div rg-flipper="field:date_column;range:year;">Y</div>
+<div rg-flipper="field:date_column;range:month;">M</div>
+<div rg-flipper="field:date_column;range:day;">D</div>
+```
+
+### Options
+
+- `field`: The name of the date column in your grid's data source to filter. This parameter is **required**.
+- `range`: The time unit for navigation. Valid values are `year`, `month`, or `day`. This parameter is **required**.
+
+### Behavior
+
+RockGrid automatically transforms the element into a three-button navigation component:
+
+**Button Layout:**
+- **Previous (`<`)**: Navigate to the previous time period
+- **Current (label)**: Jump to the current time period (today's year/month/day)
+- **Next (`>`)**: Navigate to the next time period
+
+**Navigation Logic:**
+- **Year navigation**: Filters by year format (`yyyy`)
+- **Month navigation**: Filters by year-month format (`yyyy-MM`)
+- **Day navigation**: Filters by full date format (`yyyy-MM-dd`)
+
+**Smart Filtering:**
+- If a filter is already applied to the date column, the flipper uses that as the starting point for navigation
+- If no filter is set, the flipper starts from the current date
+- Each navigation action updates the header filter for the specified column
+
+### Dependencies
+
+The Flipper plugin requires the Luxon library for date manipulation. Ensure Luxon is enabled in RockGrid's module settings!
+
 ## HeaderFilter (rg-headerfilter)
 
 <img src=https://i.imgur.com/rjbntcH.gif class=blur>
