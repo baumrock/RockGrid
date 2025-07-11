@@ -1,0 +1,269 @@
+.text-black {
+  color: black;
+}
+.text-white {
+  color: white;
+}
+.rg-bg-transparent {
+  background-color: transparent;
+}
+.rg-bg-black {
+  background-color: #000000;
+}
+.rg-bg-white {
+  background-color: #ffffff;
+}
+.rg-bg-red {
+  background-color: rgba(244, 67, 54, 0.6);
+}
+.rg-bg-red-50 {
+  background-color: rgba(255, 235, 238, 0.6);
+}
+.rg-bg-red-100 {
+  background-color: rgba(255, 205, 210, 0.6);
+}
+.rg-bg-red-200 {
+  background-color: rgba(239, 154, 154, 0.6);
+}
+.rg-bg-red-300 {
+  background-color: rgba(229, 115, 115, 0.6);
+}
+.rg-bg-red-400 {
+  background-color: rgba(239, 83, 80, 0.6);
+}
+.rg-bg-red-500 {
+  background-color: rgba(244, 67, 54, 0.6);
+}
+.rg-bg-red-600 {
+  background-color: rgba(229, 57, 53, 0.6);
+}
+.rg-bg-red-700 {
+  background-color: rgba(211, 47, 47, 0.6);
+}
+.rg-bg-red-800 {
+  background-color: rgba(198, 40, 40, 0.6);
+}
+.rg-bg-red-900 {
+  background-color: rgba(183, 28, 28, 0.6);
+}
+.rg-bg-blue {
+  background-color: rgba(33, 150, 243, 0.6);
+}
+.rg-bg-blue-50 {
+  background-color: rgba(227, 242, 253, 0.6);
+}
+.rg-bg-blue-100 {
+  background-color: rgba(187, 222, 251, 0.6);
+}
+.rg-bg-blue-200 {
+  background-color: rgba(144, 202, 249, 0.6);
+}
+.rg-bg-blue-300 {
+  background-color: rgba(100, 181, 246, 0.6);
+}
+.rg-bg-blue-400 {
+  background-color: rgba(66, 165, 245, 0.6);
+}
+.rg-bg-blue-500 {
+  background-color: rgba(33, 150, 243, 0.6);
+}
+.rg-bg-blue-600 {
+  background-color: rgba(30, 136, 229, 0.6);
+}
+.rg-bg-blue-700 {
+  background-color: rgba(25, 118, 210, 0.6);
+}
+.rg-bg-blue-800 {
+  background-color: rgba(21, 101, 192, 0.6);
+}
+.rg-bg-blue-900 {
+  background-color: rgba(13, 71, 161, 0.6);
+}
+.rg-bg-green {
+  background-color: rgba(76, 175, 80, 0.6);
+}
+.rg-bg-green-50 {
+  background-color: rgba(232, 245, 233, 0.6);
+}
+.rg-bg-green-100 {
+  background-color: rgba(200, 230, 201, 0.6);
+}
+.rg-bg-green-200 {
+  background-color: rgba(165, 214, 167, 0.6);
+}
+.rg-bg-green-300 {
+  background-color: rgba(129, 199, 132, 0.6);
+}
+.rg-bg-green-400 {
+  background-color: rgba(102, 187, 106, 0.6);
+}
+.rg-bg-green-500 {
+  background-color: rgba(76, 175, 80, 0.6);
+}
+.rg-bg-green-600 {
+  background-color: rgba(67, 160, 71, 0.6);
+}
+.rg-bg-green-700 {
+  background-color: rgba(56, 142, 60, 0.6);
+}
+.rg-bg-green-800 {
+  background-color: rgba(46, 125, 50, 0.6);
+}
+.rg-bg-green-900 {
+  background-color: rgba(27, 94, 32, 0.6);
+}
+.rg-bg-yellow {
+  background-color: rgba(255, 235, 59, 0.6);
+}
+.rg-bg-yellow-50 {
+  background-color: rgba(255, 253, 231, 0.6);
+}
+.rg-bg-yellow-100 {
+  background-color: rgba(255, 249, 196, 0.6);
+}
+.rg-bg-yellow-200 {
+  background-color: rgba(255, 245, 157, 0.6);
+}
+.rg-bg-yellow-300 {
+  background-color: rgba(255, 241, 118, 0.6);
+}
+.rg-bg-yellow-400 {
+  background-color: rgba(255, 238, 88, 0.6);
+}
+.rg-bg-yellow-500 {
+  background-color: rgba(255, 235, 59, 0.6);
+}
+.rg-bg-yellow-600 {
+  background-color: rgba(253, 216, 53, 0.6);
+}
+.rg-bg-yellow-700 {
+  background-color: rgba(251, 192, 45, 0.6);
+}
+.rg-bg-yellow-800 {
+  background-color: rgba(249, 168, 37, 0.6);
+}
+.rg-bg-yellow-900 {
+  background-color: rgba(245, 127, 23, 0.6);
+}
+.rg-bg-orange {
+  background-color: rgba(255, 152, 0, 0.6);
+}
+.rg-bg-orange-50 {
+  background-color: rgba(255, 243, 224, 0.6);
+}
+.rg-bg-orange-100 {
+  background-color: rgba(255, 224, 178, 0.6);
+}
+.rg-bg-orange-200 {
+  background-color: rgba(255, 204, 128, 0.6);
+}
+.rg-bg-orange-300 {
+  background-color: rgba(255, 183, 77, 0.6);
+}
+.rg-bg-orange-400 {
+  background-color: rgba(255, 167, 38, 0.6);
+}
+.rg-bg-orange-500 {
+  background-color: rgba(255, 152, 0, 0.6);
+}
+.rg-bg-orange-600 {
+  background-color: rgba(251, 140, 0, 0.6);
+}
+.rg-bg-orange-700 {
+  background-color: rgba(245, 124, 0, 0.6);
+}
+.rg-bg-orange-800 {
+  background-color: rgba(239, 108, 0, 0.6);
+}
+.rg-bg-orange-900 {
+  background-color: rgba(230, 81, 0, 0.6);
+}
+.rg-bg-grey {
+  background-color: rgba(158, 158, 158, 0.6);
+}
+.rg-bg-grey-50 {
+  background-color: rgba(250, 250, 250, 0.6);
+}
+.rg-bg-grey-100 {
+  background-color: rgba(245, 245, 245, 0.6);
+}
+.rg-bg-grey-200 {
+  background-color: rgba(238, 238, 238, 0.6);
+}
+.rg-bg-grey-300 {
+  background-color: rgba(224, 224, 224, 0.6);
+}
+.rg-bg-grey-400 {
+  background-color: rgba(189, 189, 189, 0.6);
+}
+.rg-bg-grey-500 {
+  background-color: rgba(158, 158, 158, 0.6);
+}
+.rg-bg-grey-600 {
+  background-color: rgba(117, 117, 117, 0.6);
+}
+.rg-bg-grey-700 {
+  background-color: rgba(97, 97, 97, 0.6);
+}
+.rg-bg-grey-800 {
+  background-color: rgba(66, 66, 66, 0.6);
+}
+.rg-bg-grey-900 {
+  background-color: rgba(33, 33, 33, 0.6);
+}
+.tabulator-row.tabulator-selected.tabulator-row-even {
+  background-color: #424242;
+  color: #ffffff;
+}
+.tabulator-row.tabulator-selected.tabulator-row-odd {
+  background-color: #616161;
+  color: #ffffff;
+}
+.RockGrid.tabulator {
+  font-variant-numeric: tabular-nums;
+}
+.RockGridWrapper .buttonsWrapper {
+  margin-bottom: 5px;
+}
+.RockGridWrapper .buttons {
+  display: inline-flex;
+  column-gap: 5px;
+}
+.RockGridWrapper .rockgridbutton {
+  border-radius: 5px;
+}
+.RockGridWrapper .rockgridbutton.hidden {
+  display: none;
+}
+.RockGridWrapper .buttons > [show-when-selected],
+.RockGridWrapper .buttons > [show-when-filtered] {
+  display: none;
+}
+.RockGridWrapper.has-selected-rows .buttons > [show-when-selected] {
+  display: initial;
+}
+.RockGridWrapper.has-filtered-rows .buttons > [show-when-filtered] {
+  display: initial;
+}
+.InputfieldRockGrid .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.InputfieldRockGrid .tag {
+  background: #fafafa;
+  border-color: #bdbdbd;
+  color: #212121;
+  border-width: 1px;
+  border-style: solid;
+  padding: 2px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.InputfieldRockGrid .tag.active {
+  background: #424242;
+  color: #ffffff;
+}
+body.AdminStyleRock .rockgridbutton.uk-button-secondary {
+  background-color: #616161;
+}

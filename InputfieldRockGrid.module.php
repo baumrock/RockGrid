@@ -104,7 +104,7 @@ class InputfieldRockGrid extends Inputfield
     $files = json_encode($files);
 
     $hash = rockgrid()->safeName($this->grid);
-    $gridMarkup .= "<script>new RockGridGrid('#{$this->id}', '$hash', '$jsVars', '$files')</script>";
+    $gridMarkup .= "<script>RockGrid.init('#{$this->id}', '$hash', '$jsVars', '$files')</script>";
 
     // textarea first so that it exists in JS init() call
     // then the grid

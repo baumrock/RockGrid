@@ -29,5 +29,6 @@ document.addEventListener("RockGrid:init", (e) => {
     // enable row selection
     selectableRows: true,
     // selectableRowsRangeMode: "click",
+    // paginationCounter:"rows", // showing 1-20 of xxx rows
   });
 });
