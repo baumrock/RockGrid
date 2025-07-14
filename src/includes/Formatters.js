@@ -39,6 +39,23 @@ RockGrid.formatters = {
   },
 
   /**
+   * Email formatter
+   *
+   * Usage:
+   * col.formatter = RockGrid.formatters.email;
+   */
+  email: function (cell, formatterParams = null) {
+    let val = cell.getValue();
+    if (!val) return "";
+
+    // add stopPropagation to prevent row selection
+    return `<a
+      href='mailto:${val}'
+      onclick="event.stopPropagation();"
+    >${val}</a>`;
+  },
+
+  /**
    * Money formatter
    *
    * Usage:
@@ -86,5 +103,29 @@ RockGrid.formatters = {
     return tags
       .map((tag) => `<span class='tag' rg-headerfilter='${tag}'>${tag}</span>`)
       .join(" ");
+  },
+
+  /**
+   * URL formatter
+   *
+   * Usage:
+   * col.formatter = RockGrid.formatters.url;
+   *
+   * Usage with custom target:
+   * col.formatter = RockGrid.formatters.url;
+   * col.formatterParams = { target: "_self" };
+   */
+  url: function (cell, formatterParams = null) {
+    let val = cell.getValue();
+    if (!val) return "";
+    // get target from formatter params
+    const target = formatterParams?.target || "_blank";
+
+    // add stopPropagation to prevent row selection
+    return `<a
+      href='${val}'
+      target='${target}'
+      onclick="event.stopPropagation();"
+    >${val}</a>`;
   },
 };
