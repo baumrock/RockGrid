@@ -1,3 +1,12 @@
+## [1.7.0](https://github.com/baumrock/RockGrid/compare/v1.6.0...v1.7.0) (2025-07-17)
+
+
+### Features
+
+* add url and email formatter ([ec7106d](https://github.com/baumrock/RockGrid/commit/ec7106d96f9ecda6de034e10ba5a071292ef2385))
+* improve smart filter and add smarter filter + docs ([8f90bef](https://github.com/baumrock/RockGrid/commit/8f90befb6c62e46ef94d3c5c63e2f9617b3ad5f2))
+* improve tagsfilter with mode:and + multiple:true ([d71eb1c](https://github.com/baumrock/RockGrid/commit/d71eb1c62eee58ce951561c34b9b7b2bcf1a26a9))
+
 ## [1.6.0](https://github.com/baumrock/RockGrid/compare/v1.5.0...v1.6.0) (2025-07-11)
 
 
@@ -42,18 +51,4 @@
 
 * add missing trash selected ajax endpoint ([ea53c82](https://github.com/baumrock/RockGrid/commit/ea53c82fc33ee4a8aab5591228e3652922ca097e))
 * remove index from data column to support mysql json columns ([eb9c9ad](https://github.com/baumrock/RockGrid/commit/eb9c9ad66c34590561545cb5cf5ce108d3d1970f))
-
-## [1.2.0](https://github.com/baumrock/RockGrid/compare/v1.1.0...v1.2.0) (2025-03-12)
-
-
-### Features
-
-* add autoload grids and docs for batch updates ([57d0451](https://github.com/baumrock/RockGrid/commit/57d045148a3eba8aeef6c887e488599c9e3168c3))
-* add button visibility class "has-selected-rows" for "show-when-filtered" button ([3132218](https://github.com/baumrock/RockGrid/commit/3132218600814d5502558f110c62f1fdc755b100))
-
-
-### Bug Fixes
-
-* tags not readable when selected ([3e64cb9](https://github.com/baumrock/RockGrid/commit/3e64cb926c26fa45083f6e7ff5ea738792c159a2))
-* wrong secondary button color ([85d9766](https://github.com/baumrock/RockGrid/commit/85d9766cfc5e01f1181810da8d2cc8c2be4722ba))
 
