@@ -1,9 +1,9 @@
 /**
  * RockGrid filters for tabulator
  *
- * Simple usage:
+ * Usage:
  * col.headerFilter = true;
- * col.headerFilterFunc = "rg.smart2";
+ * col.headerFilterFunc = "rg.smarter";
  */
 Tabulator.extendModule("filter", "filters", {
   /**
