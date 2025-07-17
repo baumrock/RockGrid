@@ -37,6 +37,16 @@ The smart filter (`rg.smart`) is a versatile filter that supports multiple filte
 
 - **`=value`** - Exact match (case-sensitive)
 
+### Fuzzy Search
+
+The smart filter includes built-in fuzzy search functionality. When you enter multiple words separated by spaces, it automatically performs an AND search across all terms.
+
+**How it works:**
+- Enter multiple words separated by spaces (e.g., "ne ci")
+- The filter automatically converts this to "ne AND ci"
+- This finds records where both "ne" and "ci" appear anywhere in the value
+- Perfect for finding "New York City" when searching for "ne ci"
+
 ### Default Behavior
 
 If none of the special characters or operators are used, the filter performs a case-insensitive partial match (like filter).
