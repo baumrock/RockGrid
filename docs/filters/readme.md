@@ -66,9 +66,6 @@ If none of the special characters or operators are used, the filter performs a c
 // Show all records with values less than or equal to 50
 "<=50"
 
-// Show all records with values between 10 and 100
-">=10 AND <=100"
-
 // Exact match for "John"
 "=John"
 
