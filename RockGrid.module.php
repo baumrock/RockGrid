@@ -38,6 +38,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
   public $hideSymbol = false;
 
   public $loadLuxon = false;
+  public $loadExcelJS = false;
 
   public $locale;
 
@@ -275,6 +276,13 @@ class RockGrid extends WireData implements Module, ConfigurableModule
 
     $inputfields->add([
       'type' => 'checkbox',
+      'name' => 'loadExcelJS',
+      'label' => 'Load XLSX Library (for export)',
+      'checked' => $this->loadExcelJS ? 'checked' : '',
+    ]);
+
+    $inputfields->add([
+      'type' => 'checkbox',
       'name' => 'debug',
       'label' => 'Debug Mode',
       'checked' => $this->debug ? 'checked' : '',
@@ -345,10 +353,14 @@ class RockGrid extends WireData implements Module, ConfigurableModule
    */
   protected function hookRenderForm(HookEvent $event): void
   {
-    wire()->modules->get('JqueryUI')->use('modal');
-    $assets = [
+    /** @var JqueryUI $jquery */
+    $jquery = wire()->modules->get('JqueryUI');
+    $jquery->use('modal');
+    $assets = array_filter([
       __DIR__ . '/lib/math.min.js',
-      __DIR__ . '/lib/luxon.min.js',
+      ($this->loadLuxon ? __DIR__ . '/lib/luxon.min.js' : ''),
+      ($this->loadExcelJS ? __DIR__ . '/lib/exceljs.min.js' : ''),
+      ($this->loadExcelJS ? __DIR__ . '/lib/FileSaver.min.js' : ''),
       __DIR__ . '/lib/tabulator.min.js',
       __DIR__ . '/dst/RockGrid.min.js',
       __DIR__ . '/scripts/magictags.js',
@@ -357,7 +369,7 @@ class RockGrid extends WireData implements Module, ConfigurableModule
       __DIR__ . '/scripts/extensions.js',
       __DIR__ . '/lib/tabulator.min.css',
       __DIR__ . '/dst/RockGrid.min.css',
-    ];
+    ]);
     foreach ($assets as $asset) {
       $url = $this->url($asset, true);
       if (str_ends_with($asset, '.js')) wire()->config->scripts->add($url);
@@ -370,6 +382,9 @@ class RockGrid extends WireData implements Module, ConfigurableModule
         'locale' => $this->locale(),
         'currency' => $this->currency(),
         'hideSymbol' => $this->hideSymbol ? 1 : 0,
+        'loadLuxon' => $this->loadLuxon ? 1 : 0,
+        'httpUrl' => wire()->pages->get(1)->httpUrl(),
+        'httpAdminUrl' => wire()->pages->get(2)->httpUrl(),
       ],
       'translations' => [
         'cancel' => __('Cancel'),
