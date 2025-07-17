@@ -1,3 +1,10 @@
+## [1.8.0](https://github.com/baumrock/RockGrid/compare/v1.7.1...v1.8.0) (2025-07-17)
+
+
+### Features
+
+* add fuzzy search support ([4f208a9](https://github.com/baumrock/RockGrid/commit/4f208a9bf444b260aeae789d4a22356a7370d7bb))
+
 ## [1.7.1](https://github.com/baumrock/RockGrid/compare/v1.7.0...v1.7.1) (2025-07-17)
 
 
@@ -37,11 +44,4 @@
 ### Bug Fixes
 
 * money formatter removing negative indicator ([a5ab415](https://github.com/baumrock/RockGrid/commit/a5ab41533a0fa2fa7fd087e3c7b54c0fef4167b6))
-
-## [1.4.0](https://github.com/baumrock/RockGrid/compare/v1.3.0...v1.4.0) (2025-07-02)
-
-
-### Features
-
-* make colors transparent to allow striped rows and selection to shine through ([555cb80](https://github.com/baumrock/RockGrid/commit/555cb802fe65657dbf173f60fd5bda4a4992aa3d))
 
