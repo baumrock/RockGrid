@@ -28,7 +28,7 @@ Tabulator.extendModule("filter", "filters", {
     if (search.indexOf(">") === 0) return val > parseFloat(search.substring(1));
 
     // = foo uses an exact match
-    if (search.indexOf("=") === 0) return val === search.substring(1);
+    if (search.indexOf("=") === 0) return val === search.substring(1).trim();
 
     // otherwise we use the regular like filter
     return filters["like"](search, val, rowData, filterParams);
