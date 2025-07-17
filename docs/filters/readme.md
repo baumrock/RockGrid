@@ -1,4 +1,4 @@
-# RockGrid Filters
+# Filters
 
 RockGrid provides powerful filtering capabilities through custom filter functions that extend Tabulator's built-in filtering system. These filters can be applied to any column in your RockGrid table.
 
