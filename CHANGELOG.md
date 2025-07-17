@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/baumrock/RockGrid/compare/v1.7.0...v1.7.1) (2025-07-17)
+
+
+### Bug Fixes
+
+* add missing trim ([a315882](https://github.com/baumrock/RockGrid/commit/a315882b9078694d9a5b54c7eda53162549c42cc))
+
 ## [1.7.0](https://github.com/baumrock/RockGrid/compare/v1.6.0...v1.7.0) (2025-07-17)
 
 
@@ -37,18 +44,4 @@
 ### Features
 
 * make colors transparent to allow striped rows and selection to shine through ([555cb80](https://github.com/baumrock/RockGrid/commit/555cb802fe65657dbf173f60fd5bda4a4992aa3d))
-
-## [1.3.0](https://github.com/baumrock/RockGrid/compare/v1.2.0...v1.3.0) (2025-07-02)
-
-
-### Features
-
-* add clone item endpoint ([db25c08](https://github.com/baumrock/RockGrid/commit/db25c08520b41f254ef6f48444062bb499e83cba))
-* always log selected row ids to console ([ea1ce8c](https://github.com/baumrock/RockGrid/commit/ea1ce8ced6bd387f1cc829de283fa23820389dbd))
-
-
-### Bug Fixes
-
-* add missing trash selected ajax endpoint ([ea53c82](https://github.com/baumrock/RockGrid/commit/ea53c82fc33ee4a8aab5591228e3652922ca097e))
-* remove index from data column to support mysql json columns ([eb9c9ad](https://github.com/baumrock/RockGrid/commit/eb9c9ad66c34590561545cb5cf5ce108d3d1970f))
 
