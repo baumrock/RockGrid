@@ -91,9 +91,6 @@ The smarter filter (`rg.smarter`) extends the smart filter with the ability to c
 // Show all records with values less than 50 OR greater than 200
 "< 50 OR > 200"
 
-// Show all records that are not empty AND contain "active"
-". AND active"
-
 // Show all records that are empty OR contain "pending"
 "! OR pending"
 
