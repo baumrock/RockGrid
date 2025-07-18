@@ -1,3 +1,11 @@
+## [1.9.0](https://github.com/baumrock/RockGrid/compare/v1.8.0...v1.9.0) (2025-07-18)
+
+
+### Features
+
+* add support for excel download buttons ([74c8b5d](https://github.com/baumrock/RockGrid/commit/74c8b5d733757ef5a373ccd1f95ab51e7c9a54bf))
+* add support for week filtering to flipper ([62620d1](https://github.com/baumrock/RockGrid/commit/62620d125569e2f37160412f4b10edaab6867c79))
+
 ## [1.8.0](https://github.com/baumrock/RockGrid/compare/v1.7.1...v1.8.0) (2025-07-17)
 
 
@@ -27,21 +35,4 @@
 ### Features
 
 * add flipper filter ([6db5d91](https://github.com/baumrock/RockGrid/commit/6db5d9120cc4ed4b573a74e6f6d01720de8bf6fa))
-
-## [1.5.0](https://github.com/baumrock/RockGrid/compare/v1.4.0...v1.5.0) (2025-07-11)
-
-
-### Features
-
-* add currency config settings and money formatter ([180892e](https://github.com/baumrock/RockGrid/commit/180892e3dc324d277bcdc2ccf0d48909e17335d5))
-* add date formatter and refactor to trait ([413a42d](https://github.com/baumrock/RockGrid/commit/413a42dbcb01c51169b4b99c852dbe5ce6494815))
-* add flatten helper + docs ([0fce1f0](https://github.com/baumrock/RockGrid/commit/0fce1f0c6aac87a61b22e1636cd1aa61d12d5a7c))
-* add formatDate helper ([14c1738](https://github.com/baumrock/RockGrid/commit/14c17382dc815c0d84d84c95a207ee53eef66772))
-* add sort() helper for rockgrid data ([37e8960](https://github.com/baumrock/RockGrid/commit/37e8960648804b64c9fc5a2804bd26a062f9c61f))
-* add TagsFilter ([d0e78f5](https://github.com/baumrock/RockGrid/commit/d0e78f5a519b02f04187aea978b4db89db6cc6a1))
-
-
-### Bug Fixes
-
-* money formatter removing negative indicator ([a5ab415](https://github.com/baumrock/RockGrid/commit/a5ab41533a0fa2fa7fd087e3c7b54c0fef4167b6))
 
