@@ -31,20 +31,32 @@ RockGrid automatically scans the grid data and generates clickable tags for each
 
 <img src=https://i.imgur.com/hrd2hCj.gif class=blur>
 
-The `rg-flipper` magic attribute creates an interactive date navigation component that allows users to quickly filter dates and navigate between different time periods (years, months, or days). It automatically renders three buttons: previous, current, and next, enabling intuitive date-based filtering.
+The `rg-flipper` magic attribute creates an interactive date navigation component that allows users to quickly filter dates and navigate between different time periods (years, months, weeks, or days). It automatically renders three buttons: previous, current, and next, enabling intuitive date-based filtering.
 
 ### Usage
 
 ```html
 <div rg-flipper="field:date_column;range:year;">Y</div>
 <div rg-flipper="field:date_column;range:month;">M</div>
+<div rg-flipper="field:date_column;range:monday;">W</div>
 <div rg-flipper="field:date_column;range:day;">D</div>
+<div rg-flipper="field:week;range:monday;format:yy-MM-dd;">W</div>
 ```
 
 ### Options
 
 - `field`: The name of the date column in your grid's data source to filter. This parameter is **required**.
-- `range`: The time unit for navigation. Valid values are `year`, `month`, or `day`. This parameter is **required**.
+- `range`: The time unit for navigation. Valid values are `year`, `month`, `monday` (week), or `day`. This parameter is **required**.
+- `format`: Custom date format string (optional). If not provided, default formats are used based on the range type.
+
+### Default Formats
+
+- **Year**: `yyyy`
+- **Month**: `yyyy-MM`
+- **Monday/Week**: `yyyy-MM-dd`
+- **Day**: `yyyy-MM-dd`
+
+Note: We do **not** use week numbers (like `yyyy-WW`) for week-based filtering because week numbers can cause confusing results around the new year. For example, dates at the end of December and the beginning of January may belong to the same ISO week, but have different years, or vice versa. This can lead to situations where days from two different years are grouped under the same week number, or the same date appears in different weeks depending on the year. To avoid this ambiguity, RockGrid uses the date of the Monday that starts the week (e.g., `yy-MM-dd`) as the filter value. This approach ensures that each week is uniquely and consistently identified, even across year boundaries.
 
 ### Behavior
 
@@ -52,12 +64,13 @@ RockGrid automatically transforms the element into a three-button navigation com
 
 **Button Layout:**
 - **Previous (`<`)**: Navigate to the previous time period
-- **Current (label)**: Jump to the current time period (today's year/month/day)
+- **Current (label)**: Jump to the current time period (today's year/month/week/day)
 - **Next (`>`)**: Navigate to the next time period
 
 **Navigation Logic:**
 - **Year navigation**: Filters by year format (`yyyy`)
 - **Month navigation**: Filters by year-month format (`yyyy-MM`)
+- **Monday/Week navigation**: Filters by full date format (`yyyy-MM-dd`) starting from Monday of the week
 - **Day navigation**: Filters by full date format (`yyyy-MM-dd`)
 
 **Smart Filtering:**

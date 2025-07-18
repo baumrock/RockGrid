@@ -1,10 +1,12 @@
 /**
- * Create a flipper to quickly filter dates and jump to the next/previous year/month/day
+ * Create a flipper to quickly filter dates and jump to the next/previous year/month/week/day
  *
  * Usage:
  * <div rg-flipper="field:date;range:year;">Y</div>
+ * <div rg-flipper="field:date;range:monday;">W</div>
  * <div rg-flipper="field:date;range:month;">M</div>
  * <div rg-flipper="field:date;range:day;">D</div>
+ * <div rg-flipper="field:week;range:monday;format:yy-MM-dd;">W</div>
  */
 (() => {
   class Flipper {
@@ -19,9 +21,15 @@
 
     current() {
       let date = luxon.DateTime.local();
-      if (this.settings.range === "year") date = date.toFormat("yyyy");
-      if (this.settings.range === "month") date = date.toFormat("yyyy-MM");
-      if (this.settings.range === "day") date = date.toFormat("yyyy-MM-dd");
+      const format = this.getFormat();
+
+      if (this.settings.range === "year") date = date.toFormat(format);
+      if (this.settings.range === "month") date = date.toFormat(format);
+      if (this.settings.range === "day") date = date.toFormat(format);
+      if (this.settings.range === "monday") {
+        // Get the current week's Monday
+        date = date.startOf("week").toFormat(format);
+      }
       this.setFilter(date);
     }
 
@@ -29,6 +37,22 @@
       if (el.classList.contains("prev")) this.prev();
       if (el.classList.contains("current")) this.current();
       if (el.classList.contains("next")) this.next();
+    }
+
+    getFormat() {
+      // If custom format is provided, use it
+      if (this.settings.format) {
+        return this.settings.format;
+      }
+
+      // Default formats for each range type
+      if (this.settings.range === "year") return "yyyy";
+      if (this.settings.range === "month") return "yyyy-MM";
+      if (this.settings.range === "day") return "yyyy-MM-dd";
+      if (this.settings.range === "monday") return "yyyy-MM-dd";
+
+      // fallback
+      return "yyyy-MM-dd";
     }
 
     handleClicks() {
@@ -42,27 +66,36 @@
     next() {
       // get current header filter value for the field
       const filter = this.table.getHeaderFilterValue(this.settings.field);
+      const format = this.getFormat();
       let date;
+
       if (this.settings.range === "year") {
         // if filter is set, parse it, else use current year
         date = filter
-          ? luxon.DateTime.fromFormat(filter, "yyyy")
+          ? luxon.DateTime.fromFormat(filter, format)
           : luxon.DateTime.local();
         // add 1 year
-        date = date.plus({ years: 1 }).toFormat("yyyy");
+        date = date.plus({ years: 1 }).toFormat(format);
       } else if (this.settings.range === "month") {
         date = filter
-          ? luxon.DateTime.fromFormat(filter, "yyyy-MM")
+          ? luxon.DateTime.fromFormat(filter, format)
           : luxon.DateTime.local();
-        date = date.plus({ months: 1 }).toFormat("yyyy-MM");
+        date = date.plus({ months: 1 }).toFormat(format);
       } else if (this.settings.range === "day") {
         date = filter
-          ? luxon.DateTime.fromFormat(filter, "yyyy-MM-dd")
+          ? luxon.DateTime.fromFormat(filter, format)
           : luxon.DateTime.local();
-        date = date.plus({ days: 1 }).toFormat("yyyy-MM-dd");
+        date = date.plus({ days: 1 }).toFormat(format);
+      } else if (this.settings.range === "monday") {
+        // if filter is set, parse it, else use current week's Monday
+        date = filter
+          ? luxon.DateTime.fromFormat(filter, format)
+          : luxon.DateTime.local().startOf("week");
+        // add 1 week
+        date = date.plus({ weeks: 1 }).toFormat(format);
       } else {
         // fallback: just use current date
-        date = luxon.DateTime.local().toISODate();
+        date = luxon.DateTime.local().toFormat(format);
       }
       this.setFilter(date);
     }
@@ -70,27 +103,36 @@
     prev() {
       // get current header filter value for the field
       const filter = this.table.getHeaderFilterValue(this.settings.field);
+      const format = this.getFormat();
       let date;
+
       if (this.settings.range === "year") {
         // if filter is set, parse it, else use current year
         date = filter
-          ? luxon.DateTime.fromFormat(filter, "yyyy")
+          ? luxon.DateTime.fromFormat(filter, format)
           : luxon.DateTime.local();
         // subtract 1 year
-        date = date.minus({ years: 1 }).toFormat("yyyy");
+        date = date.minus({ years: 1 }).toFormat(format);
       } else if (this.settings.range === "month") {
         date = filter
-          ? luxon.DateTime.fromFormat(filter, "yyyy-MM")
+          ? luxon.DateTime.fromFormat(filter, format)
           : luxon.DateTime.local();
-        date = date.minus({ months: 1 }).toFormat("yyyy-MM");
+        date = date.minus({ months: 1 }).toFormat(format);
       } else if (this.settings.range === "day") {
         date = filter
-          ? luxon.DateTime.fromFormat(filter, "yyyy-MM-dd")
+          ? luxon.DateTime.fromFormat(filter, format)
           : luxon.DateTime.local();
-        date = date.minus({ days: 1 }).toFormat("yyyy-MM-dd");
+        date = date.minus({ days: 1 }).toFormat(format);
+      } else if (this.settings.range === "monday") {
+        // if filter is set, parse it, else use current week's Monday
+        date = filter
+          ? luxon.DateTime.fromFormat(filter, format)
+          : luxon.DateTime.local().startOf("week");
+        // subtract 1 week
+        date = date.minus({ weeks: 1 }).toFormat(format);
       } else {
         // fallback: just use current date
-        date = luxon.DateTime.local().toISODate();
+        date = luxon.DateTime.local().toFormat(format);
       }
       this.setFilter(date);
     }

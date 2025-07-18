@@ -111,6 +111,10 @@
       return val || defaultValue;
     }
 
+    httpEditUrl(id) {
+      return this.config.httpAdminUrl + "page/edit/?id=" + id;
+    }
+
     icon(name, tooltip) {
       if (!name) return "";
       if (tooltip) {

@@ -122,6 +122,13 @@
       config.ajaxURL = this.ajaxURL;
     }
 
+    setupDependencies(config) {
+      // see https://tabulator.info/docs/6.3/dependencies
+      config.dependencies = {
+        DateTime: RockGrid.config.loadLuxon ? luxon.DateTime : null,
+      };
+    }
+
     sleep(prop, value) {
       let oldValue = this.sleepValue;
       let oldString = JSON.stringify(oldValue);
@@ -149,6 +156,7 @@
       // ---- defaults ----
       this.setupAjaxUrl(config);
       this.setupAjaxParams(config);
+      this.setupDependencies(config);
 
       // setup the tabulator table
       let grid = this;
