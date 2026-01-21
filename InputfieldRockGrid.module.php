@@ -6,7 +6,7 @@ namespace ProcessWire;
  * RockGrid Inputfield using tabulator.info
  *
  * @author Bernhard Baumrock, 19.02.2021
- * @license COMMERCIAL DO NOT DISTRIBUTE
+ * @license MIT as of 2026-01-21
  * @link https://www.baumrock.com
  */
 class InputfieldRockGrid extends Inputfield

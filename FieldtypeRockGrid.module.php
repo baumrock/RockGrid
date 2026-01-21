@@ -6,7 +6,7 @@ use RockGrid\RockGridField;
 
 /**
  * @author Bernhard Baumrock, 16.06.2022
- * @license COMMERCIAL DO NOT DISTRIBUTE
+ * @license MIT as of 2026-01-21
  * @link https://www.baumrock.com
  */
 class FieldtypeRockGrid extends Fieldtype

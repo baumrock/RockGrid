@@ -6,7 +6,7 @@ use Tracy\Dumper;
 
 /**
  * @author Bernhard Baumrock, 15.05.2024
- * @license COMMERCIAL DO NOT DISTRIBUTE
+ * @license MIT as of 2026-01-21
  * @link https://www.baumrock.com
  */
 class ProcessRockGrid extends Process

@@ -14,7 +14,7 @@ function rockgrid(): RockGrid
 
 /**
  * @author Bernhard Baumrock, 19.02.2021
- * @license COMMERCIAL DO NOT DISTRIBUTE
+ * @license MIT as of 2026-01-21
  * @link https://www.baumrock.com
  */
 class RockGrid extends WireData implements Module, ConfigurableModule
