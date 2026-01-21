@@ -82,6 +82,17 @@ RockGrid automatically transforms the element into a three-button navigation com
 
 The Flipper plugin requires the Luxon library for date manipulation. Ensure Luxon is enabled in RockGrid's module settings!
 
+### Tooltips
+
+You can add tooltips to your flipper like this:
+
+```php
+<span
+  rg-flipper="field:day;range:month;"
+  title="Flip Month" uk-tooltip
+>M</span>
+```
+
 ## HeaderFilter (rg-headerfilter)
 
 <img src=https://i.imgur.com/rjbntcH.gif class=blur>
