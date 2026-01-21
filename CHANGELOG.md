@@ -1,3 +1,14 @@
+## [2.0.0](https://github.com/baumrock/RockGrid/compare/v1.9.0...v2.0.0) (2026-01-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* change license to MIT
+
+### Bug Fixes
+
+* change license to MIT ([c970df5](https://github.com/baumrock/RockGrid/commit/c970df55d09ee254b5b80a6aad9f6b36a2f147c0))
+
 ## [1.9.0](https://github.com/baumrock/RockGrid/compare/v1.8.0...v1.9.0) (2025-07-18)
 
 
@@ -28,11 +39,4 @@
 * add url and email formatter ([ec7106d](https://github.com/baumrock/RockGrid/commit/ec7106d96f9ecda6de034e10ba5a071292ef2385))
 * improve smart filter and add smarter filter + docs ([8f90bef](https://github.com/baumrock/RockGrid/commit/8f90befb6c62e46ef94d3c5c63e2f9617b3ad5f2))
 * improve tagsfilter with mode:and + multiple:true ([d71eb1c](https://github.com/baumrock/RockGrid/commit/d71eb1c62eee58ce951561c34b9b7b2bcf1a26a9))
-
-## [1.6.0](https://github.com/baumrock/RockGrid/compare/v1.5.0...v1.6.0) (2025-07-11)
-
-
-### Features
-
-* add flipper filter ([6db5d91](https://github.com/baumrock/RockGrid/commit/6db5d9120cc4ed4b573a74e6f6d01720de8bf6fa))
 
